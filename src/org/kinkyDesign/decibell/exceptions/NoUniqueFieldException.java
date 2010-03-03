@@ -33,53 +33,28 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkyDesign.decibell.annotations;
 
-import org.kinkyDesign.decibell.collections.OnModification;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import org.kinkyDesign.decibell.collections.SQLType;
+package org.kinkyDesign.decibell.exceptions;
 
 /**
- * Any key for a DB table.
- * @author chung
+ *
+ * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Target(ElementType.FIELD)
-@Documented
-public @interface Entry {
+public class NoUniqueFieldException extends Exception {
 
     /**
-     * The key is unique among all entities.
-     * @return true if is unique
+     * Creates a new instance of <code>NoUniqueFieldException</code> without detail message.
      */
-    boolean unique() default false;
-    /**
-     * This key cannot be null
-     * @return true if is not null
-     */
-    boolean notNull() default false;
-    /**
-     * Specify action to be taken upon deletion of the key
-     * @return Action to be taken
-     */
-    OnModification onDelete() default OnModification.CASCADE;
-    /**
-     * Specify action to be taken upon update of the key
-     * @return Action to be taken
-     */
-    OnModification onUpdate() default OnModification.CASCADE;
-    /**
-     * Default value for the key
-     * @return Value to be assigned to the key if no other value is provided.
-     */
-    String defaultValue() default "";
+    public NoUniqueFieldException() {
+    }
 
-    
-    
+
+    /**
+     * Constructs an instance of <code>NoUniqueFieldException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public NoUniqueFieldException(String msg) {
+        super(msg);
+    }
 }

@@ -6,7 +6,9 @@ package org.kinkyDesign.examples;
 import org.kinkyDesign.decibell.annotations.*;
 
 /* The superclass Component denotes that this class is a corresponds to a database entity
-   which is normally a table. This is an example about a User  
+   which is normally a table. This is an example about a User
+   The name of the corresponding table in the database is User, i.e. has the same name with the class
+   or if there is an abmiguity, the whole name can be used, like org_kinky_example_User  
  */
 public class User 
         extends Component {
@@ -16,9 +18,16 @@ public class User
  */
 
 /* Let the primary key of this class be an integer ID */
-@Key
+@Entry
 @PrimaryKey(generatedAsId=false) 
 public int ID;
+
+/* 
+ When using the annotation @PrimaryKey, it is implied that it is a key, so 
+ there is no need to use @Key too. So the above declaration is equivalent to:
+ */
+@PrimaryKey
+public int id;
 
 /*
  Decibell will parse the datatype of the java object (in this case: java.lang.String) and 
@@ -30,13 +39,13 @@ public int ID;
  Double, Float --> Float
  etc...
  */
-@Key(unique=true, notNull=true) 
+@Entry(unique=true, notNull=true) 
 public String userName;
 
 /*
  A very simple database entry is generated for the users' ages.
 */
-@Key 
+@Entry
 public int age;
 
 /*
@@ -52,27 +61,35 @@ public UserGroup group;
  generate an extra table called user_resources_relations with two columns: one for the 
  primary key of User and one for the primary key of Resource.
  */
-@Key 
+@Entry
 public ArrayList<Resource> listOfResources;
 
 /*
  Same as above
  */
-@Key 
+@Entry
 private Resource[] anotherList;
 
 /*
  This is not valid, because the class Object is not tagged as @Component
  */
-@Key 
+@Entry
 public Object something;
 
 /*
  Add a constraint to a key. This variable takes values from the set {HIGH, LOW}
  */
-@Key 
+@Entry
 @Constraint(domain={"HIGH", "LOW"}) 
 public String kinky;
+
+/*
+ This creates a many-to-many relation between this entity (User) and the childName element.
+ So this creates a table with two columns: The primary key of User (ID) and another column of
+ type VarChar(255).
+ */
+@Entry
+ArrayList<String> childName;
 
 
 // To be discussed:
