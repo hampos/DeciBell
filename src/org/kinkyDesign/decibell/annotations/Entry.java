@@ -42,6 +42,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.kinkyDesign.decibell.collections.SQLType;
 
 /**
  * Any key for a DB table.
@@ -78,4 +79,7 @@ public @interface Entry {
      * @return Value to be assigned to the key if no other value is provided.
      */
     String defaultValue() default "";
+
+    SQLType type() default SQLType.VOID;
+    
 }

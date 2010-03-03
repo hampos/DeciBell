@@ -53,7 +53,7 @@ public enum SQLType implements JSQLType {
     INTEGER(Integer.class),
     /**
      * <code>SMALLINT</code> is the counterpart of <code>short </code>. Higher and Lower
-     * limits are 32767 and -32768 respectively. SMALLINT provides 2 bytes of storage.
+     * limits are 32767 and -32768 respectively. <code>SMALLINT</code> provides 2 bytes of storage.
      */
     SMALLINT(Short.class),
     /**
@@ -61,6 +61,18 @@ public enum SQLType implements JSQLType {
      * range from -9223372036854775808 up to 9223372036854775807.
      */
     BIGINT(Long.class),
+    /**
+     * The REAL data type provides 4 bytes of storage for numbers using IEEE floating-point
+     * notation. Note that the limits in this SQL type are different from the corresponding
+     * java type (<code>Float</code>).
+     * <p>
+     * REAL value ranges:<br/>
+     * • Smallest REAL value: -3.402E+38<br/>
+     * • Largest REAL value: 3.402E+38<br/>
+     * • Smallest positive REAL value: 1.175E-37<br/>
+     * • Largest negative REAL value: -1.175E-37<br/>
+     * </p>
+     */
     REAL(Float.class),
     /**
      * The DOUBLE PRECISION data type provides 8-byte storage for numbers using IEEE
@@ -109,7 +121,23 @@ public enum SQLType implements JSQLType {
             return "CHAR(10)";
         }
     },
-    TIMESTAMP(Timestamp.class);
+    /**
+     * TIMESTAMP stores a combined DATE and TIME value to be stored. It permits a
+     * fractional-seconds value of up to nine digits. The corresponding java datatype
+     * is <code>java.sql.Timestamp</code>. Dates, times, and timestamps cannot be
+     * mixed with one another in expressions. Example: <code>'1962-09-23 03:23:34.234'</code> .
+     */
+    TIMESTAMP(Timestamp.class),
+    /**
+     * This is not a valid SQL datatype, instead is a flag to denote that the type of
+     * the undelying element should be retrieved from the corresponding java type declared
+     * in the code. <code>VOID</code> can be any of the above types and the corresponding java
+     * type, just for consistency, is set to <code>java.langg.Void</code>. This type, is not
+     * intended to be used <em>as is</em> in any SQL operation, it is just a directive to
+     * Decibell, to put effort to chose the correct type itself. <code>ANY</code> could
+     * be an alternative name for <code>VOID</code>.
+     */
+    VOID(Void.class);
 
     private Class javaDataType = String.class;
 
