@@ -33,27 +33,37 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkyDesign.decibell.annotations;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.kinkyDesign.decibell.collections;
 
 /**
- * Any key for a DB table.
- * @author chung
+ *
+ * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Target(ElementType.FIELD)
-@Documented
-public @interface Key {
+public interface  JSQLType {
 
-    boolean unique() default false;
-    boolean notNull() default false;
-    OnModification onDelete() default OnModification.CASCADE;
-    OnModification onUpdate() default OnModification.CASCADE;
+    /**
+     * Correspondence between SQL and Javatypes is documented in the derby specifications,
+     * Derby Reference Manual, Version 10.5., p.190.
+     * @param javaType
+     * @return Corresponding SQLType object.
+     */
+    SQLType fromJavaType(Class javaType);
+    /**
+     * The java type corresponding to the SQLType object.
+     * @return The Class which better describes the SQL data type.
+     */
+    Class getJavaType();
+    /**
+     * The SQL Type as a string (i.e. its name)
+     * @return Name of SQL counterpart of the SQLType object into consideration.
+     */
+    String getSqlType();
+    /**
+     * Whether the SQLType can be cast as another SQLType.
+     * @param other Some other SQL datatype.
+     * @return true if the casting is feasible, false in the contrary.
+     */
+    boolean isCastAs(SQLType other);
+
 }
