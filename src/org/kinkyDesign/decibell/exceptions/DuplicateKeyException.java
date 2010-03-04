@@ -34,7 +34,7 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkyDesign.decibell.exceptions;
+package org.kinkydesign.decibell.exceptions;
 
 /**
  *

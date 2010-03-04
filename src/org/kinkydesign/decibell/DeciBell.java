@@ -34,27 +34,39 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.exceptions;
+package org.kinkydesign.decibell;
+
+import java.lang.reflect.Field;
+import java.util.Set;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.core.Component;
+import org.reflections.Reflections;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class NoUniqueFieldException extends Exception {
+public class DeciBell implements Runnable {
 
-    /**
-     * Creates a new instance of <code>NoUniqueFieldException</code> without detail message.
-     */
-    public NoUniqueFieldException() {
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public void start(){
+        Reflections reflections = new Reflections("");
 
-    /**
-     * Constructs an instance of <code>NoUniqueFieldException</code> with the specified detail message.
-     * @param msg the detail message.
-     */
-    public NoUniqueFieldException(String msg) {
-        super(msg);
+        Set<Class<? extends Component>> components = reflections.getSubTypesOf(Component.class);
+
+        for(Class c : components){
+            System.out.println(c);
+        }
+
+        Set<Field> annotated = reflections.getFieldsAnnotatedWith(PrimaryKey.class);
+
+        for(Field f : annotated){
+            System.out.println(f);
+        }
     }
+
 }

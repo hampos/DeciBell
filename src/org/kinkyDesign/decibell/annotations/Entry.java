@@ -33,16 +33,16 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkyDesign.decibell.annotations;
+package org.kinkydesign.decibell.annotations;
 
-import org.kinkyDesign.decibell.collections.OnModification;
+import org.kinkydesign.decibell.collections.OnModification;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.kinkyDesign.decibell.collections.SQLType;
+import org.kinkydesign.decibell.collections.SQLType;
 
 /**
  * Any key for a DB table.

@@ -1,8 +1,8 @@
 package examples;
 
 import java.util.ArrayList;
-import org.kinkyDesign.decibell.core.Component;
-import org.kinkyDesign.decibell.exceptions.DuplicateKeyException;
+import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 
 public class ReadWriteApplication {
 

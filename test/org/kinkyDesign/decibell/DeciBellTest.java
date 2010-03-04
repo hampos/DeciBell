@@ -3,24 +3,23 @@
  * and open the template in the editor.
  */
 
-package examples;
+package org.kinkydesign.decibell;
 
+import org.kinkydesign.decibell.DeciBell;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.kinkydesign.decibell.DeciBell;
 import static org.junit.Assert.*;
-import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
 /**
  *
  * @author hampos
  */
-public class UserTest {
+public class DeciBellTest {
 
-    public UserTest() {
+    public DeciBellTest() {
     }
 
     @BeforeClass
@@ -40,23 +39,17 @@ public class UserTest {
     }
 
     /**
-     * Test of myMethod method, of class User.
+     * Test of run method, of class DeciBell.
      */
     @Test
-    public void testMyMethod() {
+    public void testRun() {
     }
 
     /**
-     * Test of setUseName method, of class User.
+     * Test of start method, of class DeciBell.
      */
     @Test
-    public void testSetUseName() {
-    }
-
-    @Test
-    public void testClass() throws NoUniqueFieldException{
-        User user = new User();
-        user.delete();
+    public void testStart() {
         DeciBell db = new DeciBell();
         db.start();
     }

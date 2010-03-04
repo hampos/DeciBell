@@ -4,8 +4,9 @@ package examples;
 Import org.kinkyDesign.decibell classes...
  */
 import java.util.ArrayList;
-import org.kinkyDesign.decibell.annotations.*;
-import org.kinkyDesign.decibell.core.Component;
+import org.kinkydesign.decibell.annotations.*;
+import org.kinkydesign.decibell.core.Component;
+
 
 /* The superclass Component denotes that this class is a corresponds to a database entity
 which is normally a table. This is an example about a User

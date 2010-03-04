@@ -4,9 +4,12 @@
  */
 package examples;
 
+import org.kinkydesign.decibell.core.Component;
+
 /**
  *
  * @author hampos
  */
-public class UserGroup {
+public class UserGroup extends Component{
+    
 }

@@ -33,11 +33,11 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkyDesign.decibell.core;
+package org.kinkydesign.decibell.core;
 
 import java.util.ArrayList;
-import org.kinkyDesign.decibell.exceptions.DuplicateKeyException;
-import org.kinkyDesign.decibell.exceptions.NoUniqueFieldException;
+import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
+import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
 /**
  *
