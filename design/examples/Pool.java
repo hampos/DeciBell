@@ -1,4 +1,6 @@
-public class InitializePool{
+package examples;
+
+public class Pool{
 
 
 

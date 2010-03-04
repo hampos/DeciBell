@@ -33,24 +33,28 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkyDesign.decibell.annotations;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.kinkyDesign.decibell.exceptions;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Target(ElementType.FIELD)
-@Documented
-public @interface ForeignKey {
+public class DuplicateKeyException extends Exception {
 
+    /**
+     * Creates a new instance of <code>DuplicateKeyException</code> without detail message.
+     */
+    public DuplicateKeyException() {
+    }
+
+
+    /**
+     * Constructs an instance of <code>DuplicateKeyException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public DuplicateKeyException(String msg) {
+        super(msg);
+    }
 }

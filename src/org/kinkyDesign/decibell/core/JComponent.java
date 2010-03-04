@@ -36,6 +36,8 @@
 package org.kinkyDesign.decibell.core;
 
 import java.util.ArrayList;
+import org.kinkyDesign.decibell.exceptions.DuplicateKeyException;
+import org.kinkyDesign.decibell.exceptions.NoUniqueFieldException;
 
 /**
  *
@@ -47,7 +49,7 @@ public interface JComponent {
     /**
      * Registers the component in the database.
      */
-    void register();
+    void register() throws DuplicateKeyException;
 
     /**
      * Get all the components from the database which resemble the given component.
@@ -76,13 +78,13 @@ public interface JComponent {
      * this is reproduced in the database by setting the coresponding field to null.
      * This operation is based on prepared statements.
      */
-    void update();
+    void update() throws NoUniqueFieldException;
 
     /**
      * Deletes the current component from the database. At least one valid unique field must
      * be specified in order for the delete operation to take place.
      * This operation is based on prepared statements.
      */
-    void delete();
+    void delete() throws NoUniqueFieldException;
     
 }

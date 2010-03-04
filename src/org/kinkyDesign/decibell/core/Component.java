@@ -35,11 +35,35 @@
  */
 package org.kinkyDesign.decibell.core;
 
+import java.util.ArrayList;
+import org.kinkyDesign.decibell.exceptions.DuplicateKeyException;
+import org.kinkyDesign.decibell.exceptions.NoUniqueFieldException;
+
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public abstract class Component {
+public abstract class Component implements JComponent {
+
+    public void delete() throws NoUniqueFieldException {
+        System.out.println(this.getClass());
+    }
+
+    public void register() throws DuplicateKeyException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public ArrayList<Component> search() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public ArrayList<Component> search(String... fields) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void update() throws NoUniqueFieldException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
 }
