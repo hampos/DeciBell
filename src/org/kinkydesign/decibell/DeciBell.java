@@ -34,7 +34,9 @@
  * tel. +30 210 7723236
  */
 package org.kinkydesign.decibell;
-
+import java.util.Set;
+import org.kinkydesign.decibell.core.Component;
+import org.reflections.Reflections;
 /**
  *
  * @author Pantelis Sopasakis
@@ -43,6 +45,15 @@ package org.kinkydesign.decibell;
 public class DeciBell {
 
     public void start(){
+
+        Reflections reflections = new Reflections("");
+
+        Set<Class<? extends Component>> components = reflections.getSubTypesOf(Component.class);
+
+        for(Class c : components){
+            System.out.println(c);
+        }
+
 
     }
 }
