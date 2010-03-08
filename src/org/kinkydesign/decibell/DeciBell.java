@@ -34,10 +34,12 @@
  * tel. +30 210 7723236
  */
 package org.kinkydesign.decibell;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.interfaces.JDeciBell;
 import org.reflections.Reflections;
 /**
@@ -47,19 +49,13 @@ import org.reflections.Reflections;
  */
 public class DeciBell implements JDeciBell{
 
-    private String user = "itsme";
-    private String password = "letmein";
-    private String urlBase = "jdbc:derby://";
-    private String dbName = "db";
-    private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-    private String javacmd = "java";
-    private String javaOptions ="-Djava.net.preferIPv4Stack=true";
-    private String driverHome = "/usr/local/sges-v3/javadb";
-    private String host = "localhost";
-    private int port = 1527;
-    private String databaseUrl = urlBase+host+":"+port+"/"+dbName+";user="+user;
+    private DbConnector connector = new DbConnector();
 
+    private static Map<Class<? extends Component> , DeciBell> componentDBmap =
+            new HashMap<Class<? extends Component>, DeciBell>();
+        
     Set<Class<? extends Component>> components = null;
+
 
     public void attach(Class c) {
         c.asSubclass(Component.class);
@@ -67,8 +63,9 @@ public class DeciBell implements JDeciBell{
             components = new HashSet<Class<? extends Component>>();
         }
         this.components.add(c);
-
+        componentDBmap.put(c, this);
     }
+
 
     public void start(){
 
@@ -77,10 +74,11 @@ public class DeciBell implements JDeciBell{
             components = reflections.getSubTypesOf(Component.class);
         }
 
+//        TablesGenerator.construct(components);
+
         for(Class c : components){
             System.out.println(c);
         }
-
 
     }
 
@@ -97,25 +95,30 @@ public class DeciBell implements JDeciBell{
     }
 
     public void setDriverHome(String driverHome) {
-        this.driverHome = driverHome;
+        connector.setDriverHome(driverHome);
     }
 
     public void setDriver(String driver) {
-        this.driver = driver;
+        connector.setDriver(driver);
     }
 
     public void setJavaOptions(String javaOptions) {
-        this.javaOptions = javaOptions;
+        connector.setJavaOptions(javaOptions);
     }
 
     public void setJavacmd(String javacmd) {
-        this.javacmd = javacmd;
+        connector.setJavacmd(javacmd);
     }
 
     public void setUser(String user) {
-        this.user = user;
+        connector.setUser(user);
     }
 
+    public void setDbName() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+   
 
   
 }
