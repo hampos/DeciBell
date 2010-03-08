@@ -13,7 +13,7 @@ which is normally a table. This is an example about a User
 The name of the corresponding table in the database is User, i.e. has the same name with the class
 or if there is an abmiguity, the whole name can be used, like org_kinky_example_User  
  */
-public class User extends Component {
+public class User extends Component<User> {
 
     /*
     Now create some fields for that class...

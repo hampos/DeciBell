@@ -5,12 +5,14 @@
 
 package examples;
 
+import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.core.Component;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
@@ -56,6 +58,8 @@ public class UserTest {
     @Test
     public void testClass() throws NoUniqueFieldException{
         User user = new User();
+        ArrayList<User> list = user.search();
+        System.out.println(list.get(0).id);
         user.delete();
         DeciBell db = new DeciBell();
         db.start();

@@ -33,9 +33,10 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.core;
+package org.kinkydesign.decibell.interfaces;
 
 import java.util.ArrayList;
+import org.kinkydesign.decibell.core.Component;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
@@ -44,7 +45,7 @@ import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public interface JComponent {
+public interface JComponent<T extends Component> {
 
     /**
      * Registers the component in the database.
@@ -59,7 +60,7 @@ public interface JComponent {
      * are prepared upon the startup of decibell.
      * @return List of results
      */
-    ArrayList<Component> search();
+    ArrayList<T> search();
 
     /**
      * Returns only the prescribed fields of the component, that is it performs a more
@@ -69,7 +70,7 @@ public interface JComponent {
      * @param fields
      * @return List of results.
      */
-    ArrayList<Component> search(String... fields);
+    ArrayList<T> search(String... fields);
 
     /**
      * Performs an update on the specified component. First, a database search is performed,

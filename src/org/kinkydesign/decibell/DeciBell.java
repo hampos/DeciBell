@@ -34,21 +34,48 @@
  * tel. +30 210 7723236
  */
 package org.kinkydesign.decibell;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.interfaces.JDeciBell;
 import org.reflections.Reflections;
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class DeciBell {
+public class DeciBell implements JDeciBell{
+
+    private String user = "itsme";
+    private String password = "letmein";
+    private String urlBase = "jdbc:derby://";
+    private String dbName = "db";
+    private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
+    private String javacmd = "java";
+    private String javaOptions ="-Djava.net.preferIPv4Stack=true";
+    private String driverHome = "/usr/local/sges-v3/javadb";
+    private String host = "localhost";
+    private int port = 1527;
+    private String databaseUrl = urlBase+host+":"+port+"/"+dbName+";user="+user;
+
+    Set<Class<? extends Component>> components = null;
+
+    public void attach(Class c) {
+        c.asSubclass(Component.class);
+        if(components == null){
+            components = new HashSet<Class<? extends Component>>();
+        }
+        this.components.add(c);
+
+    }
 
     public void start(){
 
-        Reflections reflections = new Reflections("");
-
-        Set<Class<? extends Component>> components = reflections.getSubTypesOf(Component.class);
+        if(this.components == null){
+            Reflections reflections = new Reflections("");
+            components = reflections.getSubTypesOf(Component.class);
+        }
 
         for(Class c : components){
             System.out.println(c);
@@ -56,4 +83,39 @@ public class DeciBell {
 
 
     }
+
+    public void restart() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void reset() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void stop() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setDriverHome(String driverHome) {
+        this.driverHome = driverHome;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    public void setJavaOptions(String javaOptions) {
+        this.javaOptions = javaOptions;
+    }
+
+    public void setJavacmd(String javacmd) {
+        this.javacmd = javacmd;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+
+  
 }

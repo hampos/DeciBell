@@ -11,5 +11,5 @@ import org.kinkydesign.decibell.core.Component;
  * @author hampos
  */
 public class UserGroup extends Component{
-    
+    int id;
 }
