@@ -41,6 +41,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.kinkydesign.decibell.collections.OnModification;
 
 /**
  *
@@ -52,5 +53,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Documented
 public @interface ForeignKey {
+
+    OnModification onDelete() default OnModification.NO_ACTION;
+
+    OnModification onUpdate() default OnModification.NO_ACTION;
+
 
 }

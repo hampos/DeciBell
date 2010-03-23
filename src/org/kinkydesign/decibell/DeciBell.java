@@ -34,14 +34,22 @@
  * tel. +30 210 7723236
  */
 package org.kinkydesign.decibell;
+import examples.User;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.core.Component;
 import org.kinkydesign.decibell.db.DbConnector;
+import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.interfaces.JDeciBell;
 import org.reflections.Reflections;
+import org.reflections.scanners.FieldAnnotationsScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 /**
  *
  * @author Pantelis Sopasakis
@@ -70,15 +78,28 @@ public class DeciBell implements JDeciBell{
     public void start(){
 
         if(this.components == null){
-            Reflections reflections = new Reflections("");
+            Reflections reflections = new Reflections(
+          new ConfigurationBuilder()
+
+              .setUrls(ClasspathHelper.getUrlForClass(User.class))
+              .setScanners(new FieldAnnotationsScanner(), new TypeAnnotationsScanner()));
+
             components = reflections.getSubTypesOf(Component.class);
+            //Configuration conf = new ConfigurationBuilder();
+            Set<Field> fields = reflections.getFieldsAnnotatedWith(PrimaryKey.class);
+            for(Field f : fields){
+                System.err.println(f.getName());
+
+            }
         }
 
-//        TablesGenerator.construct(components);
-
-        for(Class c : components){
-            System.out.println(c);
-        }
+        TablesGenerator tables = new TablesGenerator(connector, components);
+        tables.construct();
+        //ExecutorService ex = Executors.newFixedThreadPool(nThreads);
+//        Field[] fields = User.class.getDeclaredFields();
+//        for(Field f : fields){
+//            System.out.println(f.getDeclaringClass());
+//        }
 
     }
 

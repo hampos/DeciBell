@@ -33,44 +33,27 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.annotations;
 
-import org.kinkydesign.decibell.collections.OnModification;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import org.kinkydesign.decibell.collections.SQLType;
+package org.kinkydesign.decibell.exceptions;
 
 /**
- * Any key for a DB table.
- * @author chung
+ *
+ * @author hampos
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Target(ElementType.FIELD)
-@Documented
-public @interface Entry {
+public class NoPrimaryKeyException extends Exception {
 
     /**
-     * The key is unique among all entities.
-     * @return true if is unique
+     * Creates a new instance of <code>NoPrimaryKeyException</code> without detail message.
      */
-    boolean unique() default false;
-    /**
-     * This key cannot be null
-     * @return true if is not null
-     */
-    boolean notNull() default false;
+    public NoPrimaryKeyException() {
+    }
+
 
     /**
-     * Default value for the key
-     * @return Value to be assigned to the key if no other value is provided.
+     * Constructs an instance of <code>NoPrimaryKeyException</code> with the specified detail message.
+     * @param msg the detail message.
      */
-    String defaultValue() default "";
-
-    
-    
+    public NoPrimaryKeyException(String msg) {
+        super(msg);
+    }
 }

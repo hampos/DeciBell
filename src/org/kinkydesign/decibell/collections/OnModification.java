@@ -44,7 +44,17 @@ public enum OnModification {
 
     CASCADE,
     RESTRICT,
-    SET_NULL,
-    NO_ACTION;
+    SET_NULL{
+        @Override
+        public String toString(){
+            return "SET NULL";
+        }
+    },
+    NO_ACTION{
+        @Override
+        public String toString(){
+            return "NO ACTION";
+        }
+    };
 
 }

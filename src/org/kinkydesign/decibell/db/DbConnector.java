@@ -47,7 +47,7 @@ public class DbConnector implements JDbConnector {
     }
 
     public String getUser() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return user;
     }
 
     public void setDbPort(int port) {

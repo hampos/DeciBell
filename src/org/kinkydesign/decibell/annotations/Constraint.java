@@ -41,6 +41,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.kinkydesign.decibell.collections.SQLType;
 
 /**
  *
@@ -58,9 +59,11 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Constraint {
 
-    double low() default Double.MIN_VALUE;
+    String low() default "";
 
-    double high() default Double.MAX_VALUE;
+    String high() default "";
 
     String[] domain() default {""};
+
+
 }
