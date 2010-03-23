@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Set;
 import org.kinkydesign.decibell.annotations.Constraint;
 import org.kinkydesign.decibell.annotations.Entry;
@@ -15,7 +14,6 @@ import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.collections.ComponentRegistry;
 import org.kinkydesign.decibell.collections.OnModification;
-import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.collections.TypeMap;
 import org.kinkydesign.decibell.core.Component;
 import org.kinkydesign.decibell.db.table.Table;
@@ -163,7 +161,6 @@ public class TablesGenerator {
                 table.addColumn(column);
             }
         }
-        //TODO: Improve this for greater than 1 hierarchies
         if (table.getPrimaryKeyColumns().isEmpty()) {
             if (c.getSuperclass() != Component.class) {
                 for (TableColumn col : registry.get(connector, c.getSuperclass()).getPrimaryKeyColumns()) {
@@ -191,14 +188,13 @@ public class TablesGenerator {
                 Class carg = (Class) arg;
                 table.setTableName(connector.getUser() + "."
                         + f.getDeclaringClass().getName().replace(".", "_")
-                        + "&" + carg.getName().replace(".", "_"));
+                        + "_AND_" + carg.getName().replace(".", "_"));
                 Table master = registry.get(connector).get((Class<? extends Component>) f.getDeclaringClass());
                 Table slave = registry.get(connector).get((Class<? extends Component>) carg);
                 Set<TableColumn> masterKeys = master.getPrimaryKeyColumns();
                 Set<TableColumn> slaveKeys = slave.getPrimaryKeyColumns();
                 for (TableColumn col : masterKeys) {
                     TableColumn column = col.clone();
-                    System.err.println(master.getTableName());
                     column.setForeignKey(master.getTableName().split("\\.",0)[1], col.getColumnName(),
                             OnModification.CASCADE, OnModification.NO_ACTION);
                     column.setColumnName(master.getTableName().split("\\.",0)[1] + "_" + col.getColumnName());

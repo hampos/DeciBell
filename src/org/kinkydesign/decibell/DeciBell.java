@@ -34,6 +34,7 @@
  * tel. +30 210 7723236
  */
 package org.kinkydesign.decibell;
+
 import examples.User;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -50,56 +51,38 @@ import org.reflections.scanners.FieldAnnotationsScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class DeciBell implements JDeciBell{
+public class DeciBell implements JDeciBell {
 
     private DbConnector connector = new DbConnector();
-
-    private static Map<Class<? extends Component> , DeciBell> componentDBmap =
+    private static Map<Class<? extends Component>, DeciBell> componentDBmap =
             new HashMap<Class<? extends Component>, DeciBell>();
-        
     Set<Class<? extends Component>> components = null;
-
 
     public void attach(Class c) {
         c.asSubclass(Component.class);
-        if(components == null){
+        if (components == null) {
             components = new HashSet<Class<? extends Component>>();
         }
         this.components.add(c);
         componentDBmap.put(c, this);
     }
 
-
-    public void start(){
-
-        if(this.components == null){
-            Reflections reflections = new Reflections(
-          new ConfigurationBuilder()
-
-              .setUrls(ClasspathHelper.getUrlForClass(User.class))
-              .setScanners(new FieldAnnotationsScanner(), new TypeAnnotationsScanner()));
-
+    public void start() {
+        connector.setDriverHome("/Applications/NetBeans/sges-v3/javadb");
+        connector.connect();
+        if (this.components == null) {
+            Reflections reflections = new Reflections("");
             components = reflections.getSubTypesOf(Component.class);
-            //Configuration conf = new ConfigurationBuilder();
-            Set<Field> fields = reflections.getFieldsAnnotatedWith(PrimaryKey.class);
-            for(Field f : fields){
-                System.err.println(f.getName());
-
-            }
         }
 
         TablesGenerator tables = new TablesGenerator(connector, components);
         tables.construct();
-        //ExecutorService ex = Executors.newFixedThreadPool(nThreads);
-//        Field[] fields = User.class.getDeclaredFields();
-//        for(Field f : fields){
-//            System.out.println(f.getDeclaringClass());
-//        }
 
     }
 
@@ -138,8 +121,4 @@ public class DeciBell implements JDeciBell{
     public void setDbName() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-   
-
-  
 }

@@ -37,6 +37,7 @@ package org.kinkydesign.decibell.db.table;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -49,7 +50,7 @@ import java.util.Set;
  */
 public class Table {
 
-    private Set<TableColumn> listOfColumns = new HashSet<TableColumn>();
+    private Set<TableColumn> listOfColumns = new LinkedHashSet<TableColumn>();
     private String tableName = null;
 
     /**
@@ -159,7 +160,7 @@ public class Table {
             SQL += ",\n";
         }
         if (!getForeignKeyColumns().isEmpty()) {
-            Set<TableColumn> foreignColumns = new HashSet<TableColumn>(getForeignKeyColumns());
+            Set<TableColumn> foreignColumns = new LinkedHashSet<TableColumn>(getForeignKeyColumns());
             while (!foreignColumns.isEmpty()) {
                 it = foreignColumns.iterator();
                 TableColumn fk = it.next();
@@ -203,7 +204,7 @@ public class Table {
     }
 
     public Set<TableColumn> getPrimaryKeyColumns() {
-        Set<TableColumn> primaryKeyColumns = new HashSet<TableColumn>();
+        Set<TableColumn> primaryKeyColumns = new LinkedHashSet<TableColumn>();
         for (TableColumn column : listOfColumns) {
             if (column.isPrimaryKey()) {
                 primaryKeyColumns.add(column);
@@ -213,7 +214,7 @@ public class Table {
     }
 
     public Set<TableColumn> getForeignKeyColumns() {
-        Set<TableColumn> foreignKeyColumns = new HashSet<TableColumn>();
+        Set<TableColumn> foreignKeyColumns = new LinkedHashSet<TableColumn>();
         for (TableColumn column : listOfColumns) {
             if (column.isForeignKey()) {
                 foreignKeyColumns.add(column);
