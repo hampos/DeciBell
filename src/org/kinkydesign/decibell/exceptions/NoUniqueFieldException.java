@@ -41,7 +41,7 @@ package org.kinkydesign.decibell.exceptions;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class NoUniqueFieldException extends Exception {
+public class NoUniqueFieldException extends RuntimeException {
 
     /**
      * Creates a new instance of <code>NoUniqueFieldException</code> without detail message.

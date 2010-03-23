@@ -40,7 +40,7 @@ package org.kinkydesign.decibell.exceptions;
  *
  * @author hampos
  */
-public class NoPrimaryKeyException extends Exception {
+public class NoPrimaryKeyException extends RuntimeException {
 
     /**
      * Creates a new instance of <code>NoPrimaryKeyException</code> without detail message.

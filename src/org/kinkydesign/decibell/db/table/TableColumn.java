@@ -38,6 +38,8 @@ package org.kinkydesign.decibell.db.table;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.core.Component;
@@ -47,7 +49,7 @@ import org.kinkydesign.decibell.core.Component;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class TableColumn {
+public class TableColumn implements Cloneable{
 
     private String columnName = "";
     private SQLType columnType = null;
@@ -198,7 +200,7 @@ public class TableColumn {
                 for (int i = 0; i < this.domain.length; i++) {
                     if (!domain[i].isEmpty()) {
                         if (domainStr.isEmpty()) {
-                            domainStr = this.columnName + " IN (";
+                            domainStr = columnName + " IN (";
                         } else {
                             domainStr += ", ";
                         }
@@ -217,7 +219,7 @@ public class TableColumn {
             Iterator<String> it = tempSet.iterator();
             while(it.hasNext()){
                 if(constraint.isEmpty()){
-                    constraint = " CONSTRAINT " + this.columnName + "_CONSTRAINT " + " CHECK ( ";
+                    constraint = " CONSTRAINT " + columnName + "_CONSTRAINT " + " CHECK ( ";
                     constraint += it.next();                    
                 }else{
                     constraint += " AND "+it.next();
@@ -284,5 +286,14 @@ public class TableColumn {
 
     public void setReferencesClass(Class<? extends Component> referencesClass){
         this.referencesClass = referencesClass;
+    }
+
+    @Override
+    public TableColumn clone(){
+        try {
+            return (TableColumn) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
