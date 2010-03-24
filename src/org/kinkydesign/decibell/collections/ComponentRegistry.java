@@ -54,9 +54,13 @@ import org.kinkydesign.decibell.db.table.TableColumn;
  */
 public class ComponentRegistry implements Map<DbConnector, Map<Class<? extends Component>, Table>> {
 
+    private static Map<DbConnector, ComponentRegistry> registries = new HashMap<DbConnector,ComponentRegistry>();
+
     private static Map<DbConnector, Map<Class<? extends Component>, Table>> componentRegistry =
             new HashMap<DbConnector, Map<Class<? extends Component>, Table>>();
     private static Map<DbConnector, Set<Table>> reltables = new HashMap<DbConnector, Set<Table>>();
+
+    private Map<Class<? extends Component>,Table> components = null;
 
     public ComponentRegistry(DbConnector con) {
         if (!containsKey(con)) {
@@ -65,6 +69,10 @@ public class ComponentRegistry implements Map<DbConnector, Map<Class<? extends C
         if (!reltables.containsKey(con)) {
             reltables.put(con, new HashSet<Table>());
         }
+    }
+
+    public static ComponentRegistry getRegistry(DbConnector con){
+        return registries.get(con);
     }
 
     public Collection<Map<Class<? extends Component>, Table>> values() {
