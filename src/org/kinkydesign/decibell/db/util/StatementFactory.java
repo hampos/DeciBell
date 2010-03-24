@@ -49,27 +49,28 @@ import org.kinkydesign.decibell.db.table.Table;
  */
 public class StatementFactory {
 
-    public static PreparedStatement createSearch(Table table){
+    public static PreparedStatement createSearch(Table table) {
         return null;
     }
 
-    public static PreparedStatement createUpdate(Table table){
+    public static PreparedStatement createUpdate(Table table) {
         return null;
     }
 
-    public static PreparedStatement createRegister(Table table, DbConnector con){
-        for(Table t : table.getRelations()){
+    public static PreparedStatement createRegister(Table table, DbConnector con) {
+        for (Table t : table.getRelations()) {
             System.out.println(t.getTableName());
         }
         try {
-            return con.prepareStatement("DROP TABLE itsme.examples_User");
+            PreparedStatement ps = con.prepareStatement("DROP TABLE itsme.examples_User");
+
+            return ps;
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public static PreparedStatement createDelete(Table table){
+    public static PreparedStatement createDelete(Table table) {
         return null;
     }
-
 }

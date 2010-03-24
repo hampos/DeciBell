@@ -36,9 +36,12 @@
 package org.kinkydesign.decibell.db;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kinkydesign.decibell.collections.ComponentRegistry;
 import org.kinkydesign.decibell.core.Component;
 import org.kinkydesign.decibell.db.table.Table;
@@ -51,28 +54,41 @@ import org.kinkydesign.decibell.db.util.StatementFactory;
  */
 public class StatementPool {
 
-    private int poolSize = 10;
-    ComponentRegistry registry = null;
+    private static ComponentRegistry registry = null;
+    private static Map<Table, ArrayBlockingQueue<PreparedStatement>> search =
+            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
+    private static Map<Table, ArrayBlockingQueue<PreparedStatement>> update =
+            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
+    private static Map<Table, ArrayBlockingQueue<PreparedStatement>> register =
+            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
+    private static Map<Table, ArrayBlockingQueue<PreparedStatement>> delete =
+            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
 
-    Map<Class<? extends Component>,ArrayBlockingQueue<PreparedStatement>> search = 
-            new HashMap<Class<? extends Component>,ArrayBlockingQueue<PreparedStatement>>();
-    Map<Class<? extends Component>,ArrayBlockingQueue<PreparedStatement>> update =
-            new HashMap<Class<? extends Component>,ArrayBlockingQueue<PreparedStatement>>();
-    Map<Class<? extends Component>,ArrayBlockingQueue<PreparedStatement>> register =
-            new HashMap<Class<? extends Component>,ArrayBlockingQueue<PreparedStatement>>();
-    Map<Class<? extends Component>,ArrayBlockingQueue<PreparedStatement>> delete =
-            new HashMap<Class<? extends Component>,ArrayBlockingQueue<PreparedStatement>>();
-
-    public StatementPool(DbConnector con, int poolSize){
-        this.poolSize = poolSize;
+    public static void generate(DbConnector con, int poolSize) {
         registry = new ComponentRegistry(con);
-        for(Class c : registry.get(con).keySet()){
-            search.put(c, new ArrayBlockingQueue<PreparedStatement>(50));
-            register.put(c, new ArrayBlockingQueue<PreparedStatement>(50));
-            for(int i=0; i<poolSize; i++){
-                register.get(c).add(StatementFactory.createRegister(registry.get(con, c),con));
+        for (Table t : registry.get(con).values()) {
+            search.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
+            register.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
+            for (int i = 0; i < poolSize; i++) {
+                register.get(t).add(StatementFactory.createRegister(t, con));
             }
         }
     }
 
+    public static PreparedStatement getRegister(Table t) {
+        try {
+            return register.get(t).take();
+        } catch (InterruptedException ex) {
+            return getRegister(t);
+        }
+    }
+
+    public static void recycleRegister(PreparedStatement ps, Table t) {
+        try {
+            ps.clearParameters();
+            register.get(t).add(ps);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }

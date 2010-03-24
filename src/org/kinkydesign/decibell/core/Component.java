@@ -57,6 +57,8 @@ public abstract class Component<T extends Component> implements JComponent<T> {
     }
 
     public void register() throws DuplicateKeyException {
+        Class c = this.getClass();
+
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
