@@ -44,8 +44,11 @@ public class DeciBellTest {
         instance.attach(UserGroup.class);
         instance.attach(SubUser.class);
         instance.attach(User.class);
-        
+
+        instance.setDriverHome("/Applications/NetBeans/sges-v3/javadb");
         instance.start();
+        instance.reset();
+      //  instance.stop();
 
 
     }

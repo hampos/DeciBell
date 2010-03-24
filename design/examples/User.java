@@ -83,7 +83,7 @@ public class User extends Component<User> {
     Add a constraint to a key. This variable takes values from the set {HIGH, LOW}
      */
     @Entry
-    @Constraint(domain = {"HIGH", "LOW"}, low="0",high="10")
+    @Constraint(domain = {"HIGH", "LOW"})
     public String kinky;
 
     /*
