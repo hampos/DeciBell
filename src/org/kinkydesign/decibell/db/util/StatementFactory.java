@@ -37,10 +37,12 @@ package org.kinkydesign.decibell.db.util;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.table.Table;
+import org.kinkydesign.decibell.db.table.TableColumn;
 
 /**
  *
@@ -58,12 +60,22 @@ public class StatementFactory {
     }
 
     public static PreparedStatement createRegister(Table table, DbConnector con) {
-        for (Table t : table.getRelations()) {
-            System.out.println(t.getTableName());
-        }
-        try {
-            PreparedStatement ps = con.prepareStatement("DROP TABLE itsme.examples_User");
+        String creationSQL = "INSERT INTO " + table.getTableName() + "(";
+        String questionMarks = "(";
+        final Iterator<TableColumn> tableColumnIterator = table.getTableColumns().iterator();
 
+        while (tableColumnIterator.hasNext()) {
+            questionMarks += "?";
+            creationSQL += tableColumnIterator.next().getColumnName();
+            if (tableColumnIterator.hasNext()) {
+                questionMarks += " , ";
+                creationSQL += " , ";
+            }
+        }
+        questionMarks += ")";
+        creationSQL += ") VALUES " + questionMarks;
+        try {
+            PreparedStatement ps = con.prepareStatement(creationSQL);
             return ps;
         } catch (SQLException ex) {
             throw new RuntimeException(ex);

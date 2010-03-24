@@ -76,7 +76,7 @@ public class DeciBell implements JDeciBell {
         TablesGenerator tables = new TablesGenerator(connector, components);
         tables.construct();
 
-        StatementPool.generate(connector, 10);
+        StatementPool pool = new StatementPool(connector,10);
     }
 
     public void restart() {
