@@ -53,6 +53,8 @@ public class Table {
     private Set<TableColumn> listOfColumns = new LinkedHashSet<TableColumn>();
     private String tableName = null;
 
+    private Set<Table> relations = new HashSet<Table>();
+
     /**
      * Construct a new Table object.
      */
@@ -221,5 +223,13 @@ public class Table {
             }
         }
         return foreignKeyColumns;
+    }
+
+    public void addRelation(Table t){
+        relations.add(t);
+    }
+
+    public Set<Table> getRelations(){
+        return relations;
     }
 }

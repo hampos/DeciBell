@@ -63,6 +63,6 @@ public interface JDeciBell {
 
     public void setUser(String user);
 
-    public void setDbName();
+    public void setDbName(String dbName);
 
 }

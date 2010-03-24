@@ -38,15 +38,18 @@ package org.kinkydesign.decibell.db;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.kinkydesign.decibell.db.interfaces.JDbConnector;
 import org.apache.derby.jdbc.ClientDataSource;
+import org.kinkydesign.decibell.collections.ComponentRegistry;
+import org.kinkydesign.decibell.db.table.Table;
 
 /**
  *
@@ -106,6 +109,10 @@ public class DbConnector implements JDbConnector {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
+    
     public void connect() {
         if (!isConnected()) {
             try {
@@ -243,5 +250,44 @@ public class DbConnector implements JDbConnector {
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public void execute(String sql) {
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+        } catch (SQLException ex) {
+            if(!ex.getSQLState().equals("X0Y32") && !ex.getSQLState().equals("42Y55") ){
+                System.out.println(ex.getSQLState());
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+        return connection.prepareStatement(sql);
+    }
+
+    public Statement createStatement() throws SQLException {
+        return connection.createStatement();
+    }
+
+    public Blob createBlob() throws SQLException {
+        return connection.createBlob();
+    }
+
+    public void clearDB() {
+        ComponentRegistry registry = new ComponentRegistry(this);
+        Object[] tables = registry.getRelationTables(this).toArray();
+        for(int i=tables.length-1 ; i>=0 ; i--){
+            Table t = (Table)tables[i];
+            execute("DROP TABLE "+t.getTableName());
+        }
+        tables = registry.get(this).values().toArray();
+        for(int i=tables.length-1 ; i>=0 ; i--){
+            Table t = (Table)tables[i];
+            execute("DROP TABLE "+t.getTableName());
+        }
+        execute("DROP SCHEMA "+user+" RESTRICT");
     }
 }

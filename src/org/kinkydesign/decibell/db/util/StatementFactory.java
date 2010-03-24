@@ -33,37 +33,43 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.collections;
+package org.kinkydesign.decibell.db.util;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.kinkydesign.decibell.db.DbConnector;
+import org.kinkydesign.decibell.db.table.Table;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public interface  JSQLType {
+public class StatementFactory {
 
-    /**
-     * Correspondence between SQL and Javatypes is documented in the derby specifications,
-     * Derby Reference Manual, Version 10.5., p.190.
-     * @param javaType
-     * @return Corresponding SQLType object.
-     */
-    SQLType fromJavaType(Class javaType);
-    /**
-     * The java type corresponding to the SQLType object.
-     * @return The Class which better describes the SQL data type.
-     */
-    Class getJavaType();
-    /**
-     * The SQL Type as a string (i.e. its name)
-     * @return Name of SQL counterpart of the SQLType object into consideration.
-     */
-    String getSqlType();
-    /**
-     * Whether the SQLType can be cast as another SQLType.
-     * @param other Some other SQL datatype.
-     * @return true if the casting is feasible, false in the contrary.
-     */
-    boolean isCastAs(SQLType other);
+    public static PreparedStatement createSearch(Table table){
+        return null;
+    }
+
+    public static PreparedStatement createUpdate(Table table){
+        return null;
+    }
+
+    public static PreparedStatement createRegister(Table table, DbConnector con){
+        for(Table t : table.getRelations()){
+            System.out.println(t.getTableName());
+        }
+        try {
+            return con.prepareStatement("DROP TABLE itsme.examples_User");
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static PreparedStatement createDelete(Table table){
+        return null;
+    }
 
 }

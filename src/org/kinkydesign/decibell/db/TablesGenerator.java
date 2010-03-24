@@ -38,18 +38,18 @@ public class TablesGenerator {
         registry = new ComponentRegistry(connector);
     }
 
-    public void construct() {
+    public void construct() {        
         for (Class<? extends Component> c : components) {
             tableCreation(c);
         }
         relTableCreation();
         Iterator<Table> it = registry.get(connector).values().iterator();
         while (it.hasNext()) {
-            System.out.println(it.next().getCreationSQL());
+            connector.execute(it.next().getCreationSQL());
         }
         it = registry.getRelationTables(connector).iterator();
         while (it.hasNext()) {
-            System.out.println(it.next().getCreationSQL());
+            connector.execute(it.next().getCreationSQL());
         }
     }
 
@@ -207,6 +207,8 @@ public class TablesGenerator {
                     column.setColumnName(slave.getTableName().split("\\.",0)[1] + "_" + col.getColumnName());
                     table.addColumn(column);
                 }
+                master.addRelation(table);
+                slave.addRelation(table);
             }
             registry.setRelationTable(connector, table);
         }

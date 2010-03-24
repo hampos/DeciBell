@@ -35,22 +35,16 @@
  */
 package org.kinkydesign.decibell;
 
-import examples.User;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.core.Component;
 import org.kinkydesign.decibell.db.DbConnector;
+import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.interfaces.JDeciBell;
 import org.reflections.Reflections;
-import org.reflections.scanners.FieldAnnotationsScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 
 /**
  *
@@ -74,28 +68,31 @@ public class DeciBell implements JDeciBell {
     }
 
     public void start() {
-        connector.setDriverHome("/Applications/NetBeans/sges-v3/javadb");
         connector.connect();
         if (this.components == null) {
             Reflections reflections = new Reflections("");
             components = reflections.getSubTypesOf(Component.class);
         }
-
         TablesGenerator tables = new TablesGenerator(connector, components);
         tables.construct();
 
+        StatementPool pool = new StatementPool(connector, 10);
     }
 
     public void restart() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        connector.disconnect();
+        connector.killDerby();
+        connector.connect();
     }
 
+  //  @Deprecated
     public void reset() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        connector.clearDB();
     }
 
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        connector.disconnect();
+        connector.killDerby();
     }
 
     public void setDriverHome(String driverHome) {
@@ -118,7 +115,7 @@ public class DeciBell implements JDeciBell {
         connector.setUser(user);
     }
 
-    public void setDbName() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setDbName(String dbName) {
+        connector.setDbName(dbName);
     }
 }

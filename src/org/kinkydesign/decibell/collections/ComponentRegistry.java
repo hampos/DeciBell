@@ -52,15 +52,19 @@ import org.kinkydesign.decibell.db.table.TableColumn;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class ComponentRegistry implements Map<DbConnector,Map<Class<? extends Component>,Table>>{
-    private static Map<DbConnector,Map<Class<? extends Component>,Table>> componentRegistry =
-            new HashMap<DbConnector,Map<Class<? extends Component>,Table>>();
+public class ComponentRegistry implements Map<DbConnector, Map<Class<? extends Component>, Table>> {
 
-    private static Map<DbConnector,Set<Table>> reltables = new HashMap<DbConnector,Set<Table>>();
+    private static Map<DbConnector, Map<Class<? extends Component>, Table>> componentRegistry =
+            new HashMap<DbConnector, Map<Class<? extends Component>, Table>>();
+    private static Map<DbConnector, Set<Table>> reltables = new HashMap<DbConnector, Set<Table>>();
 
-    public ComponentRegistry(DbConnector con){
-        put(con, new LinkedHashMap<Class<? extends Component>, Table>());
-        reltables.put(con, new HashSet<Table>());
+    public ComponentRegistry(DbConnector con) {
+        if (!containsKey(con)) {
+            put(con, new LinkedHashMap<Class<? extends Component>, Table>());
+        }
+        if (!reltables.containsKey(con)) {
+            reltables.put(con, new HashSet<Table>());
+        }
     }
 
     public Collection<Map<Class<? extends Component>, Table>> values() {
@@ -72,7 +76,7 @@ public class ComponentRegistry implements Map<DbConnector,Map<Class<? extends Co
     }
 
     public Map<Class<? extends Component>, Table> remove(Object key) {
-        return componentRegistry.remove((DbConnector)key);
+        return componentRegistry.remove((DbConnector) key);
     }
 
     public void putAll(Map<? extends DbConnector, ? extends Map<Class<? extends Component>, Table>> m) {
@@ -92,7 +96,7 @@ public class ComponentRegistry implements Map<DbConnector,Map<Class<? extends Co
     }
 
     public Map<Class<? extends Component>, Table> get(Object key) {
-        return componentRegistry.get((DbConnector)key);
+        return componentRegistry.get((DbConnector) key);
     }
 
     public Set<Entry<DbConnector, Map<Class<? extends Component>, Table>>> entrySet() {
@@ -100,18 +104,18 @@ public class ComponentRegistry implements Map<DbConnector,Map<Class<? extends Co
     }
 
     public boolean containsValue(Object value) {
-        return componentRegistry.containsValue( (Map<Class<? extends Component>, Table>) value);
+        return componentRegistry.containsValue((Map<Class<? extends Component>, Table>) value);
     }
 
     public boolean containsKey(Object key) {
-        return componentRegistry.containsKey((DbConnector)key);
+        return componentRegistry.containsKey((DbConnector) key);
     }
 
     public void clear() {
         componentRegistry.clear();
     }
-    
-    public int size(DbConnector con){
+
+    public int size(DbConnector con) {
         return componentRegistry.get(con).size();
     }
 
@@ -119,58 +123,53 @@ public class ComponentRegistry implements Map<DbConnector,Map<Class<? extends Co
         return componentRegistry.get(con).isEmpty();
     }
 
-    public boolean containsKey(DbConnector con, Object key){
-        return componentRegistry.get(con).containsKey((Class<? extends Component>)key);
+    public boolean containsKey(DbConnector con, Object key) {
+        return componentRegistry.get(con).containsKey((Class<? extends Component>) key);
     }
 
     public boolean containsValue(DbConnector con, Object value) {
-        return componentRegistry.get(con).containsValue((Table)value);
+        return componentRegistry.get(con).containsValue((Table) value);
     }
 
     public Object remove(DbConnector con, Object key) {
-        return componentRegistry.get(con).remove((Class<? extends Component>)key);
+        return componentRegistry.get(con).remove((Class<? extends Component>) key);
     }
 
-    public Table get(DbConnector con, Object key){
-        return componentRegistry.get(con).get((Class<? extends Component>)key);
+    public Table get(DbConnector con, Object key) {
+        return componentRegistry.get(con).get((Class<? extends Component>) key);
     }
 
     public Object put(DbConnector con, Object key, Object value) {
         return componentRegistry.get(con).put((Class<? extends Component>) key, (Table) value);
     }
 
-
-    
-    public void setRelationTable(DbConnector con, Table relTable){
+    public void setRelationTable(DbConnector con, Table relTable) {
         reltables.get(con).add(relTable);
     }
-    
-    public Set<Table> getRelationTables(DbConnector con){
+
+    public Set<Table> getRelationTables(DbConnector con) {
         return reltables.get(con);
     }
 
-
-
-    public Set<Class<? extends Component>> getParents(DbConnector con, Class<? extends Component> child){
+    public Set<Class<? extends Component>> getParents(DbConnector con, Class<? extends Component> child) {
         Set<Class<? extends Component>> parents = new HashSet<Class<? extends Component>>();
-        for(TableColumn col : get(con,child).getForeignKeyColumns()){
+        for (TableColumn col : get(con, child).getForeignKeyColumns()) {
             parents.add(col.getReferencesClass());
         }
         return parents;
     }
 
-    public Set<Class<? extends Component>> getChildren(DbConnector con, Class<? extends Component> parent){
+    public Set<Class<? extends Component>> getChildren(DbConnector con, Class<? extends Component> parent) {
         Set<Class<? extends Component>> children = new HashSet<Class<? extends Component>>();
-        Map<Class<? extends Component>,Table> components =
+        Map<Class<? extends Component>, Table> components =
                 (Map<Class<? extends Component>, Table>) get(con);
-        for(Class c : components.keySet()){
-            for(TableColumn col : components.get(c).getForeignKeyColumns()){
-                if(col.getReferencesClass().equals(parent)){
+        for (Class c : components.keySet()) {
+            for (TableColumn col : components.get(c).getForeignKeyColumns()) {
+                if (col.getReferencesClass().equals(parent)) {
                     children.add(col.getReferencesClass());
                 }
             }
         }
         return children;
     }
-
 }

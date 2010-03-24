@@ -46,5 +46,6 @@ public interface JDbConnector {
     boolean isConnected();
 
 
+    void execute(String sql);
 
 }
