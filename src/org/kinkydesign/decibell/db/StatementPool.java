@@ -54,19 +54,17 @@ import org.kinkydesign.decibell.db.util.StatementFactory;
  */
 public class StatementPool {
 
-    private static Map<DbConnector,StatementPool> pools = new HashMap<DbConnector,StatementPool>();
-
-    private ComponentRegistry registry = null;
-    private Map<Table, ArrayBlockingQueue<PreparedStatement>> search =
+    private static ComponentRegistry registry = null;
+    private static Map<Table, ArrayBlockingQueue<PreparedStatement>> search =
             new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
-    private Map<Table, ArrayBlockingQueue<PreparedStatement>> update =
+    private static Map<Table, ArrayBlockingQueue<PreparedStatement>> update =
             new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
-    private Map<Table, ArrayBlockingQueue<PreparedStatement>> register =
+    private static Map<Table, ArrayBlockingQueue<PreparedStatement>> register =
             new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
-    private Map<Table, ArrayBlockingQueue<PreparedStatement>> delete =
+    private static Map<Table, ArrayBlockingQueue<PreparedStatement>> delete =
             new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
 
-    public StatementPool(DbConnector con, int poolSize) {
+    public static void generate(DbConnector con, int poolSize) {
         registry = new ComponentRegistry(con);
         for (Table t : registry.get(con).values()) {
             search.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
@@ -75,14 +73,9 @@ public class StatementPool {
                 register.get(t).add(StatementFactory.createRegister(t, con));
             }
         }
-        pools.put(con, this);
     }
 
-    public static StatementPool getPool(DbConnector con){
-        return pools.get(con);
-    }
-
-    public PreparedStatement getRegister(Table t) {
+    public static PreparedStatement getRegister(Table t) {
         try {
             return register.get(t).take();
         } catch (InterruptedException ex) {
@@ -90,7 +83,7 @@ public class StatementPool {
         }
     }
 
-    public void recycleRegister(PreparedStatement ps, Table t) {
+    public static void recycleRegister(PreparedStatement ps, Table t) {
         try {
             ps.clearParameters();
             register.get(t).add(ps);

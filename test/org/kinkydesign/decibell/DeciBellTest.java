@@ -40,12 +40,11 @@ public class DeciBellTest {
     @Test
     public void testStart() {
         System.out.println("start");
-
         DeciBell instance = new DeciBell();
 
         instance.setDriverHome("/home/chung/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
-        instance.setDbName("mydata/base/db1");
-
+        instance.setDbName("database/asda");
+        
         instance.attach(UserGroup.class);
         instance.attach(SubUser.class);
         instance.attach(User.class);

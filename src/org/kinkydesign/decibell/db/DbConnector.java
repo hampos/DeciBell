@@ -61,12 +61,13 @@ public class DbConnector implements JDbConnector {
     private String user = "itsme";
     private String password = "letmein";
     private String urlBase = "jdbc:derby://";
-    private String dbName = "database/asdfg";
+    private String dbName = "db";
+    private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
     private String javacmd = "java";
     private String javaOptions = "-Djava.net.preferIPv4Stack=true";
     private String driverHome = "/usr/local/sges-v3/javadb";
     private String host = "localhost";
-    private int port = 1527;
+    private int port = 1527;    
     private String databaseDriver = "org.apache.derby.jdbc.EmbeddedDriver";
     private Connection connection;
     private final Runtime runtime = Runtime.getRuntime();
@@ -76,7 +77,7 @@ public class DbConnector implements JDbConnector {
     }
 
     public void setDriver(String driver) {
-        this.databaseDriver = driver;
+        this.driver = driver;
     }
 
     public void setJavaOptions(String javaOptions) {
@@ -91,6 +92,10 @@ public class DbConnector implements JDbConnector {
         this.user = user;
     }
 
+    public String getDatabaseUrl(){
+        return urlBase + host + ":" + port + "/" + dbName + ";user=" + user;
+    }
+
     public String getDriver() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -101,10 +106,6 @@ public class DbConnector implements JDbConnector {
 
     public void setDbPort(int port) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getDatabaseUrl(){
-        return urlBase + host + ":" + port + "/" + dbName + ";user=" + user;
     }
 
     public int getDbPort() {
