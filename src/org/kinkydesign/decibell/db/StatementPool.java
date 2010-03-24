@@ -56,7 +56,6 @@ public class StatementPool {
 
     private static Map<DbConnector,StatementPool> pools = new HashMap<DbConnector,StatementPool>();
 
-    private ComponentRegistry registry = null;
     private Map<Table, ArrayBlockingQueue<PreparedStatement>> search =
             new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
     private Map<Table, ArrayBlockingQueue<PreparedStatement>> update =
@@ -67,8 +66,7 @@ public class StatementPool {
             new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
 
     public StatementPool(DbConnector con, int poolSize) {
-        registry = new ComponentRegistry(con);
-        for (Table t : registry.get(con).values()) {
+        for (Table t : ComponentRegistry.getRegistry(con).values()) {
             search.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
             register.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
             for (int i = 0; i < poolSize; i++) {

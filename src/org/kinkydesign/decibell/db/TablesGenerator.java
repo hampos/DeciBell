@@ -43,11 +43,11 @@ public class TablesGenerator {
             tableCreation(c);
         }
         relTableCreation();
-        Iterator<Table> it = registry.get(connector).values().iterator();
+        Iterator<Table> it = ComponentRegistry.getRegistry(connector).values().iterator();
         while (it.hasNext()) {
             connector.execute(it.next().getCreationSQL());
         }
-        it = registry.getRelationTables(connector).iterator();
+        it = registry.getRelationTables().iterator();
         while (it.hasNext()) {
             connector.execute(it.next().getCreationSQL());
         }
@@ -55,10 +55,10 @@ public class TablesGenerator {
 
     private void tableCreation(Class<? extends Component> c) {
         Table table = new Table();
-        if (registry.containsKey(connector, c)) {
+        if (registry.containsKey( c)) {
             return;
         }
-        if (c.getSuperclass() != Component.class && !registry.containsKey(connector, c.getSuperclass())) {
+        if (c.getSuperclass() != Component.class && !registry.containsKey((Class<? extends Component>) c.getSuperclass())) {
             tableCreation((Class<? extends Component>) c.getSuperclass());
         }
         table.setTableName(connector.getUser() + "." + c.getName().replace(".", "_"));
@@ -121,10 +121,10 @@ public class TablesGenerator {
                     flag = false;
                 } else {
                     if (isComponent(field.getType())) {
-                        if (!registry.containsKey(connector, field.getType())) {
+                        if (!registry.containsKey((Class<? extends Component>)field.getType())) {
                             tableCreation((Class<? extends Component>) field.getType());
                         }
-                        for (TableColumn col : registry.get(connector, field.getType()).getPrimaryKeyColumns()) {
+                        for (TableColumn col : registry.get((Class<? extends Component>)field.getType()).getPrimaryKeyColumns()) {
                             TableColumn foreignColumn = new TableColumn();
                             if (column.hasDefault()) {
                                 foreignColumn.setDefaultValue(column.getDefaultValue());
@@ -163,7 +163,7 @@ public class TablesGenerator {
         }
         if (table.getPrimaryKeyColumns().isEmpty()) {
             if (c.getSuperclass() != Component.class) {
-                for (TableColumn col : registry.get(connector, c.getSuperclass()).getPrimaryKeyColumns()) {
+                for (TableColumn col : registry.get((Class<? extends Component>) c.getSuperclass()).getPrimaryKeyColumns()) {
                     TableColumn column = new TableColumn();
                     column.setColumnName(col.getColumnName());
                     column.setColumnType(col.getColumnType());
@@ -177,7 +177,7 @@ public class TablesGenerator {
                 throw new NoPrimaryKeyException("Component " + c.getName() + " does not have a valid declared primary key");
             }
         }
-        registry.put(connector, c, table);
+        registry.put((Class<? extends Component>) c, table);
     }
 
     private void relTableCreation() {
@@ -189,8 +189,8 @@ public class TablesGenerator {
                 table.setTableName(connector.getUser() + "."
                         + f.getDeclaringClass().getName().replace(".", "_")
                         + "_AND_" + carg.getName().replace(".", "_"));
-                Table master = registry.get(connector).get((Class<? extends Component>) f.getDeclaringClass());
-                Table slave = registry.get(connector).get((Class<? extends Component>) carg);
+                Table master = registry.get((Class<? extends Component>) f.getDeclaringClass());
+                Table slave = registry.get((Class<? extends Component>) carg);
                 Set<TableColumn> masterKeys = master.getPrimaryKeyColumns();
                 Set<TableColumn> slaveKeys = slave.getPrimaryKeyColumns();
                 for (TableColumn col : masterKeys) {
@@ -210,7 +210,7 @@ public class TablesGenerator {
                 master.addRelation(table);
                 slave.addRelation(table);
             }
-            registry.setRelationTable(connector, table);
+            registry.setRelationTable(table);
         }
     }
 

@@ -277,13 +277,12 @@ public class DbConnector implements JDbConnector {
     }
 
     public void clearDB() {
-        ComponentRegistry registry = new ComponentRegistry(this);
-        Object[] tables = registry.getRelationTables(this).toArray();
+        Object[] tables = ComponentRegistry.getRegistry(this).getRelationTables().toArray();
         for(int i=tables.length-1 ; i>=0 ; i--){
             Table t = (Table)tables[i];
             execute("DROP TABLE "+t.getTableName());
         }
-        tables = registry.get(this).values().toArray();
+        tables = ComponentRegistry.getRegistry(this).values().toArray();
         for(int i=tables.length-1 ; i>=0 ; i--){
             Table t = (Table)tables[i];
             execute("DROP TABLE "+t.getTableName());
