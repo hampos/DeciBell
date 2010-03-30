@@ -1,5 +1,6 @@
 package org.kinkydesign.decibell;
 
+import examples.SubSubUser;
 import examples.SubUser;
 import examples.User;
 import examples.UserGroup;
@@ -44,14 +45,15 @@ public class DeciBellTest {
 
         instance.setDriverHome("/home/chung/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
         instance.setDbName("database/asda");
-        
+
+        instance.attach(SubSubUser.class);
         instance.attach(UserGroup.class);
         instance.attach(SubUser.class);
         instance.attach(User.class);
 
         
         instance.start();
-        instance.reset();
+        //instance.reset();
       //  instance.stop();
 
 

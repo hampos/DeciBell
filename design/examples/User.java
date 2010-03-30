@@ -6,7 +6,7 @@ Import org.kinkyDesign.decibell classes...
 import java.util.ArrayList;
 import org.kinkydesign.decibell.annotations.*;
 import org.kinkydesign.decibell.annotations.Entry;
-import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.Component;
 
 
 /* The superclass Component denotes that this class is a corresponds to a database entity

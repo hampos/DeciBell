@@ -6,7 +6,7 @@ package examples;
 
 import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
-import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.Component;
 
 /**
  *

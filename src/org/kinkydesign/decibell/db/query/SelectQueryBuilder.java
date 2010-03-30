@@ -59,6 +59,7 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
     private static final String FROM = "FROM";
     private static final String INNER_JOIN = "INNER JOIN";
     private static final String ON = "ON";
+    private static final String COMMA = ",";
     private static final String DOT = ".";
     private static final String DOT_STAR = ".*";
     private static final String WHERE = "WHERE";
@@ -105,6 +106,14 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
     }
 
     public SQLQuery selectQuery() {
+        String columnsToSelect = "";
+        Iterator<TableColumn> baseColumns = baseTable.getTableColumns().iterator();
+        while(baseColumns.hasNext()){
+            columnsToSelect += baseTable.getTableName() + DOT + baseColumns.next().getColumnName() + SPACE;
+                    if (baseColumns.hasNext() )
+                        columnsToSelect += COMMA + SPACE;
+        }
+
         String selectSQL = SELECT + SPACE + baseTable.getTableName() + DOT_STAR + SPACE + FROM + SPACE + baseTable.getTableName() + SPACE;
         if (secondaryMap_2_onColumn.size() > 0) {
             selectSQL += INNER_JOIN + SPACE;
@@ -210,8 +219,6 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
 
         JSelectQueryBuilder builder = new SelectQueryBuilder(users);
         builder.attach(userGroups, groupCol, groupNameCol);
-
-        
 
         System.out.println(builder.easySearchQueryEquality());
     }
