@@ -7,9 +7,10 @@ package org.kinkydesign.decibell.db.table;
 
 /**
  *
- * @author hampos
+ * @author Charalampos Chomenides
+ * @author Pantelis Sopasakis
  */
-public class TableRelation extends Table{
+public class TableRelation extends Table {
     private Table first = null;
     private Table second = null;
 

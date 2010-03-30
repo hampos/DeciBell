@@ -41,7 +41,6 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.kinkydesign.decibell.collections.SQLType;
 
 /**
  *
@@ -51,7 +50,8 @@ import org.kinkydesign.decibell.collections.SQLType;
  * constraint <code>@Constraint(low=10, high=20)</code> means that the variable is constrained in
  * the closed interval [10,20].
  * 
- * @author Chung
+ * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
@@ -59,10 +59,37 @@ import org.kinkydesign.decibell.collections.SQLType;
 @Documented
 public @interface Constraint {
 
+    /**
+     * Lower-bound imposed on an attribute as a constraint. Applies only to numeric-type
+     * attributes and should not be combined with {@link Constraint#domain() domain()}.
+     * @return
+     *      String value which must be castable as a number. I.e. "1" is an acceptable
+     *      value while "a" is not.
+     * @see Constraint#high()
+     */
     String low() default "";
 
+    /**
+     * Higher-bound imposed on an attribute as a constraint. Applies only to numeric-type
+     * attributes and should not be combined with {@link Constraint#domain() domain()}.
+     * @return
+     *      String value which must be castable as a number. I.e. "1" is an acceptable
+     *      value while "a" is not.
+     * @see Constraint#low()
+     */
     String high() default "";
 
+    /**
+     * Specify the domain of nominal attributes, that is attributes that accept
+     * values from a finite set. Examples of such values is status-like values. For
+     * example if the attribute under consideration is a HTTP status then it could
+     * be constrained in the set <code>{200, 400, 404, 500}</code>; or if it is the
+     * "opinion of a customer for a product" the <code>domain</code> would be
+     * something like <code>{"GOOD", "BAD", "NO ANSWER"}</code>.
+     *
+     * @return
+     *      The domain of the attribute as a string array.
+     */
     String[] domain() default {""};
 
 

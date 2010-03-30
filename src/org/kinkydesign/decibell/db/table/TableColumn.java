@@ -35,19 +35,22 @@
  */
 package org.kinkydesign.decibell.db.table;
 
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.collections.Qualifier;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class TableColumn implements Cloneable{
+final public class TableColumn implements Cloneable, JTableColumn {
 
     private String columnName = "";
     private SQLType columnType = null;
@@ -187,11 +190,11 @@ public class TableColumn implements Cloneable{
         Set<String> tempSet = new HashSet<String>();
         if (this.isConstrained) {            
             if (this.hasLow) {
-                lowStr += columnName + ">=" + this.low;
+                lowStr += columnName + Qualifier.GREATER_EQUAL + this.low;
                 tempSet.add(lowStr);
             }
             if (this.hasHigh) {
-                highStr += columnName + "<=" + this.high;
+                highStr += columnName + Qualifier.LESS_EQUAL + this.high;
                 tempSet.add(highStr);
             }
             if (this.hasDomain) {
@@ -220,7 +223,7 @@ public class TableColumn implements Cloneable{
                     constraint = " CONSTRAINT " + columnName + "_CONSTRAINT " + " CHECK ( ";
                     constraint += it.next();                    
                 }else{
-                    constraint += " AND "+it.next();
+                    constraint += " " + LogicalOperator.AND + " " + it.next();
                 }
                 if(!it.hasNext()){
                     constraint += " )";
@@ -294,4 +297,6 @@ public class TableColumn implements Cloneable{
             throw new RuntimeException(ex);
         }
     }
+
+
 }

@@ -33,8 +33,9 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.collections;
+package org.kinkydesign.decibell.core;
 
+import org.kinkydesign.decibell.core.interfaces.JComponentRegistry;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,17 +43,23 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
 
+
 /**
+ *
+ * A special mapping between components and tables, where to every {@link Component component class}
+ * attached to the {@link DeciBell } there is a corresponding table which is turn is found
+ * in the database once it is successfully created. This stands for an easy correspondance
+ * between components and tables.
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class ComponentRegistry implements Map<Class<? extends Component>,Table>{
+public class ComponentRegistry implements JComponentRegistry {
 
     private static Map<DbConnector, ComponentRegistry> registries = new HashMap<DbConnector,ComponentRegistry>();
 

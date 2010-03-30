@@ -43,7 +43,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
-import org.kinkydesign.decibell.interfaces.JComponent;
+import org.kinkydesign.decibell.core.interfaces.JComponent;
 
 /**
  *

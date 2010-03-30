@@ -43,7 +43,6 @@ import org.kinkydesign.decibell.core.Component;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.TablesGenerator;
-import org.kinkydesign.decibell.interfaces.JDeciBell;
 import org.reflections.Reflections;
 
 /**
@@ -53,12 +52,20 @@ import org.reflections.Reflections;
  */
 public class DeciBell implements JDeciBell {
 
+    /**
+     * A {@link DeciBell } object is a nice Wrapper to {@link DbConnector } offering
+     * increased flexibility. This is the private DbConnector object held by Decibell.
+     */
     private DbConnector connector = new DbConnector();
+
     private static Map<Class<? extends Component>, DeciBell> componentDBmap =
             new HashMap<Class<? extends Component>, DeciBell>();
+    /**
+     * The set of all user-specified components (Classes that extend {@link Component }).
+     */
     Set<Class<? extends Component>> components = null;
 
-    public void attach(Class c) {
+    public void attach(Class<? extends Component> c) {
         c.asSubclass(Component.class);
         if (components == null) {
             components = new HashSet<Class<? extends Component>>();
@@ -85,7 +92,7 @@ public class DeciBell implements JDeciBell {
         connector.connect();
     }
 
-  //  @Deprecated
+  
     public void reset() {
         connector.clearDB();
     }

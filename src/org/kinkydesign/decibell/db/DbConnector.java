@@ -48,11 +48,11 @@ import java.sql.Statement;
 import java.util.Properties;
 import org.kinkydesign.decibell.db.interfaces.JDbConnector;
 import org.apache.derby.jdbc.ClientDataSource;
-import org.kinkydesign.decibell.collections.ComponentRegistry;
+import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.table.Table;
 
 /**
- *
+ * A Connector to a database identified by its URL.
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
@@ -62,7 +62,6 @@ public class DbConnector implements JDbConnector {
     private String password = "letmein";
     private String urlBase = "jdbc:derby://";
     private String dbName = "db";
-    private String driver = "org.apache.derby.jdbc.EmbeddedDriver";
     private String javacmd = "java";
     private String javaOptions = "-Djava.net.preferIPv4Stack=true";
     private String driverHome = "/usr/local/sges-v3/javadb";
@@ -72,12 +71,19 @@ public class DbConnector implements JDbConnector {
     private Connection connection;
     private final Runtime runtime = Runtime.getRuntime();
 
+
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+
     public void setDriverHome(String driverHome) {
         this.driverHome = driverHome;
     }
 
     public void setDriver(String driver) {
-        this.driver = driver;
+        this.databaseDriver = driver;
     }
 
     public void setJavaOptions(String javaOptions) {

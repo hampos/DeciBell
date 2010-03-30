@@ -40,10 +40,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.kinkydesign.decibell.collections.ComponentRegistry;
-import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.util.StatementFactory;
 
@@ -69,8 +66,10 @@ public class StatementPool {
         for (Table t : ComponentRegistry.getRegistry(con).values()) {
             search.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
             register.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
+            delete.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
             for (int i = 0; i < poolSize; i++) {
                 register.get(t).add(StatementFactory.createRegister(t, con));
+                register.get(t).add(StatementFactory.createDelete(t, con));
             }
         }
         pools.put(con, this);

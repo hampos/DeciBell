@@ -1,4 +1,4 @@
-/**
+/*
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -34,35 +34,9 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.interfaces;
-
 /**
  *
- * @author Pantelis Sopasakis
- * @author Charalampos Chomenides
+ * Link between java and database entities.
  */
-public interface JDeciBell {
+package org.kinkydesign.decibell.db;
 
-    public void attach(Class c);
-
-    public void start();
-
-    public void restart();
-
-    public void reset();
-
-    public void stop();
-
-    public void setDriverHome(String driverHome);
-
-    public void setDriver(String driver);
-
-    public void setJavaOptions(String javaOptions);
-
-    public void setJavacmd(String javacmd);
-
-    public void setUser(String user);
-
-    public void setDbName(String dbName);
-
-}

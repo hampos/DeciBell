@@ -36,9 +36,11 @@
 package org.kinkydesign.decibell.collections;
 
 /**
- *
+ * An almost complete list of all datatypes accepted by Derby&copy;. The documentation
+ * of the following enumeration elements is copied here from the Derby Manual.
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @see TypeMap Correspondence between java datatypes and SQL ones.
  */
 public enum SQLType{
 

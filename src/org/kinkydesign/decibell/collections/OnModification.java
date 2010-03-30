@@ -37,6 +37,12 @@ package org.kinkydesign.decibell.collections;
 
 /**
  *
+ * An enumeration of the actions that Derby&copy; database server can take upon a
+ * delete or update operation. These operations include {@link OnModification#CASCADE cascade},
+ * {@link OnModification#RESTRICT restrict}, {@link OnModification#NO_ACTION no action} and
+ * {@link OnModification#SET_NULL set null}. This enumeration is intended to be used
+ * by internal processes of DeciBell&copy;.
+ *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */

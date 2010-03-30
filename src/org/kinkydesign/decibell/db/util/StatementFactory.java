@@ -38,14 +38,13 @@ package org.kinkydesign.decibell.db.util;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.kinkydesign.decibell.db.DbConnector;
+import org.kinkydesign.decibell.db.query.InsertQueryBuilder;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
 
 /**
- *
+ * Factory used to prepare statements related to database queries.
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
@@ -60,29 +59,45 @@ public class StatementFactory {
     }
 
     public static PreparedStatement createRegister(Table table, DbConnector con) {
-        String creationSQL = "INSERT INTO " + table.getTableName() + "(";
-        String questionMarks = "(";
-        final Iterator<TableColumn> tableColumnIterator = table.getTableColumns().iterator();
-
-        while (tableColumnIterator.hasNext()) {
-            questionMarks += "?";
-            creationSQL += tableColumnIterator.next().getColumnName();
-            if (tableColumnIterator.hasNext()) {
-                questionMarks += " , ";
-                creationSQL += " , ";
-            }
-        }
-        questionMarks += ")";
-        creationSQL += ") VALUES " + questionMarks;
+        final InsertQueryBuilder builder = new InsertQueryBuilder(table);
+        final String creationSQL = builder.insertQuery().toString();
         try {
             PreparedStatement ps = con.prepareStatement(creationSQL);
             return ps;
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException("Error while preparing the SQL statement : <" + creationSQL
+                    + "> for the insertion of new data the table '"+table.getTableName()+"'", ex);
         }
     }
 
-    public static PreparedStatement createDelete(Table table) {
-        return null;
+    /**
+     * Creates a prepared statement for the deletion of certain rows of an SQL table.
+     * The deletion is performed with respect to the primary key(s) value(s) for a
+     * row of the table
+     * @param table
+     *      A database table.
+     * @param con
+     *      A {@link DbConnector } object, that is a pointer to a database connection.
+     * @return
+     *      PreparedStatement for the deletion.
+     */
+    public static PreparedStatement createDelete(Table table, DbConnector con) {
+        String deletionSql = "DELETE FROM " + table.getTableName() + " WHERE ";
+        final Iterator<TableColumn> primaryKeyColumnIterator = table.getPrimaryKeyColumns().iterator();
+        while (primaryKeyColumnIterator.hasNext()) {
+            deletionSql += primaryKeyColumnIterator.next().getColumnName()+"=? ";
+            if (primaryKeyColumnIterator.hasNext()) {
+                deletionSql += " AND ";
+            }
+        }
+        System.out.println(deletionSql);
+        try {
+            PreparedStatement ps = con.prepareStatement(deletionSql);
+            return ps;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Error while preparing the SQL statement {" + deletionSql
+                    + "} for deleting certain rows from the table '"+table.getTableName()+"'", ex);
+        }
     }
+
 }
