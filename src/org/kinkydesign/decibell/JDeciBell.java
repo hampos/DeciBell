@@ -36,7 +36,6 @@
 
 package org.kinkydesign.decibell;
 
-import org.kinkydesign.decibell.core.Component;
 
 /**
  *

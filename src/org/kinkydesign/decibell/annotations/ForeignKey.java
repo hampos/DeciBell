@@ -42,7 +42,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.kinkydesign.decibell.collections.OnModification;
-import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.Component;
 
 /**
  *

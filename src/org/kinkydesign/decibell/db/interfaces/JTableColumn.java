@@ -37,7 +37,7 @@ package org.kinkydesign.decibell.db.interfaces;
 
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.Component;
 
 /**
  *

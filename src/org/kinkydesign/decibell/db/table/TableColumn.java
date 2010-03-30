@@ -42,7 +42,7 @@ import java.util.Set;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.collections.Qualifier;
 
 /**

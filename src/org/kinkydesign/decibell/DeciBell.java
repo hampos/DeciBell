@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.kinkydesign.decibell.core.Component;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.TablesGenerator;

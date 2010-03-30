@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.table.Table;

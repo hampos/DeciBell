@@ -62,7 +62,7 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
     private static final String DOT = ".";
     private static final String DOT_STAR = ".*";
     private static final String WHERE = "WHERE";
-    private static final String NBSP = " ";
+    private static final String SPACE = " ";
     /**
      *
      * Name of the base table.
@@ -105,14 +105,14 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
     }
 
     public SQLQuery selectQuery() {
-        String selectSQL = SELECT + NBSP + baseTable.getTableName() + DOT_STAR + NBSP + FROM + NBSP + baseTable.getTableName() + NBSP;
+        String selectSQL = SELECT + SPACE + baseTable.getTableName() + DOT_STAR + SPACE + FROM + SPACE + baseTable.getTableName() + SPACE;
         if (secondaryMap_2_onColumn.size() > 0) {
-            selectSQL += INNER_JOIN + NBSP;
+            selectSQL += INNER_JOIN + SPACE;
             Iterator<Entry<Table, TableColumn[]>> it = secondaryMap_2_onColumn.entrySet().iterator();
             while (it.hasNext()) {
                 Entry<Table, TableColumn[]> entry = it.next();
-                selectSQL += entry.getKey().getTableName() + NBSP + ON + NBSP + entry.getKey().getTableName() + DOT + entry.getValue()[1].getColumnName() + NBSP
-                        + NBSP + Qualifier.EQUAL + NBSP + baseTable.getTableName() + DOT + entry.getValue()[0].getColumnName() + NBSP;
+                selectSQL += entry.getKey().getTableName() + SPACE + ON + SPACE + entry.getKey().getTableName() + DOT + entry.getValue()[1].getColumnName() + SPACE
+                        + SPACE + Qualifier.EQUAL + SPACE + baseTable.getTableName() + DOT + entry.getValue()[0].getColumnName() + SPACE;
             }
         }
         return new SQLQuery(selectSQL);
@@ -130,12 +130,12 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
             return selectQuery();
         }
         String selectSQL = selectQuery().toString();
-        selectSQL += WHERE + NBSP;
+        selectSQL += WHERE + SPACE;
         final Iterator<Proposition> it = propositions.iterator();
         while (it.hasNext()) {
             selectSQL += it.next().toString();
             if (it.hasNext()) {
-                selectSQL += NBSP + logicalOperator + NBSP;
+                selectSQL += SPACE + logicalOperator + SPACE;
             }
         }
         return new SQLQuery(selectSQL);
@@ -153,13 +153,13 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
             if (propositions.size() == 0)  return selectQuery();
         }
         String selectSQL = selectQuery().toString();
-        selectSQL += WHERE + NBSP;
+        selectSQL += WHERE + SPACE;
         final Iterator<Proposition> it = propositions.iterator();
         final Iterator<LogicalOperator> it_logical = logicalOperators.iterator();
         while (it.hasNext()) {
             selectSQL += it.next().toString();
             if (it.hasNext()) {
-                selectSQL += NBSP + it_logical.next() + NBSP;
+                selectSQL += SPACE + it_logical.next() + SPACE;
             }
         }
         return new SQLQuery(selectSQL);

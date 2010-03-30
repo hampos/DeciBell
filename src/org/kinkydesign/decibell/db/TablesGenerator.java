@@ -50,7 +50,7 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.TypeMap;
-import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
 import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;

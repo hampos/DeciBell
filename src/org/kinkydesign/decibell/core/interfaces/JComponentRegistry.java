@@ -37,7 +37,7 @@ package org.kinkydesign.decibell.core.interfaces;
 
 import java.util.Map;
 import java.util.Set;
-import org.kinkydesign.decibell.core.Component;
+import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.table.Table;
 
