@@ -42,6 +42,8 @@ import java.util.Set;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.TablesGenerator;
+import org.kinkydesign.decibell.db.derby.DerbyConnector;
+import org.kinkydesign.decibell.db.derby.DerbyTablesGenerator;
 import org.reflections.Reflections;
 
 /**
@@ -55,7 +57,7 @@ public class DeciBell implements JDeciBell {
      * A {@link DeciBell } object is a nice Wrapper to {@link DbConnector } offering
      * increased flexibility. This is the private DbConnector object held by Decibell.
      */
-    private DbConnector connector = new DbConnector();
+    private DbConnector connector = new DerbyConnector();
 
     private static Map<Class<? extends Component>, DeciBell> componentDBmap =
             new HashMap<Class<? extends Component>, DeciBell>();
@@ -79,7 +81,7 @@ public class DeciBell implements JDeciBell {
             Reflections reflections = new Reflections("");
             components = reflections.getSubTypesOf(Component.class);
         }
-        TablesGenerator tables = new TablesGenerator(connector, components);
+        TablesGenerator tables = new DerbyTablesGenerator(connector, components);
         tables.construct();
 
         StatementPool pool = new StatementPool(connector,10);
@@ -87,7 +89,7 @@ public class DeciBell implements JDeciBell {
 
     public void restart() {
         connector.disconnect();
-        connector.killDerby();
+        connector.killServer();
         connector.connect();
     }
 
@@ -98,7 +100,7 @@ public class DeciBell implements JDeciBell {
 
     public void stop() {
         connector.disconnect();
-        connector.killDerby();
+        connector.killServer();
     }
 
     public void setDriverHome(String driverHome) {
@@ -106,7 +108,7 @@ public class DeciBell implements JDeciBell {
     }
 
     public void setDriver(String driver) {
-        connector.setDriver(driver);
+        connector.setDatabaseDriver(driver);
     }
 
     public void setJavaOptions(String javaOptions) {

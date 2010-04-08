@@ -35,22 +35,16 @@
  */
 package org.kinkydesign.decibell.db.table;
 
-import org.kinkydesign.decibell.db.interfaces.JTableColumn;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.collections.Qualifier;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-final public class TableColumn implements Cloneable, JTableColumn {
+final public class TableColumn implements Cloneable {
 
     private String columnName = "";
     private SQLType columnType = null;
@@ -116,16 +110,15 @@ final public class TableColumn implements Cloneable, JTableColumn {
 
     }
 
-    public String getForeignKey() {
-        String foreignKey = "";
-        if (isForeignKey) {
-            foreignKey = "FOREIGN KEY (" + columnName + ") REFERENCES " + referencesTable + "(" + referencesColumn + ")";
-            foreignKey += " ON DELETE " + onDelete.toString();
-            foreignKey += " ON UPDATE " + onUpdate.toString();
-        }
-        return foreignKey;
-    }
-
+//    public String getForeignKey() {
+//        String foreignKey = "";
+//        if (isForeignKey) {
+//            foreignKey = "FOREIGN KEY (" + columnName + ") REFERENCES " + referencesTable + "(" + referencesColumn + ")";
+//            foreignKey += " ON DELETE " + onDelete.toString();
+//            foreignKey += " ON UPDATE " + onUpdate.toString();
+//        }
+//        return foreignKey;
+//    }
     public String getReferenceTable() {
         return referencesTable;
     }
@@ -148,11 +141,7 @@ final public class TableColumn implements Cloneable, JTableColumn {
     }
 
     public String getDefaultValue() {
-        if (hasDefault) {
-            return " DEFAULT " + this.defaultValue;
-        } else {
-            return "";
-        }
+        return this.defaultValue;
 
     }
 
@@ -181,57 +170,57 @@ final public class TableColumn implements Cloneable, JTableColumn {
         this.hasHigh = true;
         this.high = high;
     }
-
-    public String getConstraint() {
-        String constraint = "";
-        String lowStr = "";
-        String highStr = "";
-        String domainStr = "";
-        Set<String> tempSet = new HashSet<String>();
-        if (this.isConstrained) {            
-            if (this.hasLow) {
-                lowStr += columnName + Qualifier.GREATER_EQUAL + this.low;
-                tempSet.add(lowStr);
-            }
-            if (this.hasHigh) {
-                highStr += columnName + Qualifier.LESS_EQUAL + this.high;
-                tempSet.add(highStr);
-            }
-            if (this.hasDomain) {
-                for (int i = 0; i < this.domain.length; i++) {
-                    if (!domain[i].isEmpty()) {
-                        if (domainStr.isEmpty()) {
-                            domainStr = columnName + " IN (";
-                        } else {
-                            domainStr += ", ";
-                        }
-                        if (this.columnType.equals(SQLType.VARCHAR) || this.columnType.equals(SQLType.LONG_VARCHAR)) {
-                            domainStr += "'" + domain[i] + "'";
-                        } else {
-                            domainStr += domain[i];
-                        }
-                        if (i == domain.length - 1) {
-                            domainStr += " )";
-                        }
-                    }
-                }
-                tempSet.add(domainStr);
-            }
-            Iterator<String> it = tempSet.iterator();
-            while(it.hasNext()){
-                if(constraint.isEmpty()){
-                    constraint = " CONSTRAINT " + columnName + "_CONSTRAINT " + " CHECK ( ";
-                    constraint += it.next();                    
-                }else{
-                    constraint += " " + LogicalOperator.AND + " " + it.next();
-                }
-                if(!it.hasNext()){
-                    constraint += " )";
-                }
-            }
-        }
-        return constraint;
-    }
+    
+//    public String getConstraint() {
+//        String constraint = "";
+//        String lowStr = "";
+//        String highStr = "";
+//        String domainStr = "";
+//        Set<String> tempSet = new HashSet<String>();
+//        if (this.isConstrained()) {
+//            if (this.hasLow()) {
+//                lowStr += columnName + Qualifier.GREATER_EQUAL + this.getLow();
+//                tempSet.add(lowStr);
+//            }
+//            if (this.hasHigh()) {
+//                highStr += columnName + Qualifier.LESS_EQUAL + this.getHigh();
+//                tempSet.add(highStr);
+//            }
+//            if (this.hasDomain()) {
+//                for (int i = 0; i < this.getDomain().length; i++) {
+//                    if (!this.getDomain()[i].isEmpty()) {
+//                        if (domainStr.isEmpty()) {
+//                            domainStr = columnName + " IN (";
+//                        } else {
+//                            domainStr += ", ";
+//                        }
+//                        if (this.getColumnType().equals(SQLType.VARCHAR) || this.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+//                            domainStr += "'" + this.getDomain()[i] + "'";
+//                        } else {
+//                            domainStr += this.getDomain()[i];
+//                        }
+//                        if (i == this.getDomain().length - 1) {
+//                            domainStr += " )";
+//                        }
+//                    }
+//                }
+//                tempSet.add(domainStr);
+//            }
+//            Iterator<String> it = tempSet.iterator();
+//            while (it.hasNext()) {
+//                if (constraint.isEmpty()) {
+//                    constraint = " CONSTRAINT " + this.getColumnName() + "_CONSTRAINT " + " CHECK ( ";
+//                    constraint += it.next();
+//                } else {
+//                    constraint += " " + LogicalOperator.AND + " " + it.next();
+//                }
+//                if (!it.hasNext()) {
+//                    constraint += " )";
+//                }
+//            }
+//        }
+//        return constraint;
+//    }
 
     public void setUnique(boolean isUnique) {
         this.isUnique = isUnique;
@@ -253,15 +242,15 @@ final public class TableColumn implements Cloneable, JTableColumn {
         return isConstrained;
     }
 
-    public boolean hasLow(){
+    public boolean hasLow() {
         return hasLow;
     }
 
-    public boolean hasHigh(){
+    public boolean hasHigh() {
         return hasHigh;
     }
 
-    public boolean hasDomain(){
+    public boolean hasDomain() {
         return hasDomain;
     }
 
@@ -281,22 +270,20 @@ final public class TableColumn implements Cloneable, JTableColumn {
         return hasDefault;
     }
 
-    public Class<? extends Component> getReferencesClass(){
+    public Class<? extends Component> getReferencesClass() {
         return referencesClass;
     }
 
-    public void setReferencesClass(Class<? extends Component> referencesClass){
+    public void setReferencesClass(Class<? extends Component> referencesClass) {
         this.referencesClass = referencesClass;
     }
 
     @Override
-    public TableColumn clone(){
+    public TableColumn clone() {
         try {
             return (TableColumn) super.clone();
         } catch (CloneNotSupportedException ex) {
             throw new RuntimeException(ex);
         }
     }
-
-
 }

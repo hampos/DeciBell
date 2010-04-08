@@ -114,18 +114,18 @@ public class InsertQueryBuilder implements JInsertQueryBuilder {
     }
 
 
-    public static void main(String... args) {
-        Table t = new Table("TABLE_A");
-
-        TableColumn tc1 = new TableColumn("A");
-        tc1.setColumnType(SQLType.INTEGER);
-        t.addColumn(tc1);
-
-        TableColumn tc2 = new TableColumn("B");
-        tc2.setColumnType(SQLType.INTEGER);
-        t.addColumn(tc2);
-
-        InsertQueryBuilder qb = new InsertQueryBuilder(t);
-        System.out.println(qb.insertQuery("A"));
-    }
+//    public static void main(String... args) {
+//        Table t = new Table("TABLE_A");
+//
+//        TableColumn tc1 = new TableColumn("A");
+//        tc1.setColumnType(SQLType.INTEGER);
+//        t.addColumn(tc1);
+//
+//        TableColumn tc2 = new TableColumn("B");
+//        tc2.setColumnType(SQLType.INTEGER);
+//        t.addColumn(tc2);
+//
+//        InsertQueryBuilder qb = new InsertQueryBuilder(t);
+//        System.out.println(qb.insertQuery("A"));
+//    }
 }

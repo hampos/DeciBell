@@ -35,55 +35,113 @@
  */
 package org.kinkydesign.decibell.db;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Blob;
 import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
-import org.kinkydesign.decibell.db.interfaces.JDbConnector;
-import org.apache.derby.jdbc.ClientDataSource;
-import org.kinkydesign.decibell.core.ComponentRegistry;
-import org.kinkydesign.decibell.db.table.Table;
 
 /**
  * A Connector to a database identified by its URL.
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class DbConnector implements JDbConnector {
+public abstract class DbConnector {
 
-    private String user = "itsme";
-    private String password = "letmein";
-    private String urlBase = "jdbc:derby://";
-    private String dbName = "db";
-    private String javacmd = "java";
-    private String javaOptions = "-Djava.net.preferIPv4Stack=true";
-    private String driverHome = "/usr/local/sges-v3/javadb";
-    private String host = "localhost";
-    private int port = 1527;    
-    private String databaseDriver = "org.apache.derby.jdbc.EmbeddedDriver";
+    private String user;
+    private String password;
+    private String urlBase;
+    private String dbName;
+    private String javacmd;
+    private String javaOptions;
+    private String driverHome;
+    private String host;
+    private int port;
+    private String databaseDriver;
     private Connection connection;
     private final Runtime runtime = Runtime.getRuntime();
 
-
-
-    public void setHost(String host) {
-        this.host = host;
+    public DbConnector() {
     }
 
+    public String getDatabaseDriver() {
+        return databaseDriver;
+    }
+
+    public String getDbName() {
+        return dbName;
+    }
+
+    public String getDriverHome() {
+        return driverHome;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public String getJavaOptions() {
+        return javaOptions;
+    }
+
+    public String getJavacmd() {
+        return javacmd;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public Runtime getRuntime() {
+        return runtime;
+    }
+
+    public String getUrlBase() {
+        return urlBase;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getDatabaseUrl() {
+        return urlBase + host + ":" + port + "/" + dbName + ";user=" + user;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void setDatabaseDriver(String databaseDriver) {
+        this.databaseDriver = databaseDriver;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setUrlBase(String urlBase) {
+        this.urlBase = urlBase;
+    }
+
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
 
     public void setDriverHome(String driverHome) {
         this.driverHome = driverHome;
     }
 
-    public void setDriver(String driver) {
-        this.databaseDriver = driver;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public void setJavaOptions(String javaOptions) {
@@ -98,41 +156,13 @@ public class DbConnector implements JDbConnector {
         this.user = user;
     }
 
-    public String getDatabaseUrl(){
-        return urlBase + host + ":" + port + "/" + dbName + ";user=" + user;
-    }
+    public abstract void connect();
 
-    public String getDriver() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    public abstract void killServer();
 
-    public String getUser() {
-        return user;
-    }
+    public abstract boolean isServerRunning();
 
-    public void setDbPort(int port) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public int getDbPort() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
-    }
-    
-    public void connect() {
-        if (!isConnected()) {
-            try {
-                startDerbyServer();
-                loadDriver();
-                establishConnection();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-    }
+    public abstract void clearDB();
 
     public void disconnect() {
         if (connection != null) {
@@ -157,116 +187,12 @@ public class DbConnector implements JDbConnector {
         }
     }
 
-    public void killDerby() {
-        final String[] derby_kill_command = {
-            javacmd, javaOptions,
-            "-jar", driverHome + "/lib/derbyrun.jar", "server", "shutdown"
-        };
-        try {
-            Runtime.getRuntime().exec(derby_kill_command);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    public boolean isDerbyRunning() {
-        final String[] derby_ping_command = {
-            javacmd, javaOptions,
-            "-jar", driverHome + "/lib/derbyrun.jar", "server", "ping",
-            "-p", Integer.toString(port)};
-        try {
-            Process derby_ping = Runtime.getRuntime().exec(derby_ping_command);
-            BufferedReader br = new BufferedReader(new InputStreamReader(derby_ping.getInputStream()));
-            if (br.readLine().contains("Connection obtained")) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (IOException ex) {
-            return false;
-        }
-    }
-
-    public void startDerbyServer() throws IOException {
-        /**
-         * We tried the following, but encountered some problems. In particular it
-         * was impossible to connect to the database from the console when the
-         * application was connected already!
-         */
-        final String[] derby_start_command = {
-            javacmd,
-            javaOptions,
-            "-jar", driverHome + "/lib/derbyrun.jar", "server", "start",
-            "-p", Integer.toString(port),};
-        boolean derby_alive = isDerbyRunning();
-        while (!derby_alive) {
-            runtime.exec(derby_start_command);
-            try {
-                Thread.sleep(400);
-            } catch (InterruptedException ex) {
-            }
-            derby_alive = isDerbyRunning();
-        }
-    }
-
-    /**
-     * Load the JDBC driver specified in the properties section
-     *
-     * @see Configuration server configuration
-     * @see Configuration#getProperties() current properties
-     * @see Configuration#loadDefaultProperties() default properties
-     */
-    private void loadDriver() {
-        try {
-            Driver myDriver = (Driver) Class.forName(databaseDriver).newInstance();
-        } catch (ClassNotFoundException ex) {
-            throw new RuntimeException(ex);
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    /**
-     * Establishes a connection with the database or creates a new database
-     * if the specified is not found.
-     */
-    private void establishConnection() {
-        Properties databaseConnectionProps = new Properties();
-        databaseConnectionProps.setProperty("user", user);
-        databaseConnectionProps.setProperty("password", password);
-        databaseConnectionProps.setProperty("securityMechanism", Integer.toString(ClientDataSource.STRONG_PASSWORD_SUBSTITUTE_SECURITY));
-        try {
-            connection = DriverManager.getConnection(getDatabaseUrl(), databaseConnectionProps);
-        } catch (SQLException ex) {
-            if (ex.getErrorCode() == 40000) {
-                createDataBase();
-            } else {
-                throw new RuntimeException(ex);
-            }
-        }
-    }
-
-    /**
-     * This method is called when the specified database does not exist and it is
-     * created. The directive <code>create=true</code> is used within the URL
-     * of the database
-     */
-    private void createDataBase() {
-        try {
-            connection = DriverManager.getConnection(getDatabaseUrl() + ";create=true", user, password);
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
     public void execute(String sql) {
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
         } catch (SQLException ex) {
-            if(!ex.getSQLState().equals("X0Y32") && !ex.getSQLState().equals("42Y55") ){
+            if (!ex.getSQLState().equals("X0Y32") && !ex.getSQLState().equals("42Y55")) {
                 System.out.println(ex.getSQLState());
                 throw new RuntimeException(ex);
             }
@@ -283,19 +209,5 @@ public class DbConnector implements JDbConnector {
 
     public Blob createBlob() throws SQLException {
         return connection.createBlob();
-    }
-
-    public void clearDB() {
-        Object[] tables = ComponentRegistry.getRegistry(this).getRelationTables().toArray();
-        for(int i=tables.length-1 ; i>=0 ; i--){
-            Table t = (Table)tables[i];
-            execute("DROP TABLE "+t.getTableName());
-        }
-        tables = ComponentRegistry.getRegistry(this).values().toArray();
-        for(int i=tables.length-1 ; i>=0 ; i--){
-            Table t = (Table)tables[i];
-            execute("DROP TABLE "+t.getTableName());
-        }
-        execute("DROP SCHEMA "+user+" RESTRICT");
     }
 }

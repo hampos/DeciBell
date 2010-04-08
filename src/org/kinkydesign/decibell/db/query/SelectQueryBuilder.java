@@ -68,7 +68,7 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
      *
      * Name of the base table.
      */
-    private Table baseTable = new Table();
+    private Table baseTable;
     
     /**
      *
@@ -193,35 +193,35 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
 
     
 
-    public static void main(String... args){
-        TableColumn userNameCol = new TableColumn("userName");
-        userNameCol.setColumnType(SQLType.VARCHAR);        
-        
-        TableColumn passwordCol = new TableColumn("PassWord");
-        passwordCol.setColumnType(SQLType.LONG_VARCHAR);
-
-        TableColumn groupCol = new TableColumn("group");
-        groupCol.setColumnType(SQLType.LONG_VARCHAR);
-
-        TableColumn groupNameCol = new TableColumn("GroupName");
-        groupNameCol.setColumnType(SQLType.VARCHAR);
-
-        TableColumn levelCol = new TableColumn("Level");
-        levelCol.setColumnType(SQLType.VARCHAR);
-
-        Table users = new Table("USERS");
-        users.addColumn(userNameCol);
-        users.addColumn(passwordCol);
-
-        Table userGroups = new Table("USER_GROUPS");
-        userGroups.addColumn(groupNameCol);
-        userGroups.addColumn(levelCol);
-
-        JSelectQueryBuilder builder = new SelectQueryBuilder(users);
-        builder.attach(userGroups, groupCol, groupNameCol);
-
-        System.out.println(builder.easySearchQueryEquality());
-    }
+//    public static void main(String... args){
+//        TableColumn userNameCol = new TableColumn("userName");
+//        userNameCol.setColumnType(SQLType.VARCHAR);
+//
+//        TableColumn passwordCol = new TableColumn("PassWord");
+//        passwordCol.setColumnType(SQLType.LONG_VARCHAR);
+//
+//        TableColumn groupCol = new TableColumn("group");
+//        groupCol.setColumnType(SQLType.LONG_VARCHAR);
+//
+//        TableColumn groupNameCol = new TableColumn("GroupName");
+//        groupNameCol.setColumnType(SQLType.VARCHAR);
+//
+//        TableColumn levelCol = new TableColumn("Level");
+//        levelCol.setColumnType(SQLType.VARCHAR);
+//
+//        Table users = new Table("USERS");
+//        users.addColumn(userNameCol);
+//        users.addColumn(passwordCol);
+//
+//        Table userGroups = new Table("USER_GROUPS");
+//        userGroups.addColumn(groupNameCol);
+//        userGroups.addColumn(levelCol);
+//
+//        JSelectQueryBuilder builder = new SelectQueryBuilder(users);
+//        builder.attach(userGroups, groupCol, groupNameCol);
+//
+//        System.out.println(builder.easySearchQueryEquality());
+//    }
 
 
 }
