@@ -35,7 +35,7 @@
  */
 package org.kinkydesign.decibell.db.interfaces;
 
-import org.kinkydesign.decibell.db.query.SQLQuery;
+import org.kinkydesign.decibell.db.SQLQuery;
 import org.kinkydesign.decibell.db.table.TableColumn;
 
 /**

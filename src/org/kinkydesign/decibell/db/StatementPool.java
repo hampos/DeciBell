@@ -68,9 +68,10 @@ public class StatementPool {
             register.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
             delete.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
             for (int i = 0; i < poolSize; i++) {
-                register.get(t).add(StatementFactory.createRegister(t, con));
-                register.get(t).add(StatementFactory.createDelete(t, con));
-            }
+                //register.get(t).add(StatementFactory.createRegister(t, con));
+                //register.get(t).add(StatementFactory.createDelete(t, con));
+                register.get(t).add(StatementFactory.createSearch(t, con));
+           }
         }
         pools.put(con, this);
     }

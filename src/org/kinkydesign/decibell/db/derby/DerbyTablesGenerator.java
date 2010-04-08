@@ -103,6 +103,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
         }
     }
 
+    //@SuppressWarnings("element-type-mismatch")
     private void tableCreation(Class<? extends Component> c) {
         Table table = new DerbyTable();
         if (registry.containsKey( c)) {
@@ -195,8 +196,8 @@ public class DerbyTablesGenerator extends TablesGenerator {
                             foreignColumn.setUnique(column.isUnique());
                             foreignColumn.setColumnName(field.getName() + D_DASH + col.getColumnName());
                             foreignColumn.setColumnType(col.getColumnType());
-                            foreignColumn.setForeignKey(connector.getUser() + DOT + field.getType().getName().replace(DOT, D_DASH),
-                                    col.getColumnName(), fk.onDelete(), fk.onUpdate());
+                            foreignColumn.setForeignKey(registry.get(field.getType()),
+                                    col, fk.onDelete(), fk.onUpdate());
                             foreignColumn.setReferencesClass((Class<? extends Component>) field.getType());
                             table.addColumn(foreignColumn);
                             flag = false;
@@ -217,8 +218,8 @@ public class DerbyTablesGenerator extends TablesGenerator {
                     TableColumn column = new TableColumn();
                     column.setColumnName(col.getColumnName());
                     column.setColumnType(col.getColumnType());
-                    column.setForeignKey(connector.getUser() + DOT + c.getSuperclass().getName().replace(DOT, D_DASH),
-                            col.getColumnName(), OnModification.NO_ACTION, OnModification.NO_ACTION);
+                    column.setForeignKey(registry.get((Class<? extends Component>)c.getSuperclass()),
+                            col, OnModification.NO_ACTION, OnModification.NO_ACTION);
                     column.setReferencesClass((Class<? extends Component>) c.getSuperclass());
                     column.setPrimaryKey(true, false);
                     table.addColumn(column);
@@ -245,14 +246,14 @@ public class DerbyTablesGenerator extends TablesGenerator {
                 Set<TableColumn> slaveKeys = slave.getPrimaryKeyColumns();
                 for (TableColumn col : masterKeys) {
                     TableColumn column = col.clone();
-                    column.setForeignKey(master.getTableName().split(_DOT_,0)[1], col.getColumnName(),
+                    column.setForeignKey(master, col,
                             OnModification.CASCADE, OnModification.NO_ACTION);
                     column.setColumnName(master.getTableName().split(_DOT_,0)[1] + D_DASH + col.getColumnName());
                     table.addColumn(column);
                 }
                 for (TableColumn col : slaveKeys) {
                     TableColumn column = col.clone();
-                    column.setForeignKey(slave.getTableName().split(_DOT_,0)[1], col.getColumnName(),
+                    column.setForeignKey(slave, col,
                             OnModification.CASCADE, OnModification.NO_ACTION);
                     column.setColumnName(slave.getTableName().split(_DOT_,0)[1] + D_DASH + col.getColumnName());
                     table.addColumn(column);

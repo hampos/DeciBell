@@ -38,8 +38,12 @@ package org.kinkydesign.decibell.db.util;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kinkydesign.decibell.db.DbConnector;
+import org.kinkydesign.decibell.db.derby.query.DerbySelectQuery;
 import org.kinkydesign.decibell.db.query.InsertQueryBuilder;
+import org.kinkydesign.decibell.db.query.SelectQuery;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
 
@@ -50,12 +54,37 @@ import org.kinkydesign.decibell.db.table.TableColumn;
  */
 public class StatementFactory {
 
-    public static PreparedStatement createSearch(Table table) {
-        return null;
+    public static PreparedStatement createSearch(Table table, DbConnector con) {
+        SelectQuery a = new DerbySelectQuery(table);
+        try {
+            String sqlCommand = a.getSQL();
+            System.out.println(sqlCommand);
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM itsme.examples_User " +
+                    "INNER JOIN itsme.examples_UserGroup ON itsme.examples_User.group_id = itsme.examples_UserGroup.id " +
+                    " AND itsme.examples_User.group_name = itsme.examples_UserGroup.name  " +
+                    "WHERE itsme.examples_User.id = ? " +
+                    "AND itsme.examples_User.userName LIKE ? " +
+                    "AND itsme.examples_User.age = ? " +
+                    "AND itsme.examples_User.group_id = ? " +
+                    "AND itsme.examples_User.group_name LIKE ? " +
+                    "AND itsme.examples_User.listOfResources = ? " +
+                    "AND itsme.examples_User.anotherList = ? " +
+                    "AND itsme.examples_User.something = ? " +
+                    "AND itsme.examples_User.kinky LIKE ? " +
+                    "AND itsme.examples_User.childName = ? " +
+                    "AND itsme.examples_UserGroup.id = ? " +
+                    "AND itsme.examples_UserGroup.name LIKE ?");
+            return ps;
+        } catch (SQLException ex) {
+            Logger.getLogger(StatementFactory.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        }
+        
     }
 
     public static PreparedStatement createUpdate(Table table) {
         return null;
+
     }
 
     public static PreparedStatement createRegister(Table table, DbConnector con) {

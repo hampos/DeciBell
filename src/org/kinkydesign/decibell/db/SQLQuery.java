@@ -33,16 +33,30 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.db.query;
+package org.kinkydesign.decibell.db;
+
+import org.kinkydesign.decibell.db.table.Table;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class SQLQuery {
+public abstract class SQLQuery {
+
+    public enum QUERY_TYPE{
+        insert,
+        update,
+        select,
+        delete,
+        count;
+    }
+
+    private QUERY_TYPE type;
 
     private String SQL = null;
+
+    private Table table;
 
     public SQLQuery() {
     }
@@ -52,10 +66,19 @@ public class SQLQuery {
         this.SQL = SQL;
     }
 
-    @Override
-    public String toString() {
-        return SQL;
+    public abstract String getSQL();
+
+    public QUERY_TYPE getType() {
+        return type;
     }
+
+    public void setType(QUERY_TYPE type) {
+        this.type = type;
+    }
+
+
+    
+
 
 
 }

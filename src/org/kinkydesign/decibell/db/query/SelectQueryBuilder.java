@@ -44,6 +44,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.SQLType;
+import org.kinkydesign.decibell.db.SQLQuery;
 import org.kinkydesign.decibell.db.interfaces.JSelectQueryBuilder;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
@@ -124,7 +125,8 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
                         + SPACE + Qualifier.EQUAL + SPACE + baseTable.getTableName() + DOT + entry.getValue()[0].getColumnName() + SPACE;
             }
         }
-        return new SQLQuery(selectSQL);
+        //return new SQLQuery(selectSQL);
+        return null;
     }
 
     public SQLQuery selectQuery(ArrayList<Proposition> propositions) {
@@ -147,7 +149,8 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
                 selectSQL += SPACE + logicalOperator + SPACE;
             }
         }
-        return new SQLQuery(selectSQL);
+        //return new SQLQuery(selectSQL);
+        return null;
     }
 
     public SQLQuery selectQuery(ArrayList<Proposition> propositions, ArrayList<LogicalOperator> logicalOperators)
@@ -171,7 +174,8 @@ public class SelectQueryBuilder implements JSelectQueryBuilder {
                 selectSQL += SPACE + it_logical.next() + SPACE;
             }
         }
-        return new SQLQuery(selectSQL);
+        //return new SQLQuery(selectSQL);
+        return null;
     }
 
     

@@ -52,7 +52,6 @@ import org.kinkydesign.decibell.db.table.TableColumn;
 public class Proposition implements JProposition {
 
     private static final String QUESTION_MARK = "?";
-
     private TableColumn tableColumn;
     private Qualifier qualifier;
     private String stringValue = null;
@@ -72,78 +71,71 @@ public class Proposition implements JProposition {
         return qualifier;
     }
 
-   
     public void setQualifier(Qualifier qualifier) {
         this.qualifier = qualifier;
     }
-
 
     public TableColumn getTableColumn() {
         return tableColumn;
     }
 
-    
     public void setTableColumn(TableColumn tableColumn) {
         this.tableColumn = tableColumn;
     }
 
-
-
     public void setInt(long longValue) throws IllegalArgumentException {
-        if ( (!tableColumn.getColumnType().equals(SQLType.INTEGER)) && (!tableColumn.getColumnType().equals(SQLType.BIGINT)) )
-            throw new IllegalArgumentException("Cannot set an integer/long value to a non-integer type table column." +
-                    "Table Column: "+tableColumn.getColumnName()+" with type: "+tableColumn.getColumnType());
-        columnType[0]=true;
+        if ((!tableColumn.getColumnType().equals(SQLType.INTEGER)) && (!tableColumn.getColumnType().equals(SQLType.BIGINT))) {
+            throw new IllegalArgumentException("Cannot set an integer/long value to a non-integer type table column."
+                    + "Table Column: " + tableColumn.getColumnName() + " with type: " + tableColumn.getColumnType());
+        }
+        columnType[0] = true;
         stringValue = Long.toString(longValue);
     }
 
-    public void setNumeric(double numericValue) throws IllegalArgumentException {
-        if (  (!tableColumn.getColumnType().equals(SQLType.DOUBLE))&&(!tableColumn.getColumnType().equals(SQLType.DECIMAL))  )
-            throw new IllegalArgumentException("Cannot set a numeric value to a non-numeric type table column." +
-                    "Table Column: "+tableColumn.getColumnName()+" with type: "+tableColumn.getColumnType());
-        columnType[1]=true;
+    public void setDouble(double numericValue) throws IllegalArgumentException {
+        if ((!tableColumn.getColumnType().equals(SQLType.DOUBLE)) && (!tableColumn.getColumnType().equals(SQLType.DECIMAL))) {
+            throw new IllegalArgumentException("Cannot set a numeric value to a non-numeric type table column."
+                    + "Table Column: " + tableColumn.getColumnName() + " with type: " + tableColumn.getColumnType());
+        }
+        columnType[1] = true;
         stringValue = Double.toString(numericValue);
     }
 
-    public void setString(String stringValue){
-        if ( (!tableColumn.getColumnType().equals(SQLType.CHAR))&&(!tableColumn.getColumnType().equals(SQLType.VARCHAR)) && (!tableColumn.getColumnType().equals(SQLType.LONG_VARCHAR)) )
-            throw new IllegalArgumentException("Cannot set a string value to a non-string type table column." +
-                    "Table Column: "+tableColumn.getColumnName()+" with type: "+tableColumn.getColumnType());
-        columnType[2]=true;
-        this.stringValue = "\'"+stringValue+"\'";
+    public void setString(String stringValue) {
+        if ((!tableColumn.getColumnType().equals(SQLType.CHAR)) && (!tableColumn.getColumnType().equals(SQLType.VARCHAR)) && (!tableColumn.getColumnType().equals(SQLType.LONG_VARCHAR))) {
+            throw new IllegalArgumentException("Cannot set a string value to a non-string type table column."
+                    + "Table Column: " + tableColumn.getColumnName() + " with type: " + tableColumn.getColumnType());
+        }
+        columnType[2] = true;
+        this.stringValue = "\'" + stringValue + "\'";
     }
 
-    
     public void setNull() throws IllegalArgumentException {
-        if (tableColumn.isNotNull()) 
-            throw new IllegalArgumentException("Cannot set to NULL the non-nullable column "+tableColumn.getColumnName());
+        if (tableColumn.isNotNull()) {
+            throw new IllegalArgumentException("Cannot set to NULL the non-nullable column " + tableColumn.getColumnName());
+        }
         this.stringValue = "NULL";
         columnType = new boolean[3];
     }
 
-    public void setUnknown(){
+    public void setUnknown() {
         this.stringValue = QUESTION_MARK;
     }
-    
 
-    
     @Override
-    public String toString(){
+    public String toString() {
 
-        boolean qualifierForNull = (qualifier==Qualifier.IS || qualifier==Qualifier.IS_NOT);
-        
-        if (!columnType[0] && !columnType[1] && !columnType[2] && !qualifierForNull && 
-                (this.stringValue == null ? QUESTION_MARK != null : !this.stringValue.equals(QUESTION_MARK))) {
+        boolean qualifierForNull = (qualifier == Qualifier.IS || qualifier == Qualifier.IS_NOT);
+
+        if (!columnType[0] && !columnType[1] && !columnType[2] && !qualifierForNull
+                && (this.stringValue == null ? QUESTION_MARK != null : !this.stringValue.equals(QUESTION_MARK))) {
             throw new IllegalArgumentException("Use the qualifier IS or IS NOT with null");
         }
 
-        if (qualifierForNull && (columnType[0]||columnType[1]||columnType[2]))
-            throw new IllegalArgumentException("Illegal Qualifier {"+qualifier+"} combined with not null value (Read Derby Manual)");
+        if (qualifierForNull && (columnType[0] || columnType[1] || columnType[2])) {
+            throw new IllegalArgumentException("Illegal Qualifier {" + qualifier + "} combined with not null value (Read Derby Manual)");
+        }
 
-        return tableColumn.getColumnName()+" "+qualifier.toString()+" "+stringValue;
+        return tableColumn.getFullName() + " " + qualifier.toString() + " " + stringValue;
     }
-
-
- 
-
 }

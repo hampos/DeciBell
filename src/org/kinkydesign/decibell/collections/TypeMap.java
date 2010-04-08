@@ -78,6 +78,7 @@ public class TypeMap {
         typeMap.put(char.class, SQLType.CHAR);       
         typeMap.put(Timestamp.class , SQLType.TIMESTAMP);
         typeMap.put(Void.class, SQLType.VOID);
+
     }
 
     /**
@@ -93,7 +94,7 @@ public class TypeMap {
      *      was found.
      */
     public static SQLType getSQLType(Class c){
-        return (typeMap.get(c)!=null)?typeMap.get(c):SQLType.VARBINARY;
+        return (typeMap.get(c)!=null)?typeMap.get(c):SQLType.BLOB;
     }
 
     /**

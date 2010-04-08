@@ -158,13 +158,13 @@ public final class DerbyTable extends Table {
                 TableColumn fk = it.next();
                 it.remove();
                 String foreignKey = Fk + SPACE + LEFT_PARENTHESIS + fk.getColumnName();
-                String references = REFERENCES + SPACE + fk.getReferenceTable() + LEFT_PARENTHESIS + fk.getReferenceColumn() + SPACE;
+                String references = REFERENCES + SPACE + fk.getReferenceTableName() + LEFT_PARENTHESIS + fk.getReferenceColumnName() + SPACE;
                 String options = ON_DEL + SPACE + fk.getOnDelete() + SPACE + ON_UP + SPACE + fk.getOnUpdate();
                 while (it.hasNext()) {
                     TableColumn c = it.next();
-                    if (fk.getReferenceTable().equals(c.getReferenceTable())) {
+                    if (fk.getReferenceTableName().equals(c.getReferenceTableName())) {
                         foreignKey += COMMA + c.getColumnName();
-                        references += COMMA + c.getReferenceColumn();
+                        references += COMMA + c.getReferenceColumnName();
                         it.remove();
                     }
                 }

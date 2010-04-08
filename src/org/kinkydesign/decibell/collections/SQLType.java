@@ -153,6 +153,12 @@ public enum SQLType{
             return "LONG VARCHAR FOR BIT DATA";
         }
     },
+
+    /**
+     *
+     */
+    BLOB,
+
     /**
      * This is not a valid SQL datatype, instead is a flag to denote that the type of
      * the undelying element should be retrieved from the corresponding java type declared

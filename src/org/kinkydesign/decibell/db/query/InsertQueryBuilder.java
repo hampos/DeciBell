@@ -37,6 +37,7 @@ package org.kinkydesign.decibell.db.query;
 
 import java.util.Iterator;
 import org.kinkydesign.decibell.collections.SQLType;
+import org.kinkydesign.decibell.db.SQLQuery;
 import org.kinkydesign.decibell.db.interfaces.JInsertQueryBuilder;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
@@ -75,7 +76,8 @@ public class InsertQueryBuilder implements JInsertQueryBuilder {
         }
         questionMarks += ")";
         creationSQL += ")" + VALUES + questionMarks;
-        return new SQLQuery(creationSQL);
+        //return new SQLQuery(creationSQL);
+        return null;
     }
 
     public SQLQuery insertQuery(String... columnNames) {
@@ -92,7 +94,8 @@ public class InsertQueryBuilder implements JInsertQueryBuilder {
         }
         questionMarks += ")";
         creationSQL += ")" + VALUES + questionMarks;
-        return new SQLQuery(creationSQL);
+        //return new SQLQuery(creationSQL);
+        return null;
     }
 
     public SQLQuery insertQuery(TableColumn... columns) {
@@ -110,7 +113,8 @@ public class InsertQueryBuilder implements JInsertQueryBuilder {
         }
         questionMarks += ")";
         creationSQL += ")" + VALUES + questionMarks;
-        return new SQLQuery(creationSQL);
+        //return new SQLQuery(creationSQL);
+        return null;
     }
 
 

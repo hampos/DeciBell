@@ -38,7 +38,7 @@ package org.kinkydesign.decibell.db.interfaces;
 import java.util.ArrayList;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.db.query.Proposition;
-import org.kinkydesign.decibell.db.query.SQLQuery;
+import org.kinkydesign.decibell.db.SQLQuery;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
 

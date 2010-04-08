@@ -99,7 +99,7 @@ public interface JProposition {
      * @throws IllegalArgumentException
      * In case the parameter cannot be set
      */
-    void setNumeric(double numericValue) throws IllegalArgumentException;
+    void setDouble(double numericValue) throws IllegalArgumentException;
 
     /**
      * Set the qualifier of the proposition, e.g. {@link Qualifier#EQUAL }.

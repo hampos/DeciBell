@@ -62,11 +62,12 @@ final public class TableColumn implements Cloneable {
     private boolean hasDomain = false;
     private boolean hasDefault = false;
     private boolean isForeignKey = false;
-    private String referencesTable = null;
-    private String referencesColumn = null;
+    private Table referencesTable = null;
+    private TableColumn referencesColumn = null;
     private Class<? extends Component> referencesClass = null;
     private OnModification onUpdate = null;
     private OnModification onDelete = null;
+    private Table masterTable;
 
     public TableColumn() {
         super();
@@ -74,6 +75,20 @@ final public class TableColumn implements Cloneable {
 
     public TableColumn(String columnName) {
         setColumnName(columnName);
+    }
+
+    public Table getMasterTable() {
+        return masterTable;
+    }
+
+    public void setMasterTable(Table masterTable) {
+        this.masterTable = masterTable;
+    }
+
+
+    public String getFullName(){
+        if (masterTable == null) return getColumnName();
+        return masterTable.getTableName()+"."+getColumnName();
     }
 
     public String getColumnName() {
@@ -101,29 +116,30 @@ final public class TableColumn implements Cloneable {
         return isPrimaryKey;
     }
 
-    public void setForeignKey(String TableName, String ForeignColumn, OnModification onDelete, OnModification onUpdate) {
+    public void setForeignKey(Table table, TableColumn ForeignColumn, OnModification onDelete, OnModification onUpdate) {
         this.isForeignKey = true;
-        this.referencesTable = TableName;
+        this.referencesTable = table;
         this.referencesColumn = ForeignColumn;
         this.onDelete = onDelete;
         this.onUpdate = onUpdate;
 
     }
 
-//    public String getForeignKey() {
-//        String foreignKey = "";
-//        if (isForeignKey) {
-//            foreignKey = "FOREIGN KEY (" + columnName + ") REFERENCES " + referencesTable + "(" + referencesColumn + ")";
-//            foreignKey += " ON DELETE " + onDelete.toString();
-//            foreignKey += " ON UPDATE " + onUpdate.toString();
-//        }
-//        return foreignKey;
-//    }
-    public String getReferenceTable() {
+
+    public String getReferenceTableName() {
+        return referencesTable.getTableName();
+    }
+
+    public Table getReferenceTable(){
         return referencesTable;
     }
 
-    public String getReferenceColumn() {
+
+    public String getReferenceColumnName() {
+        return referencesColumn.getColumnName();
+    }
+
+    public TableColumn getReferenceColumn(){
         return referencesColumn;
     }
 
@@ -171,56 +187,6 @@ final public class TableColumn implements Cloneable {
         this.high = high;
     }
     
-//    public String getConstraint() {
-//        String constraint = "";
-//        String lowStr = "";
-//        String highStr = "";
-//        String domainStr = "";
-//        Set<String> tempSet = new HashSet<String>();
-//        if (this.isConstrained()) {
-//            if (this.hasLow()) {
-//                lowStr += columnName + Qualifier.GREATER_EQUAL + this.getLow();
-//                tempSet.add(lowStr);
-//            }
-//            if (this.hasHigh()) {
-//                highStr += columnName + Qualifier.LESS_EQUAL + this.getHigh();
-//                tempSet.add(highStr);
-//            }
-//            if (this.hasDomain()) {
-//                for (int i = 0; i < this.getDomain().length; i++) {
-//                    if (!this.getDomain()[i].isEmpty()) {
-//                        if (domainStr.isEmpty()) {
-//                            domainStr = columnName + " IN (";
-//                        } else {
-//                            domainStr += ", ";
-//                        }
-//                        if (this.getColumnType().equals(SQLType.VARCHAR) || this.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-//                            domainStr += "'" + this.getDomain()[i] + "'";
-//                        } else {
-//                            domainStr += this.getDomain()[i];
-//                        }
-//                        if (i == this.getDomain().length - 1) {
-//                            domainStr += " )";
-//                        }
-//                    }
-//                }
-//                tempSet.add(domainStr);
-//            }
-//            Iterator<String> it = tempSet.iterator();
-//            while (it.hasNext()) {
-//                if (constraint.isEmpty()) {
-//                    constraint = " CONSTRAINT " + this.getColumnName() + "_CONSTRAINT " + " CHECK ( ";
-//                    constraint += it.next();
-//                } else {
-//                    constraint += " " + LogicalOperator.AND + " " + it.next();
-//                }
-//                if (!it.hasNext()) {
-//                    constraint += " )";
-//                }
-//            }
-//        }
-//        return constraint;
-//    }
 
     public void setUnique(boolean isUnique) {
         this.isUnique = isUnique;

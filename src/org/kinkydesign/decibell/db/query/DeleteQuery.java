@@ -1,4 +1,6 @@
 /**
+ *  Class : DeleteQuery
+ *  Date  : Apr 8, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -33,57 +35,51 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.collections;
 
-import org.kinkydesign.decibell.db.query.Proposition;
+
+package org.kinkydesign.decibell.db.query;
+
+import java.util.Collection;
+import org.kinkydesign.decibell.db.interfaces.JSQLQuery;
+import org.kinkydesign.decibell.db.table.Table;
+import org.kinkydesign.decibell.db.table.TableColumn;
 
 /**
- * An enumeration of all available binary relations like &lt;= or &gt;=. These are
- * used within query generation and are part of those. These qualifiers play an essential
- * role in select and update queries as they are used to identify subsets of data in
- * the database. As an example, consider of a select query like <code>SELECT * FROM
- * TABLE_A WHERE A = 1 AND B &lt;= 3 AND C IS NOT NULL</code>.
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public enum Qualifier {
+public abstract class DeleteQuery implements JSQLQuery {
 
-    EQUAL("="),
-    NOT_EQUAL("<>"),
-    GREATER_THAN(">"),
-    LESS_THAN("<"),
-    GREATER_EQUAL(">="),
-    LESS_EQUAL("<="),
-    IS("IS"),
-    IS_NOT("IS NOT"),
-    LIKE("LIKE");
+    private Table table;
 
-    private String qualifier = "";
+    private Collection<? extends TableColumn> tableColumns;
 
-    /**
-     * Private constructor of this enumeration for the creation of qualifiers given
-     * their string representation/symbol.
-     * @param qualifier
-     */
-    private Qualifier(String qualifier){
-        this.qualifier = qualifier;
+    public DeleteQuery(){
+
     }
 
-    /**
-     * The symbol corresponding to the qualifier. For example:
-     * <pre><code>Qualifier qualifier = Qualifier.EQUAL;
-     * System.out.println(qualifier);
-     * </code></pre>
-     * This will return <code>'='</code>.
-     * @return
-     *      The symbol of the qualifier (as a String).
-     */
-    @Override
-    public String toString() {
-        return this.qualifier;
+    public DeleteQuery(Table table, Collection<? extends TableColumn> tableColumns){
+        this.tableColumns = tableColumns;
+        this.table = table;
     }
 
+    public abstract  String getSQL();
 
+    public void setTable(Table table) {
+        this.table = table;
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public void setColumns(Collection<? extends TableColumn> tableColumns) {
+        this.tableColumns = tableColumns;
+    }
+
+    public Collection<? extends TableColumn> getColumns() {
+        return tableColumns;
+    }
 
 }
