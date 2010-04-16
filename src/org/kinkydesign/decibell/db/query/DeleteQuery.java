@@ -39,7 +39,8 @@
 
 package org.kinkydesign.decibell.db.query;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.db.interfaces.JSQLQuery;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
@@ -52,19 +53,26 @@ import org.kinkydesign.decibell.db.table.TableColumn;
 public abstract class DeleteQuery implements JSQLQuery {
 
     private Table table;
+    protected ArrayList<Proposition> propositions = new ArrayList<Proposition>();
+    
 
-    private Collection<? extends TableColumn> tableColumns;
-
-    public DeleteQuery(){
-
-    }
-
-    public DeleteQuery(Table table, Collection<? extends TableColumn> tableColumns){
-        this.tableColumns = tableColumns;
+    public DeleteQuery(Table table){
         this.table = table;
+        initPropositions();
     }
 
-    public abstract  String getSQL();
+    private void initPropositions(){
+        for (TableColumn tc : table.getTableColumns()){
+            Proposition p = new Proposition();
+            p.setTableColumn(tc);
+            p.setUnknown();
+            p.setQualifier(Qualifier.EQUAL);
+            propositions.add(p);
+        }
+    }
+
+    public abstract String getSQL(boolean usePKonly);
+
 
     public void setTable(Table table) {
         this.table = table;
@@ -74,12 +82,8 @@ public abstract class DeleteQuery implements JSQLQuery {
         return table;
     }
 
-    public void setColumns(Collection<? extends TableColumn> tableColumns) {
-        this.tableColumns = tableColumns;
-    }
+    
 
-    public Collection<? extends TableColumn> getColumns() {
-        return tableColumns;
-    }
+ 
 
 }

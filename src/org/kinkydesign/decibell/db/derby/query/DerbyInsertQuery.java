@@ -42,6 +42,7 @@ import java.util.Map.Entry;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.derby.DerbyTable;
 import org.kinkydesign.decibell.db.query.InsertQuery;
+import org.kinkydesign.decibell.db.query.UpdateQuery;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
@@ -99,10 +100,13 @@ public class DerbyInsertQuery extends InsertQuery {
         tc2.setColumnType(SQLType.INTEGER);
         t.addColumn(tc2);
 
-        DerbyInsertQuery a = new DerbyInsertQuery(t);
+        InsertQuery a = new DerbyInsertQuery(t);
         a.setDouble(tc2, 3);
-        a.setString(tc1, "dfsjfn");
+        a.setString(tc1, "this is a string");
         System.out.println(a.getSQL());
+
+        UpdateQuery b = new DerbyUpdateQuery(t);
+        System.out.println(b.getSQL());
     }
     
 }

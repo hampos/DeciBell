@@ -73,6 +73,17 @@ final public class TableColumn implements Cloneable {
         super();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        TableColumn other = (TableColumn) obj;
+        if (other == null){
+            return false;
+        }
+        return other.getFullName().equals(getFullName());
+    }
+
+
+
     public TableColumn(String columnName) {
         setColumnName(columnName);
     }

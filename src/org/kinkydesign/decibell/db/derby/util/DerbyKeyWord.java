@@ -55,6 +55,9 @@ public class DerbyKeyWord {
             FROM = "FROM",
             WHERE = "WHERE",
             INNER_JOIN = "INNER JOIN",
+            OUTER_JOIN = "OUTER JOIN",
+            LEFT_JOIN = "LEFT OUTER JOIN",
+            RIGHT_JOIN = "RIGHT OUTER JOIN",
             QUESTION_MARK = "?",
             VALUES = "VALUES",
             LEFT_PAR = "(",
@@ -62,6 +65,22 @@ public class DerbyKeyWord {
             COMMA = ",",
             DOT = ".",
             STAR = "*",
-            DOT_REG = "\\.";
+            DOT_REG = "\\.",
+            NEWLINE = "\n",
+            DEFAULT = "DEFAULT",
+            Fk = "FOREIGN KEY",
+            Pk = "PRIMARY KEY",
+            GAAId = "GENERATED ALWAYS AS IDENTITY",
+            NOT_NULL = "NOT NULL",
+            UNIQUE = "UNIQUE",
+            CREATE_TABLE = "CREATE TABLE",
+            DROP_TABLE = "DROP TABLE",
+            IN = "IN",
+            SINGLE_QUOTE = "'",
+            CONSTRAINT = "CONSTRAINT",
+            UNDERSCORE = "_",
+            CHECK = "CHECK",
+            REFERENCES = "REFERENCES",
+            SET = "SET";
 
 }

@@ -1,7 +1,6 @@
 /**
- *  Class : DeleteQueryBuilder
- *  Date  : Mar 27, 2010
- *
+ *  Class : Infinity
+ *  Date  : 15 Απρ 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -37,22 +36,24 @@
  * tel. +30 210 7723236
  */
 
-
-package org.kinkydesign.decibell.db.query;
-
-import org.kinkydesign.decibell.db.table.Table;
+package org.kinkydesign.decibell.db.derby.util;
 
 /**
  *
- * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @author Pantelis Sopasakis
  */
-public class DeleteQueryBuilder {
-    
-    private Table table;
+public class Infinity {
 
-    public DeleteQueryBuilder(Table table) {
-    }
+    public static final int
+            LEFT_INT_INF = -2147483648,
+            RIGHT_INT_INF = 2147483647;
+    public static final double
+            LEFT_REAL_INF = -3.402E+38,
+            RIGHT_REAL_INF = 3.402E+38;
+    public static final long
+            LEFT_LONG_INF = -9223372036854775808L,
+            RIGHT_LONG_INF = 9223372036854775807L;
 
 
 

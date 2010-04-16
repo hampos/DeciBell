@@ -1,7 +1,4 @@
 /**
- *  Class : UpdateQueryBuilder
- *  Date  : Mar 27, 2010
- * 
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -36,17 +33,49 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
+package org.kinkydesign.decibell.db.derby.query;
 
-
-package org.kinkydesign.decibell.db.query;
-
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import org.kinkydesign.decibell.collections.LogicalOperator;
+import org.kinkydesign.decibell.collections.Qualifier;
+import org.kinkydesign.decibell.db.query.Join;
+import org.kinkydesign.decibell.db.table.TableColumn;
+import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 /**
- *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class UpdateQueryBuilder {
+public class DerbyJoin extends Join {
 
+    private static Map<JOIN_TYPE, String> types;
+    static{
+        types = new HashMap<JOIN_TYPE, String>();
+        types.put(JOIN_TYPE.INNER, INNER_JOIN);
+        types.put(JOIN_TYPE.OUTER, OUTER_JOIN);
+        types.put(JOIN_TYPE.LEFT, LEFT_JOIN);
+        types.put(JOIN_TYPE.RIGHT, RIGHT_JOIN);        
+    }
+
+    public DerbyJoin() {
+    }
+
+    @Override
+    public String getSQL() {
+        String sql = types.get(getJoinType()) + SPACE + getRemoteTable().getTableName() +
+                SPACE + ON + SPACE;
+        Iterator<Entry<TableColumn, TableColumn>> it = column2column.entrySet().iterator();
+        while (it.hasNext()){
+            Entry<TableColumn, TableColumn> e = it.next();
+            sql += e.getKey().getFullName() + Qualifier.EQUAL + e.getValue().getFullName() + SPACE;
+            if (it.hasNext()){
+                sql += LogicalOperator.AND + SPACE;
+            }
+        }
+        return sql;
+    }
 
 
 }

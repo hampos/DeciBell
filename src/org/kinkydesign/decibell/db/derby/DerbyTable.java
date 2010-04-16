@@ -45,6 +45,8 @@ import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
 
+import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
+
 /**
  *
  * A Table in the database is characterized by its columns. This class offers a
@@ -55,27 +57,6 @@ import org.kinkydesign.decibell.db.table.TableColumn;
  */
 public final class DerbyTable extends Table {
 
-    private static final String CREATE_TABLE = "CREATE TABLE";
-    private static final String DROP_TABLE = "DROP TABLE";
-    private static final String UNIQUE = "UNIQUE";
-    private static final String NOT_NULL = "NOT NULL";
-    private static final String GAAId = "GENERATED ALWAYS AS IDENTITY";
-    private static final String Fk = "FOREIGN KEY";
-    private static final String Pk = "PRIMARY KEY";
-    private static final String REFERENCES = "REFERENCES";
-    private static final String ON_DEL = "ON DELETE";
-    private static final String ON_UP = "ON UPDATE";
-    private static final String SPACE = " ";
-    private static final String NEWLINE = "\n";
-    private static final String COMMA = ",";
-    private static final String LEFT_PARENTHESIS = "(";
-    private static final String RIGHT_PARENTHESIS = ")";
-    private static final String DEFAULT = "DEFAULT";
-
-//    private Set<TableColumn> listOfColumns = new LinkedHashSet<TableColumn>();
-//    private String tableName = null;
-//    private Set<Table> relations = new HashSet<Table>();
-
     /**
      * Construct a new Table object.
      */
@@ -84,49 +65,12 @@ public final class DerbyTable extends Table {
     }
 
     /**
-     * Construct a new Table object, given its name.
-     * @param tableName
+     * Constructs the Derby SQL command that creates the required table according
+     * to the TableColumns it includes.
+     * @return SQL Table Creation String for Derby
      */
-//    public DerbyTable(String tableName) {
-//        this();
-//        if (tableName == null)
-//            throw new NullPointerException("The name of a table cannot be null");
-//        this.tableName = tableName;
-//    }
-
-
-//    public Set<TableColumn> getTableColumns() {
-//        return listOfColumns;
-//    }
-//
-//    public void setTableColumns(Set<TableColumn> tableColumns) {
-//        this.listOfColumns = tableColumns;
-//    }
-//
-//    public void addColumn(TableColumn column) {
-//        if (column == null)
-//            throw new NullPointerException("You cannot add a null column");
-//        if (column.getColumnName() == null)
-//            throw new NullPointerException("You cannot add a column without a name");
-//        if (column.getColumnType() == null)
-//            throw new NullPointerException("Column " + column.getColumnName() + " must have an SQL type");
-//        this.listOfColumns.add(column);
-//    }
-//
-//    public void removeColumn(TableColumn column) {
-//        this.listOfColumns.remove(column);
-//    }
-//
-//    public void setTableName(String tableName) {
-//        this.tableName = tableName;
-//    }
-//
-//    public String getTableName() {
-//        return this.tableName;
-//    }
-
     public String getCreationSQL() {
-        String SQL = CREATE_TABLE + SPACE + getTableName() + NEWLINE + LEFT_PARENTHESIS + SPACE;
+        String SQL = CREATE_TABLE + SPACE + getTableName() + NEWLINE + LEFT_PAR + SPACE;
         Iterator<TableColumn> it = super.getTableColumns().iterator();
         while (it.hasNext()) {
             TableColumn column = it.next();
@@ -157,9 +101,9 @@ public final class DerbyTable extends Table {
                 it = foreignColumns.iterator();
                 TableColumn fk = it.next();
                 it.remove();
-                String foreignKey = Fk + SPACE + LEFT_PARENTHESIS + fk.getColumnName();
-                String references = REFERENCES + SPACE + fk.getReferenceTableName() + LEFT_PARENTHESIS + fk.getReferenceColumnName() + SPACE;
-                String options = ON_DEL + SPACE + fk.getOnDelete() + SPACE + ON_UP + SPACE + fk.getOnUpdate();
+                String foreignKey = Fk + SPACE + LEFT_PAR + fk.getColumnName();
+                String references = REFERENCES + SPACE + fk.getReferenceTableName() + LEFT_PAR + fk.getReferenceColumnName() + SPACE;
+                String options = ON + SPACE + DELETE + SPACE + fk.getOnDelete() + SPACE + ON + SPACE + UPDATE + SPACE + fk.getOnUpdate();
                 while (it.hasNext()) {
                     TableColumn c = it.next();
                     if (fk.getReferenceTableName().equals(c.getReferenceTableName())) {
@@ -168,12 +112,12 @@ public final class DerbyTable extends Table {
                         it.remove();
                     }
                 }
-                foreignKey += RIGHT_PARENTHESIS + SPACE;
-                references += RIGHT_PARENTHESIS + SPACE;
+                foreignKey += RIGHT_PAR + SPACE;
+                references += RIGHT_PAR + SPACE;
                 SQL += foreignKey + references + options + COMMA + NEWLINE;
             }
         }
-        SQL += Pk + SPACE + LEFT_PARENTHESIS;
+        SQL += Pk + SPACE + LEFT_PAR;
         it = getPrimaryKeyColumns().iterator();
         while (it.hasNext()) {
             SQL += it.next().getColumnName();
@@ -181,17 +125,27 @@ public final class DerbyTable extends Table {
                 SQL += COMMA;
             }
         }
-        SQL += RIGHT_PARENTHESIS;
-        SQL = SQL + NEWLINE + RIGHT_PARENTHESIS;
+        SQL += RIGHT_PAR;
+        SQL = SQL + NEWLINE + RIGHT_PAR;
         System.out.println(SQL);
         return SQL;
     }
 
+    /**
+     * Constructs the Deletion SQL command required to delete this table.
+     * @return SQL Table Deletion String for Derby
+     */
     public String getDeletionSQL() {
         String SQL = DROP_TABLE + SPACE + getTableName();
         return SQL;
     }
 
+    /**
+     * Private Method that constructs the SQL String regarding a column's
+     * Constraints.
+     * @param col the specified TableColumn
+     * @return SQL String describing Constraints
+     */
     private String getConstraint(TableColumn col){
         String constraint = "";
         String lowStr = "";
@@ -211,17 +165,17 @@ public final class DerbyTable extends Table {
                 for (int i = 0; i < col.getDomain().length; i++) {
                     if (!col.getDomain()[i].isEmpty()) {
                         if (domainStr.isEmpty()) {
-                            domainStr = col.getColumnName() + " IN (";
+                            domainStr = col.getColumnName() + SPACE + IN + SPACE + LEFT_PAR;
                         } else {
-                            domainStr += ", ";
+                            domainStr += COMMA + SPACE;
                         }
                         if (col.getColumnType().equals(SQLType.VARCHAR) || col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                            domainStr += "'" + col.getDomain()[i] + "'";
+                            domainStr += SINGLE_QUOTE + col.getDomain()[i] + SINGLE_QUOTE;
                         } else {
                             domainStr += col.getDomain()[i];
                         }
                         if (i == col.getDomain().length - 1) {
-                            domainStr += " )";
+                            domainStr += SPACE + RIGHT_PAR;
                         }
                     }
                 }
@@ -230,44 +184,17 @@ public final class DerbyTable extends Table {
             Iterator<String> it = tempSet.iterator();
             while (it.hasNext()) {
                 if (constraint.isEmpty()) {
-                    constraint = " CONSTRAINT " + col.getColumnName() + "_CONSTRAINT " + " CHECK ( ";
+                    constraint = SPACE + CONSTRAINT + SPACE + col.getColumnName() + UNDERSCORE + CONSTRAINT + SPACE + CHECK + SPACE+ LEFT_PAR;
                     constraint += it.next();
                 } else {
                     constraint += SPACE + LogicalOperator.AND + SPACE + it.next();
                 }
                 if (!it.hasNext()) {
-                    constraint += " )";
+                    constraint += SPACE + RIGHT_PAR;
                 }
             }
         }
         return constraint;
     }
 
-//    public Set<TableColumn> getPrimaryKeyColumns() {
-//        Set<TableColumn> primaryKeyColumns = new LinkedHashSet<TableColumn>();
-//        for (TableColumn column : listOfColumns) {
-//            if (column.isPrimaryKey()) {
-//                primaryKeyColumns.add(column);
-//            }
-//        }
-//        return primaryKeyColumns;
-//    }
-//
-//    public Set<TableColumn> getForeignKeyColumns() {
-//        Set<TableColumn> foreignKeyColumns = new LinkedHashSet<TableColumn>();
-//        for (TableColumn column : listOfColumns) {
-//            if (column.isForeignKey()) {
-//                foreignKeyColumns.add(column);
-//            }
-//        }
-//        return foreignKeyColumns;
-//    }
-//
-//    public void addRelation(Table t) {
-//        relations.add(t);
-//    }
-//
-//    public Set<Table> getRelations() {
-//        return relations;
-//    }
 }

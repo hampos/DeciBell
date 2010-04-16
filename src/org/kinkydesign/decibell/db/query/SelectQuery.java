@@ -39,10 +39,16 @@ package org.kinkydesign.decibell.db.query;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
+import org.kinkydesign.decibell.db.derby.util.Infinity;
 import org.kinkydesign.decibell.db.interfaces.JSQLQuery;
+import org.kinkydesign.decibell.db.query.Join.JOIN_TYPE;
 import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.table.TableColumn;
 
@@ -51,11 +57,21 @@ import org.kinkydesign.decibell.db.table.TableColumn;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public abstract class SelectQuery implements JSQLQuery{
+public abstract class SelectQuery implements JSQLQuery {
 
     private Table table;
     private Collection<? extends TableColumn> tableColumns;
     protected ArrayList<Proposition> propositions = new ArrayList<Proposition>();
+    protected ArrayList<Join> joins = new ArrayList<Join>();
+    private Set<TableColumn> columnsAdded = new HashSet<TableColumn>();
+
+    public void setJoinType(JOIN_TYPE joinType){
+        for (Join j : joins){
+            j.setJoinType(joinType);
+        }
+    }
+
+    public abstract String getSQL(boolean searchPKonly);
 
     public Proposition removeProposition(int index) {
         return propositions.remove(index);
@@ -73,32 +89,56 @@ public abstract class SelectQuery implements JSQLQuery{
         return propositions;
     }
 
-    public SelectQuery() {
-    }
-
     public SelectQuery(Table table) {
         this.table = table;
-        updatePropositions();
     }
 
-    private void updatePropositions() {
+    protected void updatePropositions() {
         updatePropositions(table);
     }
 
     private void updatePropositions(Table table) {
         Proposition p;
         for (TableColumn tc : table.getTableColumns()) {
-            p = new Proposition();
-            p.setTableColumn(tc);
-            if (tc.getColumnType().equals(SQLType.VARCHAR)
-                    || tc.getColumnType().equals(SQLType.CHAR)) {
-                p.setQualifier(Qualifier.LIKE);
-            } else {
-                p.setQualifier(Qualifier.EQUAL);
+            boolean shouldBeAdded = true;
+            for (Join j : joins) {
+                if (j.column2column.containsValue(tc)) {
+                    shouldBeAdded = false;
+                }
             }
+            boolean alreadyAdded = columnsAdded.contains(tc);
+            if (!alreadyAdded && shouldBeAdded) {
+                // <editor-fold defaultstate="collapsed" desc="add proposition if not added as a joint">
+                columnsAdded.add(tc);
+                p = new Proposition();
+                p.setTableColumn(tc);
+                if (tc.getColumnType().equals(SQLType.VARCHAR)
+                        || tc.getColumnType().equals(SQLType.CHAR)) {
+                    p.setQualifier(Qualifier.LIKE);
+                    p.setUnknown();
+                    propositions.add(p);
+                } else if (tc.getColumnType().equals(SQLType.BIGINT)
+                        || tc.getColumnType().equals(SQLType.DECIMAL)
+                        || tc.getColumnType().equals(SQLType.DOUBLE)
+                        || tc.getColumnType().equals(SQLType.INTEGER)
+                        || tc.getColumnType().equals(SQLType.REAL)
+                        || tc.getColumnType().equals(SQLType.SMALLINT)
+                        ){
+                    Proposition p1 = null;
+                    try {
+                        p1 = (Proposition) p.clone();
+                    } catch (CloneNotSupportedException ex) {
+                        throw new RuntimeException(ex);
+                    }
 
-            p.setUnknown();
-            propositions.add(p);
+                    p.setQualifier(Qualifier.GREATER_EQUAL);
+                    p1.setQualifier(Qualifier.LESS_EQUAL);
+                    p.setUnknown();
+                    p1.setUnknown();
+                    propositions.add(p);
+                    propositions.add(p1);
+                }// </editor-fold>
+            }
         }
         Iterator<Table> remoteTables = table.getReferencedTables().iterator();
         while (remoteTables.hasNext()) {
@@ -108,64 +148,171 @@ public abstract class SelectQuery implements JSQLQuery{
     }
 
     public void setString(TableColumn column, String stringValue) {
-        Iterator<Proposition> propos = propositions.iterator();
-        Proposition p;
-        while (propos.hasNext()) {
-            p = propos.next();
+        if (!(column.getColumnType().equals(SQLType.VARCHAR)
+                || column.getColumnType().equals(SQLType.CHAR))) {
+            throw new IllegalArgumentException("Tried to assign String value to non-String"
+                    + " Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column)) {
                 p.setString(stringValue);
+                return;
             }
-            break;
         }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setLong(TableColumn column, long longValue) {
+        if (!column.getColumnType().equals(SQLType.BIGINT)) {
+            throw new IllegalArgumentException("Tried to assign Long value to non-Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setInt(longValue);
+            }
+        }
+    }
+
+    public void setLeftLong(TableColumn column, long longValue) {
+        if (!column.getColumnType().equals(SQLType.BIGINT)) {
+            throw new IllegalArgumentException("Tried to assign Long value to non-Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.GREATER_EQUAL)) {
+                p.setInt(longValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setRightLong(TableColumn column, long longValue) {
+        if (!column.getColumnType().equals(SQLType.BIGINT)) {
+            throw new IllegalArgumentException("Tried to assign Long value to non-Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
+                p.setInt(longValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
     }
 
     public void setInt(TableColumn column, int integerValue) {
-        Iterator<Proposition> propos = propositions.iterator();
-        Proposition p;
-        while (propos.hasNext()) {
-            p = propos.next();
+        if (!(column.getColumnType().equals(SQLType.INTEGER)
+                || column.getColumnType().equals(SQLType.BIGINT))) {
+            throw new IllegalArgumentException("Tried to assign Integer value to non-Integer/Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column)) {
                 p.setInt(integerValue);
             }
-            break;
         }
+    }
+
+    public void setLeftInt(TableColumn column, int integerValue) {
+        if (!(column.getColumnType().equals(SQLType.INTEGER)
+                || column.getColumnType().equals(SQLType.BIGINT))) {
+            throw new IllegalArgumentException("Tried to assign Integer value to non-Integer/Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.GREATER_EQUAL)) {
+                p.setInt(integerValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setRightInt(TableColumn column, int integerValue) {
+        if (!(column.getColumnType().equals(SQLType.INTEGER)
+                || column.getColumnType().equals(SQLType.BIGINT))) {
+            throw new IllegalArgumentException("Tried to assign Integer value to non-Integer/Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
+                p.setInt(integerValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
     }
 
     public void setDouble(TableColumn column, double doubleValue) {
-        Iterator<Proposition> propos = propositions.iterator();
-        Proposition p;
-        while (propos.hasNext()) {
-            p = propos.next();
+        if (!(column.getColumnType().equals(SQLType.DOUBLE)
+                || column.getColumnType().equals(SQLType.DECIMAL)
+                || column.getColumnType().equals(SQLType.REAL))) {
+            throw new IllegalArgumentException("Tried to assign Double value to"
+                    + " non-Double Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column)) {
                 p.setDouble(doubleValue);
             }
-            break;
         }
     }
 
+    public void setLeftDouble(TableColumn column, double doubleValue) {
+        if (!(column.getColumnType().equals(SQLType.DOUBLE)
+                || column.getColumnType().equals(SQLType.DECIMAL)
+                || column.getColumnType().equals(SQLType.REAL))) {
+            throw new IllegalArgumentException("Tried to assign Double value to"
+                    + " non-Double Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.GREATER_EQUAL)) {
+                p.setDouble(doubleValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName()
+                + " does not belong to any proposition.");
+    }
+
+    public void setRightDouble(TableColumn column, double doubleValue) {
+        if (!(column.getColumnType().equals(SQLType.DOUBLE)
+                || column.getColumnType().equals(SQLType.DECIMAL)
+                || column.getColumnType().equals(SQLType.REAL))) {
+            throw new IllegalArgumentException("Tried to assign Double value to "
+                    + "non-Double Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
+                p.setDouble(doubleValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName()
+                + " does not belong to any proposition.");
+    }
+
     public void setNull(TableColumn column) {
-        Iterator<Proposition> propos = propositions.iterator();
-        Proposition p;
-        while (propos.hasNext()) {
-            p = propos.next();
+        for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column)) {
                 p.setNull();
                 p.setQualifier(Qualifier.IS);
             }
-            break;
         }
     }
 
     public void setUnknown(TableColumn column) {
-        Iterator<Proposition> propos = propositions.iterator();
-        Proposition p;
-        while (propos.hasNext()) {
-            p = propos.next();
+        for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column)) {
                 p.setUnknown();
                 p.setQualifier(Qualifier.EQUAL);
             }
-            break;
         }
     }
 

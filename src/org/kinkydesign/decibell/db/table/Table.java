@@ -38,7 +38,6 @@ package org.kinkydesign.decibell.db.table;
 import java.util.HashMap;
 import org.kinkydesign.decibell.db.interfaces.JTable;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -157,4 +156,21 @@ public abstract class Table implements JTable {
     public Set<Table> getRelations() {
         return relations;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Table other = (Table ) obj;
+        return getTableName().equals(other.getTableName());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + (this.tableName != null ? this.tableName.hashCode() : 0);
+        return hash;
+    }
+
+
+
+
 }

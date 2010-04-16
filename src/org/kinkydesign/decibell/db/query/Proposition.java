@@ -39,6 +39,7 @@ import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.db.interfaces.JProposition;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.table.TableColumn;
+import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
  *
@@ -49,9 +50,9 @@ import org.kinkydesign.decibell.db.table.TableColumn;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class Proposition implements JProposition {
+public class Proposition
+        implements JProposition, Cloneable {
 
-    private static final String QUESTION_MARK = "?";
     private TableColumn tableColumn;
     private Qualifier qualifier;
     private String stringValue = null;
@@ -66,6 +67,13 @@ public class Proposition implements JProposition {
      */
     public Proposition() {
     }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+
 
     public Qualifier getQualifier() {
         return qualifier;
@@ -136,6 +144,6 @@ public class Proposition implements JProposition {
             throw new IllegalArgumentException("Illegal Qualifier {" + qualifier + "} combined with not null value (Read Derby Manual)");
         }
 
-        return tableColumn.getFullName() + " " + qualifier.toString() + " " + stringValue;
+        return tableColumn.getFullName() + SPACE + qualifier.toString() + SPACE + stringValue;
     }
 }
