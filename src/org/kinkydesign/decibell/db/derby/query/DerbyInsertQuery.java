@@ -101,8 +101,8 @@ public class DerbyInsertQuery extends InsertQuery {
         t.addColumn(tc2);
 
         InsertQuery a = new DerbyInsertQuery(t);
-        a.setDouble(tc2, 3);
-        a.setString(tc1, "this is a string");
+//        a.setDouble(tc2, 3);
+//        a.setString(tc1, "this is a string");
         System.out.println(a.getSQL());
 
         UpdateQuery b = new DerbyUpdateQuery(t);

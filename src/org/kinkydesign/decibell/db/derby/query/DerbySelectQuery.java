@@ -48,7 +48,7 @@ import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.derby.DerbyTable;
-import org.kinkydesign.decibell.db.derby.util.Infinity;
+import org.kinkydesign.decibell.db.derby.util.DerbyInfinity;
 import org.kinkydesign.decibell.db.query.Join;
 import org.kinkydesign.decibell.db.query.Join.JOIN_TYPE;
 import org.kinkydesign.decibell.db.query.Proposition;
@@ -66,8 +66,6 @@ public class DerbySelectQuery extends SelectQuery {
 
     public DerbySelectQuery(Table table) {
         super(table);
-        initializeJoins();
-        super.updatePropositions();
     }
 
     public String getSQL() {
@@ -108,9 +106,9 @@ public class DerbySelectQuery extends SelectQuery {
 //        for (int i=joins.size()-1;i>=0;i--) {
 //            sql += joins.get(i).getSQL() + SPACE;
 //        }
-        for (Join j : joins){
-            sql += j.getSQL() + SPACE;
-        }
+//        for (Join j : joins){
+//            sql += j.getSQL() + SPACE;
+//        }
 
         if (searchPKonly) {
             ArrayList<Proposition> props = new ArrayList<Proposition>();
@@ -139,17 +137,17 @@ public class DerbySelectQuery extends SelectQuery {
         SQLType columnType = column.getColumnType();
         switch (columnType) {
             case INTEGER:
-                setLeftInt(column, Infinity.LEFT_INT_INF);
-                setRightInt(column, Infinity.RIGHT_INT_INF);
+                setLeftInt(column, DerbyInfinity.LEFT_INT_INF);
+                setRightInt(column, DerbyInfinity.RIGHT_INT_INF);
                 break;
             case DECIMAL:
             case DOUBLE:
-                setLeftDouble(column, Infinity.LEFT_REAL_INF);
-                setRightDouble(column, Infinity.RIGHT_REAL_INF);
+                setLeftDouble(column, DerbyInfinity.LEFT_REAL_INF);
+                setRightDouble(column, DerbyInfinity.RIGHT_REAL_INF);
                 break;
             case BIGINT:
-                setLeftLong(column, Infinity.LEFT_LONG_INF);
-                setRightLong(column, Infinity.RIGHT_LONG_INF);
+                setLeftLong(column, DerbyInfinity.LEFT_LONG_INF);
+                setRightLong(column, DerbyInfinity.RIGHT_LONG_INF);
                 break;
             default:
                 setString(column, "%%");
@@ -227,6 +225,6 @@ public class DerbySelectQuery extends SelectQuery {
         a.setString(tc2, "ad");
         // a.setRightInt(tc2, 4);
 
-        System.out.println(a.getSQL(true));
+        System.out.println(a.getSQL(false));
     }
 }

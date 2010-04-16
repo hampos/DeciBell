@@ -87,15 +87,7 @@ public class DeciBell implements JDeciBell {
         }
         TablesGenerator tables = new DerbyTablesGenerator(connector, components);
         tables.construct();
-
         StatementPool pool = new StatementPool(connector,10);
-
-        for(Set<TableColumn> group : ComponentRegistry.getRegistry(connector).get(User.class).getForeignColumnsByGroup()){
-            System.out.println("--------GROUP "+group.toString());
-            for(TableColumn c : group){
-                System.out.println(c.getFullName());
-            }
-        }
     }
 
     public void restart() {
@@ -137,4 +129,9 @@ public class DeciBell implements JDeciBell {
     public void setDbName(String dbName) {
         connector.setDbName(dbName);
     }
+
+    protected DbConnector getDbConnector() {
+        return connector;
+    }
+
 }

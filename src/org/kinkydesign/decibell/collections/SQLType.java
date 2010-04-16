@@ -35,6 +35,9 @@
  */
 package org.kinkydesign.decibell.collections;
 
+import com.sun.tools.internal.ws.processor.model.java.JavaArrayType;
+import java.sql.Types;
+
 /**
  * An almost complete list of all datatypes accepted by Derby&copy;. The documentation
  * of the following enumeration elements is copied here from the Derby Manual.
@@ -49,17 +52,17 @@ public enum SQLType{
      * -2147483648 and 2147483647 respectively.<code>INTEGER</code> provides 4 bytes
      * of storage for integer values.
      */
-    INTEGER,
+    INTEGER(Types.INTEGER),
     /**
      * <code>SMALLINT</code> is the counterpart of <code>short </code>. Higher and Lower
      * limits are 32767 and -32768 respectively. <code>SMALLINT</code> provides 2 bytes of storage.
      */
-    SMALLINT,
+    SMALLINT(Types.SMALLINT),
     /**
      * <code>BIGINT</code> is like <code>Long</code> in java. It accepts values in the
      * range from -9223372036854775808 up to 9223372036854775807.
      */
-    BIGINT,
+    BIGINT(Types.BIGINT),
     /**
      * The REAL data type provides 4 bytes of storage for numbers using IEEE floating-point
      * notation. Note that the limits in this SQL type are different from the corresponding
@@ -72,25 +75,25 @@ public enum SQLType{
      * • Largest negative REAL value: -1.175E-37<br/>
      * </p>
      */
-    REAL,
+    REAL(Types.REAL),
     /**
      * The DOUBLE PRECISION data type provides 8-byte storage for numbers using IEEE
      * floating-point notation.
      */
-    DOUBLE,
+    DOUBLE(Types.DOUBLE),
     /**
      * DECIMAL provides an exact numeric in which the precision and scale can be arbitrarily
      * sized. You can specify the precision (the total number of digits, both to the left and
      * the right of the decimal point) and the scale (the number of digits of the fractional
      * component). The amount of storage required is based on the precision.
      */
-    DECIMAL,
+    DECIMAL(Types.DECIMAL),
     /**
      * This is a character array (String) of variable length, though here we have fixed its
      * size to <code>255</code>. In storage, VARCHAR(255) is smart enough to store only the
      * length you need on a given row, unlike CHAR(255) which would always store 255 characters.
      */
-    VARCHAR{
+    VARCHAR(Types.VARCHAR){
 
         @Override
         public String toString() {
@@ -107,7 +110,7 @@ public enum SQLType{
      * of 32,700 characters. It is identical to VARCHAR, except that you cannot specify a
      * maximum length when creating columns of this type.
      */
-    LONG_VARCHAR{
+    LONG_VARCHAR(Types.LONGVARCHAR){
 
         @Override
         public String toString() {
@@ -118,7 +121,7 @@ public enum SQLType{
      * Here stands for a small word. <code>CHAR</code> has always a fixed size of
      * 10 characters (as used in Decibell&copy;).
      */
-    CHAR{
+    CHAR(Types.CHAR){
 
         @Override
         public String toString() {
@@ -131,11 +134,11 @@ public enum SQLType{
      * is <code>java.sql.Timestamp</code>. Dates, times, and timestamps cannot be
      * mixed with one another in expressions. Example: <code>'1962-09-23 03:23:34.234'</code> .
      */
-    TIMESTAMP,
+    TIMESTAMP(Types.TIMESTAMP),
 
-    BIT,
+    BIT(Types.BIT),
 
-    VARBINARY{
+    VARBINARY(Types.VARBINARY){
 
         @Override
         public String toString() {
@@ -146,7 +149,7 @@ public enum SQLType{
         }
     },
 
-    LONG_VARBINARY{
+    LONG_VARBINARY(Types.LONGVARBINARY){
         
         @Override
         public String toString() {
@@ -157,7 +160,7 @@ public enum SQLType{
     /**
      *
      */
-    BLOB,
+    BLOB(Types.BLOB),
 
     /**
      * This is not a valid SQL datatype, instead is a flag to denote that the type of
@@ -168,6 +171,15 @@ public enum SQLType{
      * Decibell, to put effort to chose the correct type itself. <code>ANY</code> could
      * be an alternative name for <code>VOID</code>.
      */
-    VOID;
+    VOID(Types.BLOB);
 
+    private int type;
+
+    private SQLType(int type){
+        this.type = type;
+    }
+
+    public int getType(){
+        return type;
+    }
 }

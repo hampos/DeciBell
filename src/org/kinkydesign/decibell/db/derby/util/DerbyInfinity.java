@@ -1,4 +1,6 @@
 /**
+ *  Class : Infinity
+ *  Date  : 15 Απρ 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -33,13 +35,24 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.db.derby;
+
+package org.kinkydesign.decibell.db.derby.util;
 
 /**
  *
- * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @author Pantelis Sopasakis
  */
-public class DerbySQLQuery {
+public class DerbyInfinity {
+
+    public static final int
+            LEFT_INT_INF = -2147483648,
+            RIGHT_INT_INF = 2147483647;
+    public static final double
+            LEFT_REAL_INF = -3.402E+38,
+            RIGHT_REAL_INF = 3.402E+38;
+    public static final long
+            LEFT_LONG_INF = -9223372036854775808L,
+            RIGHT_LONG_INF = 9223372036854775807L;
 
 }

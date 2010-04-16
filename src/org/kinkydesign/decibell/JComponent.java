@@ -49,7 +49,7 @@ public interface JComponent<T extends Component> {
     /**
      * Registers the component in the database.
      */
-    void register() throws DuplicateKeyException;
+    void register(DeciBell db) throws DuplicateKeyException;
 
     /**
      * Get all the components from the database which resemble the given component.

@@ -38,9 +38,19 @@ package org.kinkydesign.decibell;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.kinkydesign.decibell.collections.SQLType;
+import org.kinkydesign.decibell.collections.TypeMap;
+import org.kinkydesign.decibell.core.ComponentRegistry;
+import org.kinkydesign.decibell.db.StatementPool;
+import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.query.InsertQuery;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
@@ -55,10 +65,43 @@ public abstract class Component<T extends Component> implements JComponent<T> {
         System.out.println(this.getClass());
     }
 
-    public void register() throws DuplicateKeyException {
+    public void register(DeciBell db) throws DuplicateKeyException {
         Class c = this.getClass();
+        ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
+        Table table = registry.get(c);
+        StatementPool pool = StatementPool.getPool(db.getDbConnector());
+        Map.Entry<PreparedStatement, InsertQuery> entry = pool.getRegister(table);
 
-        throw new UnsupportedOperationException("Not supported yet.");
+        PreparedStatement ps = entry.getKey();
+        InsertQuery query = entry.getValue();
+
+        int i = 1;
+        for (TableColumn col : table.getTableColumns()) {
+            Field field = col.getField();
+            field.setAccessible(true);
+            try {
+        //        field.get(this);
+        //        ps.setObject(i, (Object)field.get(this), col.getColumnType().getType());
+                switch(col.getColumnType()){
+                    case INTEGER:
+                        ps.setInt(i, (Integer)field.get(this));
+                        break;
+                    case VARCHAR:
+                        ps.setString(i, (String)field.get(this));
+                        break;
+                }
+                i++;
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (NullPointerException ex){
+                ex.printStackTrace();
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     public ArrayList<T> search() {
@@ -94,5 +137,4 @@ public abstract class Component<T extends Component> implements JComponent<T> {
     public void update() throws NoUniqueFieldException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
 }

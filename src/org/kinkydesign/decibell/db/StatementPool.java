@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.kinkydesign.decibell.core.ComponentRegistry;
+import org.kinkydesign.decibell.db.query.InsertQuery;
+import org.kinkydesign.decibell.db.query.SelectQuery;
 import org.kinkydesign.decibell.db.util.StatementFactory;
 
 /**
@@ -54,22 +56,28 @@ public class StatementPool {
 
     private Map<Table, ArrayBlockingQueue<PreparedStatement>> search =
             new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
+    private Map<Table, ArrayBlockingQueue<PreparedStatement>> searchpk =
+            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
     private Map<Table, ArrayBlockingQueue<PreparedStatement>> update =
             new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
-    private Map<Table, ArrayBlockingQueue<PreparedStatement>> register =
-            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
+    private Map<Table, ArrayBlockingQueue<Map.Entry<PreparedStatement,InsertQuery>>> register =
+            new HashMap<Table, ArrayBlockingQueue<Map.Entry<PreparedStatement,InsertQuery>>>();
     private Map<Table, ArrayBlockingQueue<PreparedStatement>> delete =
             new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
 
     public StatementPool(DbConnector con, int poolSize) {
         for (Table t : ComponentRegistry.getRegistry(con).values()) {
             search.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
-            register.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
+            searchpk.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
+            register.put(t, new ArrayBlockingQueue<Map.Entry<PreparedStatement,InsertQuery>>(50));
             delete.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
+            update.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
             for (int i = 0; i < poolSize; i++) {
-                //register.get(t).add(StatementFactory.createRegister(t, con));
-                //register.get(t).add(StatementFactory.createDelete(t, con));
-              //  register.get(t).add(StatementFactory.createSearch(t, con));
+                register.get(t).add(StatementFactory.createRegister(t, con));
+                delete.get(t).add(StatementFactory.createDelete(t, con));
+                search.get(t).add(StatementFactory.createSearch(t, con));
+                searchpk.get(t).add(StatementFactory.createSearchPK(t, con));
+                update.get(t).add(StatementFactory.createUpdate(t, con));
            }
         }
         pools.put(con, this);
@@ -79,7 +87,7 @@ public class StatementPool {
         return pools.get(con);
     }
 
-    public PreparedStatement getRegister(Table t) {
+    public Map.Entry<PreparedStatement,InsertQuery> getRegister(Table t) {
         try {
             return register.get(t).take();
         } catch (InterruptedException ex) {
@@ -87,10 +95,78 @@ public class StatementPool {
         }
     }
 
-    public void recycleRegister(PreparedStatement ps, Table t) {
+    public void recycleRegister(Map.Entry<PreparedStatement,InsertQuery> ps, Table t) {
+        try {
+            ps.getKey().clearParameters();
+            register.get(t).add(ps);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public PreparedStatement getSearch(Table t) {
+        try {
+            return search.get(t).take();
+        } catch (InterruptedException ex) {
+            return getSearch(t);
+        }
+    }
+
+    public void recycleSearch(PreparedStatement ps, Table t) {
         try {
             ps.clearParameters();
-            register.get(t).add(ps);
+            search.get(t).add(ps);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public PreparedStatement getSearchPK(Table t) {
+        try {
+            return searchpk.get(t).take();
+        } catch (InterruptedException ex) {
+            return getSearchPK(t);
+        }
+    }
+
+    public void recycleSearchPK(PreparedStatement ps, Table t) {
+        try {
+            ps.clearParameters();
+            searchpk.get(t).add(ps);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public PreparedStatement getUpdate(Table t) {
+        try {
+            return update.get(t).take();
+        } catch (InterruptedException ex) {
+            return getUpdate(t);
+        }
+    }
+
+    public void recycleUpdate(PreparedStatement ps, Table t) {
+        try {
+            ps.clearParameters();
+            update.get(t).add(ps);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public PreparedStatement getDelete(Table t) {
+        try {
+            return delete.get(t).take();
+        } catch (InterruptedException ex) {
+            return getDelete(t);
+        }
+    }
+
+    public void recycleDelete(PreparedStatement ps, Table t) {
+        try {
+            ps.clearParameters();
+            delete.get(t).add(ps);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }

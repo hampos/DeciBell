@@ -42,11 +42,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.derby.util.Infinity;
 import org.kinkydesign.decibell.db.interfaces.JSQLQuery;
 import org.kinkydesign.decibell.db.query.Join.JOIN_TYPE;
 import org.kinkydesign.decibell.db.Table;
@@ -64,6 +61,11 @@ public abstract class SelectQuery implements JSQLQuery {
     protected ArrayList<Proposition> propositions = new ArrayList<Proposition>();
     protected ArrayList<Join> joins = new ArrayList<Join>();
     private Set<TableColumn> columnsAdded = new HashSet<TableColumn>();
+
+    public SelectQuery(Table table) {
+        this.table = table;
+        updatePropositions();
+    }
 
     public void setJoinType(JOIN_TYPE joinType) {
         for (Join j : joins) {
@@ -89,12 +91,30 @@ public abstract class SelectQuery implements JSQLQuery {
         return propositions;
     }
 
-    public SelectQuery(Table table) {
-        this.table = table;
-    }
-
     protected void updatePropositions() {
-        updatePropositions(table);
+        for (TableColumn tc : table.getTableColumns()) {
+            Proposition p = new Proposition();
+            p.setTableColumn(tc);
+            if (tc.getColumnType().equals(SQLType.VARCHAR)
+                    || tc.getColumnType().equals(SQLType.CHAR)) {
+                p.setQualifier(Qualifier.LIKE);
+                p.setUnknown();
+                propositions.add(p);
+            } else if (tc.getColumnType().equals(SQLType.BIGINT)
+                    || tc.getColumnType().equals(SQLType.DECIMAL)
+                    || tc.getColumnType().equals(SQLType.DOUBLE)
+                    || tc.getColumnType().equals(SQLType.INTEGER)
+                    || tc.getColumnType().equals(SQLType.REAL)
+                    || tc.getColumnType().equals(SQLType.SMALLINT)) {
+                Proposition p1 = (Proposition) p.clone();
+                p.setQualifier(Qualifier.GREATER_EQUAL);
+                p1.setQualifier(Qualifier.LESS_EQUAL);
+                p.setUnknown();
+                p1.setUnknown();
+                propositions.add(p);
+                propositions.add(p1);
+            }
+        }
     }
 
     private void updatePropositions(Table table) {
@@ -323,5 +343,17 @@ public abstract class SelectQuery implements JSQLQuery {
 
     public Collection<? extends TableColumn> getColumns() {
         return tableColumns;
+    }
+
+    public ArrayList<Join> getJoins() {
+        return joins;
+    }
+
+    public void setJoins(ArrayList<Join> joins) {
+        this.joins = joins;
+    }
+
+    public void addJoin(Join join) {
+        joins.add(join);
     }
 }

@@ -14,8 +14,15 @@ import org.kinkydesign.decibell.Component;
  */
 public class UserGroup extends Component{
     @PrimaryKey
-    int id;
+    private int id;
 
     @PrimaryKey
-    String name;
+    private String name;
+
+    public UserGroup(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    
 }

@@ -66,15 +66,8 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
  */
 public class DerbyTablesGenerator extends TablesGenerator {
 
-    ComponentRegistry registry = null;
-    DbConnector connector = null;
-    Set<Class<? extends Component>> components = null;
-    Set<Field> relations = new HashSet<Field>();
-
-    public DerbyTablesGenerator(DbConnector connector, Set<Class<? extends Component>> components){
-        this.connector = connector;
-        this.components = components;
-        registry = new ComponentRegistry(connector);
+    public DerbyTablesGenerator(DbConnector connector, Set<Class<? extends Component>> components) {
+        super(connector, components);
     }
 
     public void construct() {

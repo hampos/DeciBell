@@ -35,7 +35,6 @@
  */
 package org.kinkydesign.decibell.core;
 
-import org.kinkydesign.decibell.core.interfaces.JComponentRegistry;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +59,7 @@ import org.kinkydesign.decibell.db.TableColumn;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class ComponentRegistry implements JComponentRegistry {
+public class ComponentRegistry {
 
     private static Map<DbConnector, ComponentRegistry> registries = new HashMap<DbConnector,ComponentRegistry>();
 

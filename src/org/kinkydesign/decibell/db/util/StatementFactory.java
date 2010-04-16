@@ -37,10 +37,17 @@ package org.kinkydesign.decibell.db.util;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Map;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.derby.query.DerbySelectQuery;
 import org.kinkydesign.decibell.db.query.SelectQuery;
 import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.derby.query.DerbyDeleteQuery;
+import org.kinkydesign.decibell.db.derby.query.DerbyInsertQuery;
+import org.kinkydesign.decibell.db.derby.query.DerbyUpdateQuery;
+import org.kinkydesign.decibell.db.query.DeleteQuery;
+import org.kinkydesign.decibell.db.query.InsertQuery;
+import org.kinkydesign.decibell.db.query.UpdateQuery;
 
 /**
  * Factory used to prepare statements related to database queries.
@@ -50,25 +57,67 @@ import org.kinkydesign.decibell.db.Table;
 public class StatementFactory {
 
     public static PreparedStatement createSearch(Table table, DbConnector con) {
-        SelectQuery sq = new DerbySelectQuery(table);
+        SelectQuery query = new DerbySelectQuery(table);
         try {
-            PreparedStatement ps = con.prepareStatement(sq.getSQL());
+            PreparedStatement ps = con.prepareStatement(query.getSQL());
             return ps;
         } catch (SQLException ex) {
-            System.out.println("---> " + sq.getSQL());
-            ex.printStackTrace();
-            throw new RuntimeException("buggy SQL statement: "+sq.getSQL(), ex);
+            System.out.println("buggy SQL statement: "+query.getSQL());
+            throw new RuntimeException(ex);
+        }       
+    }
+
+    public static PreparedStatement createSearchPK(Table table, DbConnector con) {
+        SelectQuery query = new DerbySelectQuery(table);
+        try {
+            PreparedStatement ps = con.prepareStatement(query.getSQL(true));
+            return ps;
+        } catch (SQLException ex) {
+            System.out.println("buggy SQL statement: "+query.getSQL(true));
+            throw new RuntimeException(ex);
         }
-        
     }
 
-    public static PreparedStatement createUpdate(Table table) {
-        return null;
-
+    public static PreparedStatement createUpdate(Table table, DbConnector con) {
+        UpdateQuery query= new DerbyUpdateQuery(table);
+        try {
+            PreparedStatement ps = con.prepareStatement(query.getSQL());
+            return ps;
+        } catch (SQLException ex) {
+            System.out.println("buggy SQL statement: "+query.getSQL());
+            throw new RuntimeException(ex);
+        }
     }
 
-    public static PreparedStatement createRegister(Table table, DbConnector con) {
-        return null;
+    public static Map.Entry<PreparedStatement,InsertQuery> createRegister(Table table, DbConnector con) {
+        InsertQuery query= new DerbyInsertQuery(table);
+        try {
+            PreparedStatement ps = con.prepareStatement(query.getSQL());
+            Map.Entry<PreparedStatement,InsertQuery> entry = new Map.Entry<PreparedStatement, InsertQuery>() {
+                PreparedStatement ps;
+                InsertQuery query;
+
+                public void setKey(PreparedStatement ps){
+                    this.ps = ps;
+                }
+
+                public PreparedStatement getKey() {
+                    return ps;
+                }
+
+                public InsertQuery getValue() {
+                    return query;
+                }
+
+                public InsertQuery setValue(InsertQuery value) {
+                    return this.query = value;
+                }
+            };
+            return entry;
+        } catch (SQLException ex) {
+            System.out.println("buggy SQL statement: "+query.getSQL());
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
@@ -83,6 +132,15 @@ public class StatementFactory {
      *      PreparedStatement for the deletion.
      */
     public static PreparedStatement createDelete(Table table, DbConnector con) {
-        return null;
+        DeleteQuery query= new DerbyDeleteQuery(table);
+        try {
+            PreparedStatement ps = con.prepareStatement(query.getSQL());
+            return ps;
+        } catch (SQLException ex) {
+            System.out.println("buggy SQL statement: "+query.getSQL());
+            throw new RuntimeException(ex);
+        }
     }
+
+
 }

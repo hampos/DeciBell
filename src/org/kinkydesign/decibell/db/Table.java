@@ -70,27 +70,32 @@ public abstract class Table implements JTable {
      */
     public Table(String tableName) {
         this();
-        if (tableName == null) 
+        if (tableName == null) {
             throw new NullPointerException("The name of a table cannot be null");
+        }
         this.tableName = tableName;
     }
 
-    
+    public abstract String getCreationSQL();
+
     public Set<TableColumn> getTableColumns() {
         return listOfColumns;
     }
-    
+
     public void setTableColumns(Set<TableColumn> tableColumns) {
         this.listOfColumns = tableColumns;
     }
 
     public void addColumn(TableColumn column) {
-        if (column == null)
+        if (column == null) {
             throw new NullPointerException("You cannot add a null column");
-        if (column.getColumnName() == null) 
+        }
+        if (column.getColumnName() == null) {
             throw new NullPointerException("You cannot add a column without a name");
-        if (column.getColumnType() == null) 
+        }
+        if (column.getColumnType() == null) {
             throw new NullPointerException("Column " + column.getColumnName() + " must have an SQL type");
+        }
         column.setMasterTable(this);
         this.listOfColumns.add(column);
     }
@@ -101,17 +106,15 @@ public abstract class Table implements JTable {
     }
 
     public void setTableName(String tableName) {
-        if (tableName == null)
+        if (tableName == null) {
             throw new NullPointerException("The name of a table cannot be null");
+        }
         this.tableName = tableName;
     }
 
     public String getTableName() {
         return this.tableName;
     }
-
-    public abstract String getCreationSQL();
-
 
     public Set<TableColumn> getPrimaryKeyColumns() {
         Set<TableColumn> primaryKeyColumns = new LinkedHashSet<TableColumn>();
@@ -123,9 +126,9 @@ public abstract class Table implements JTable {
         return primaryKeyColumns;
     }
 
-    public Map<TableColumn, TableColumn> referenceRelation(){
+    public Map<TableColumn, TableColumn> referenceRelation() {
         Map<TableColumn, TableColumn> map = new HashMap<TableColumn, TableColumn>();
-        for (TableColumn masterColumn : getForeignKeyColumns()){
+        for (TableColumn masterColumn : getForeignKeyColumns()) {
             map.put(masterColumn, masterColumn.getReferenceColumn());
         }
         return map;
@@ -141,55 +144,40 @@ public abstract class Table implements JTable {
         return foreignKeyColumns;
     }
 
-    public Set<Set<TableColumn>> getForeignColumnsByGroup(){
+    public Set<Set<TableColumn>> getForeignColumnsByGroup() {
         Set<Set<TableColumn>> groupedColumns = new HashSet<Set<TableColumn>>();
         Set<TableColumn> foreignColumns = getForeignKeyColumns();
-        System.out.println(foreignColumns.isEmpty());
-     //   Set<TableColumn> group = new LinkedHashSet<TableColumn>();
-        
-        while(!foreignColumns.isEmpty()){
+
+        while (!foreignColumns.isEmpty()) {
             Iterator<TableColumn> it = foreignColumns.iterator();
             TableColumn col = it.next();
             boolean foundGroup = false;
-            for(Set<TableColumn> group : groupedColumns){
-                for(TableColumn c : group){
-                    if(c.getReferenceTable().equals(col.getReferenceTable()) && c.getField().equals(col.getField()) ){
+            for (Set<TableColumn> group : groupedColumns) {
+                for (TableColumn c : group) {
+                    if (c.getReferenceTable().equals(col.getReferenceTable()) && c.getField().equals(col.getField())) {
                         foundGroup = true;
                     }
                 }
-                if(foundGroup){
+                if (foundGroup) {
                     group.add(col);
                     it.remove();
                     break;
                 }
             }
-            if(!foundGroup){
+            if (!foundGroup) {
                 Set<TableColumn> group = new LinkedHashSet<TableColumn>();
                 group.add(col);
                 groupedColumns.add(group);
                 it.remove();
             }
-//            if(!group.isEmpty()){
-//                for(TableColumn c : group){
-//                    if(c.getReferenceTable().equals(col.getReferenceTable())/*&& c.getField().equals(col.getField())*/){
-//                        group.add(col);
-//                        it.remove();
-//                    }
-//                }
-//                group = new LinkedHashSet<TableColumn>();
-//            }else{
-//                group.add(col);
-//                groupedColumns.add(group);
-//                it.remove();
-//            }
         }
         return groupedColumns;
     }
 
-    public Set<Table> getReferencedTables(){
+    public Set<Table> getReferencedTables() {
         Set<Table> remoteTables = new HashSet<Table>();
 
-        for (TableColumn remoteTableColumn : getForeignKeyColumns()){
+        for (TableColumn remoteTableColumn : getForeignKeyColumns()) {
             remoteTables.add(remoteTableColumn.getReferenceTable());
         }
         return remoteTables;
@@ -205,8 +193,10 @@ public abstract class Table implements JTable {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null || !obj.getClass().equals(this.getClass())) return false;
-        Table other = (Table ) obj;
+        if (obj == null || !obj.getClass().equals(this.getClass())) {
+            return false;
+        }
+        Table other = (Table) obj;
         return getTableName().equals(other.getTableName());
     }
 
@@ -216,9 +206,4 @@ public abstract class Table implements JTable {
         hash = 83 * hash + (this.tableName != null ? this.tableName.hashCode() : 0);
         return hash;
     }
-
-
-
-
-
 }

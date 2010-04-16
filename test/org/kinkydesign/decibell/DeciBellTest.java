@@ -9,6 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 
 /**
  *
@@ -39,22 +40,35 @@ public class DeciBellTest {
      * Test of start method, of class DeciBell.
      */
     @Test
-    public void testStart() {
+    public void testStart() throws DuplicateKeyException {
         System.out.println("start");
-        DeciBell instance = new DeciBell();
+        DeciBell db = new DeciBell();
 
-        instance.setDriverHome("/home/chung/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
-        instance.setDbName("database/asda");
+        db.setDriverHome("/Applications/NetBeans/sges-v3/javadb");
+        db.setDbName("chamo2");
 
-        instance.attach(SubSubUser.class);
-        instance.attach(UserGroup.class);
-        instance.attach(SubUser.class);
-        instance.attach(User.class);
+        db.attach(SubSubUser.class);
+        db.attach(UserGroup.class);
+        db.attach(SubUser.class);
+        db.attach(User.class);
 
         
-        instance.start();
-        //instance.reset();
-      //  instance.stop();
+        db.start();
+
+        UserGroup group = new UserGroup(1,"admin");
+        User user = new User();
+        user.setId(5);
+        user.setUserName("hampos");
+        user.setAge(25);
+        user.setGroup(group);
+
+        group.register(db);
+        user.register(db);
+        
+
+        db.reset();
+
+        db.stop();
 
 
     }
