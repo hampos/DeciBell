@@ -49,8 +49,8 @@ import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.derby.util.Infinity;
 import org.kinkydesign.decibell.db.interfaces.JSQLQuery;
 import org.kinkydesign.decibell.db.query.Join.JOIN_TYPE;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.TableColumn;
 
 /**
  *
@@ -65,8 +65,8 @@ public abstract class SelectQuery implements JSQLQuery {
     protected ArrayList<Join> joins = new ArrayList<Join>();
     private Set<TableColumn> columnsAdded = new HashSet<TableColumn>();
 
-    public void setJoinType(JOIN_TYPE joinType){
-        for (Join j : joins){
+    public void setJoinType(JOIN_TYPE joinType) {
+        for (Join j : joins) {
             j.setJoinType(joinType);
         }
     }
@@ -122,14 +122,11 @@ public abstract class SelectQuery implements JSQLQuery {
                         || tc.getColumnType().equals(SQLType.DOUBLE)
                         || tc.getColumnType().equals(SQLType.INTEGER)
                         || tc.getColumnType().equals(SQLType.REAL)
-                        || tc.getColumnType().equals(SQLType.SMALLINT)
-                        ){
+                        || tc.getColumnType().equals(SQLType.SMALLINT)) {
                     Proposition p1 = null;
-                    try {
-                        p1 = (Proposition) p.clone();
-                    } catch (CloneNotSupportedException ex) {
-                        throw new RuntimeException(ex);
-                    }
+
+                    p1 = (Proposition) p.clone();
+
 
                     p.setQualifier(Qualifier.GREATER_EQUAL);
                     p1.setQualifier(Qualifier.LESS_EQUAL);

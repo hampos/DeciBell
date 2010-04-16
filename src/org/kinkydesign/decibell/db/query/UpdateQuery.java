@@ -42,8 +42,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.db.interfaces.JSQLQuery;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.TableColumn;
 
 /**
  *

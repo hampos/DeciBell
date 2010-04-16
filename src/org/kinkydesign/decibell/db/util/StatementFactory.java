@@ -37,14 +37,10 @@ package org.kinkydesign.decibell.db.util;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.derby.query.DerbySelectQuery;
 import org.kinkydesign.decibell.db.query.SelectQuery;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.Table;
 
 /**
  * Factory used to prepare statements related to database queries.

@@ -33,8 +33,9 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.db.table;
+package org.kinkydesign.decibell.db;
 
+import java.lang.reflect.Field;
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.Component;
@@ -53,9 +54,9 @@ final public class TableColumn implements Cloneable {
     private String defaultValue = null;
     private boolean isNotNull = false;
     private boolean isUnique = false;
-    private String[] domain;
-    private String low;
-    private String high;
+    private String[] domain = null;
+    private String low = null;
+    private String high = null;
     private boolean isConstrained = false;
     private boolean hasLow = false;
     private boolean hasHigh = false;
@@ -67,22 +68,12 @@ final public class TableColumn implements Cloneable {
     private Class<? extends Component> referencesClass = null;
     private OnModification onUpdate = null;
     private OnModification onDelete = null;
-    private Table masterTable;
+    private Table masterTable = null;
+    private Field field = null;
 
     public TableColumn() {
         super();
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        TableColumn other = (TableColumn) obj;
-        if (other == null){
-            return false;
-        }
-        return other.getFullName().equals(getFullName());
-    }
-
-
 
     public TableColumn(String columnName) {
         setColumnName(columnName);
@@ -96,10 +87,11 @@ final public class TableColumn implements Cloneable {
         this.masterTable = masterTable;
     }
 
-
-    public String getFullName(){
-        if (masterTable == null) return getColumnName();
-        return masterTable.getTableName()+"."+getColumnName();
+    public String getFullName() {
+        if (masterTable == null) {
+            return getColumnName();
+        }
+        return masterTable.getTableName() + "." + getColumnName();
     }
 
     public String getColumnName() {
@@ -136,21 +128,19 @@ final public class TableColumn implements Cloneable {
 
     }
 
-
     public String getReferenceTableName() {
         return referencesTable.getTableName();
     }
 
-    public Table getReferenceTable(){
+    public Table getReferenceTable() {
         return referencesTable;
     }
-
 
     public String getReferenceColumnName() {
         return referencesColumn.getColumnName();
     }
 
-    public TableColumn getReferenceColumn(){
+    public TableColumn getReferenceColumn() {
         return referencesColumn;
     }
 
@@ -197,7 +187,6 @@ final public class TableColumn implements Cloneable {
         this.hasHigh = true;
         this.high = high;
     }
-    
 
     public void setUnique(boolean isUnique) {
         this.isUnique = isUnique;
@@ -255,6 +244,14 @@ final public class TableColumn implements Cloneable {
         this.referencesClass = referencesClass;
     }
 
+    public Field getField() {
+        return field;
+    }
+
+    public void setField(Field field) {
+        this.field = field;
+    }
+
     @Override
     public TableColumn clone() {
         try {
@@ -262,5 +259,22 @@ final public class TableColumn implements Cloneable {
         } catch (CloneNotSupportedException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !obj.getClass().equals(this.getClass())) {
+            return false;
+        }
+        TableColumn other = (TableColumn) obj;
+        return other.getFullName().equals(getFullName());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 19 * hash + (this.columnName != null ? this.columnName.hashCode() : 0);
+        hash = 19 * hash + (this.masterTable != null ? this.masterTable.hashCode() : 0);
+        return hash;
     }
 }

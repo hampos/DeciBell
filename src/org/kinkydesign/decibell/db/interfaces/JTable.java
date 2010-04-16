@@ -36,8 +36,8 @@
 package org.kinkydesign.decibell.db.interfaces;
 
 import java.util.Set;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.TableColumn;
 
 /**
  *

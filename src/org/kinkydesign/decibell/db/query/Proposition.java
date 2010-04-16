@@ -35,10 +35,11 @@
  */
 package org.kinkydesign.decibell.db.query;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kinkydesign.decibell.collections.Qualifier;
-import org.kinkydesign.decibell.db.interfaces.JProposition;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.TableColumn;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
@@ -51,7 +52,7 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
  * @author Charalampos Chomenides
  */
 public class Proposition
-        implements JProposition, Cloneable {
+        implements Cloneable {
 
     private TableColumn tableColumn;
     private Qualifier qualifier;
@@ -69,8 +70,12 @@ public class Proposition
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    protected Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 

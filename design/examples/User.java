@@ -4,6 +4,7 @@ package examples;
 Import org.kinkyDesign.decibell classes...
  */
 import java.util.ArrayList;
+import java.util.Set;
 import org.kinkydesign.decibell.annotations.*;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.Component;
@@ -54,10 +55,16 @@ public class User extends Component<User> {
     an exception is thrown; e.g. IllegalArgumentException or sth like that).
      */
     @ForeignKey
-    public UserGroup group;
+    public UserGroup group1;
+
+    @ForeignKey
+    public UserGroup group2;
 
     @ForeignKey
     public ArrayList<UserGroup> groups;
+
+    @ForeignKey
+    public Set<UserGroup> groups2;
 
     /*
     Establish a K-to-N correspondence between a user and many resources, So this will

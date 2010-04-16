@@ -33,11 +33,12 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.db.table;
+package org.kinkydesign.decibell.db;
 
 import java.util.HashMap;
 import org.kinkydesign.decibell.db.interfaces.JTable;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -51,8 +52,6 @@ import java.util.Set;
  * @author Charalampos Chomenides
  */
 public abstract class Table implements JTable {
-
-
 
     private Set<TableColumn> listOfColumns = new LinkedHashSet<TableColumn>();
     private String tableName = null;
@@ -102,6 +101,8 @@ public abstract class Table implements JTable {
     }
 
     public void setTableName(String tableName) {
+        if (tableName == null)
+            throw new NullPointerException("The name of a table cannot be null");
         this.tableName = tableName;
     }
 
@@ -140,6 +141,51 @@ public abstract class Table implements JTable {
         return foreignKeyColumns;
     }
 
+    public Set<Set<TableColumn>> getForeignColumnsByGroup(){
+        Set<Set<TableColumn>> groupedColumns = new HashSet<Set<TableColumn>>();
+        Set<TableColumn> foreignColumns = getForeignKeyColumns();
+        System.out.println(foreignColumns.isEmpty());
+     //   Set<TableColumn> group = new LinkedHashSet<TableColumn>();
+        
+        while(!foreignColumns.isEmpty()){
+            Iterator<TableColumn> it = foreignColumns.iterator();
+            TableColumn col = it.next();
+            boolean foundGroup = false;
+            for(Set<TableColumn> group : groupedColumns){
+                for(TableColumn c : group){
+                    if(c.getReferenceTable().equals(col.getReferenceTable()) && c.getField().equals(col.getField()) ){
+                        foundGroup = true;
+                    }
+                }
+                if(foundGroup){
+                    group.add(col);
+                    it.remove();
+                    break;
+                }
+            }
+            if(!foundGroup){
+                Set<TableColumn> group = new LinkedHashSet<TableColumn>();
+                group.add(col);
+                groupedColumns.add(group);
+                it.remove();
+            }
+//            if(!group.isEmpty()){
+//                for(TableColumn c : group){
+//                    if(c.getReferenceTable().equals(col.getReferenceTable())/*&& c.getField().equals(col.getField())*/){
+//                        group.add(col);
+//                        it.remove();
+//                    }
+//                }
+//                group = new LinkedHashSet<TableColumn>();
+//            }else{
+//                group.add(col);
+//                groupedColumns.add(group);
+//                it.remove();
+//            }
+        }
+        return groupedColumns;
+    }
+
     public Set<Table> getReferencedTables(){
         Set<Table> remoteTables = new HashSet<Table>();
 
@@ -159,16 +205,18 @@ public abstract class Table implements JTable {
 
     @Override
     public boolean equals(Object obj) {
+        if(obj == null || !obj.getClass().equals(this.getClass())) return false;
         Table other = (Table ) obj;
         return getTableName().equals(other.getTableName());
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 59 * hash + (this.tableName != null ? this.tableName.hashCode() : 0);
+        int hash = 3;
+        hash = 83 * hash + (this.tableName != null ? this.tableName.hashCode() : 0);
         return hash;
     }
+
 
 
 

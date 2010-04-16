@@ -35,12 +35,16 @@
  */
 package org.kinkydesign.decibell;
 
+import examples.SubUser;
+import examples.User;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.StatementPool;
+import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.db.derby.DerbyConnector;
 import org.kinkydesign.decibell.db.derby.DerbyTablesGenerator;
@@ -85,6 +89,13 @@ public class DeciBell implements JDeciBell {
         tables.construct();
 
         StatementPool pool = new StatementPool(connector,10);
+
+        for(Set<TableColumn> group : ComponentRegistry.getRegistry(connector).get(User.class).getForeignColumnsByGroup()){
+            System.out.println("--------GROUP "+group.toString());
+            for(TableColumn c : group){
+                System.out.println(c.getFullName());
+            }
+        }
     }
 
     public void restart() {

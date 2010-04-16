@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.kinkydesign.decibell.core.ComponentRegistry;
-import org.kinkydesign.decibell.db.table.Table;
 import org.kinkydesign.decibell.db.util.StatementFactory;
 
 /**
@@ -70,7 +69,7 @@ public class StatementPool {
             for (int i = 0; i < poolSize; i++) {
                 //register.get(t).add(StatementFactory.createRegister(t, con));
                 //register.get(t).add(StatementFactory.createDelete(t, con));
-                register.get(t).add(StatementFactory.createSearch(t, con));
+              //  register.get(t).add(StatementFactory.createSearch(t, con));
            }
         }
         pools.put(con, this);

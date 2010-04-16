@@ -42,8 +42,8 @@ import java.util.Set;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.TableColumn;
 
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
@@ -74,7 +74,7 @@ public final class DerbyTable extends Table {
         Iterator<TableColumn> it = super.getTableColumns().iterator();
         while (it.hasNext()) {
             TableColumn column = it.next();
-            SQL = SQL + column.getColumnName() + SPACE + column.getColumnType().toString()+SPACE;
+            SQL = SQL + column.getColumnName() + SPACE + column.getColumnType().toString() + SPACE;
 
             if (column.isUnique()) {
                 SQL += UNIQUE + SPACE;
@@ -95,26 +95,59 @@ public final class DerbyTable extends Table {
             }
             SQL += COMMA + NEWLINE;
         }
-        if (!getForeignKeyColumns().isEmpty()) {
-            Set<TableColumn> foreignColumns = new LinkedHashSet<TableColumn>(getForeignKeyColumns());
-            while (!foreignColumns.isEmpty()) {
-                it = foreignColumns.iterator();
-                TableColumn fk = it.next();
-                it.remove();
-                String foreignKey = Fk + SPACE + LEFT_PAR + fk.getColumnName();
-                String references = REFERENCES + SPACE + fk.getReferenceTableName() + LEFT_PAR + fk.getReferenceColumnName() + SPACE;
-                String options = ON + SPACE + DELETE + SPACE + fk.getOnDelete() + SPACE + ON + SPACE + UPDATE + SPACE + fk.getOnUpdate();
+//        if (!getForeignKeyColumns().isEmpty()) {
+//            Set<TableColumn> foreignColumns = new LinkedHashSet<TableColumn>(getForeignKeyColumns());
+//            while (!foreignColumns.isEmpty()) {
+//                it = foreignColumns.iterator();
+//                TableColumn fk = it.next();
+//                it.remove();
+//                String foreignKey = Fk + SPACE + LEFT_PAR + fk.getColumnName();
+//                String references = REFERENCES + SPACE + fk.getReferenceTableName() + LEFT_PAR + fk.getReferenceColumnName() + SPACE;
+//                String options = ON + SPACE + DELETE + SPACE + fk.getOnDelete() + SPACE + ON + SPACE + UPDATE + SPACE + fk.getOnUpdate();
+//                while (it.hasNext()) {
+//                    TableColumn c = it.next();
+//                    if (/*fk.getReferenceTable().equals(c.getReferenceTable()) &&*/fk.getField().equals(c.getField())) {
+//                        foreignKey += COMMA + c.getColumnName();
+//                        references += COMMA + c.getReferenceColumnName();
+//                        it.remove();
+//                    }
+//                }
+//                foreignKey += RIGHT_PAR + SPACE;
+//                references += RIGHT_PAR + SPACE;
+//                SQL += foreignKey + references + options + COMMA + NEWLINE;
+//            }
+//        }
+        Set<Set<TableColumn>> foreignGroups = getForeignColumnsByGroup();
+        if (!foreignGroups.isEmpty()) {
+            for (Set<TableColumn> group : foreignGroups) {
+                String foreignKey = "";
+                String references = "";
+                String options = "";
+                it = group.iterator();
                 while (it.hasNext()) {
-                    TableColumn c = it.next();
-                    if (fk.getReferenceTableName().equals(c.getReferenceTableName())) {
-                        foreignKey += COMMA + c.getColumnName();
-                        references += COMMA + c.getReferenceColumnName();
-                        it.remove();
+                    TableColumn col = it.next();
+                    if (foreignKey.isEmpty()) {
+                        foreignKey = Fk + SPACE + LEFT_PAR;
+                    }
+                    if (references.isEmpty()) {
+                        references = REFERENCES + SPACE + col.getReferenceTableName() + LEFT_PAR;
+                    }
+                    if (options.isEmpty()) {
+                        options = ON + SPACE + DELETE + SPACE + col.getOnDelete() + SPACE + ON + SPACE + UPDATE + SPACE + col.getOnUpdate();
+                    }
+                    foreignKey += col.getColumnName();
+                    references += col.getReferenceColumnName();
+                    if (it.hasNext()) {
+                        foreignKey += COMMA;
+                        references += COMMA;
                     }
                 }
                 foreignKey += RIGHT_PAR + SPACE;
                 references += RIGHT_PAR + SPACE;
                 SQL += foreignKey + references + options + COMMA + NEWLINE;
+                foreignKey = "";
+                references = "";
+                options = "";
             }
         }
         SQL += Pk + SPACE + LEFT_PAR;
@@ -146,7 +179,7 @@ public final class DerbyTable extends Table {
      * @param col the specified TableColumn
      * @return SQL String describing Constraints
      */
-    private String getConstraint(TableColumn col){
+    private String getConstraint(TableColumn col) {
         String constraint = "";
         String lowStr = "";
         String highStr = "";
@@ -184,7 +217,7 @@ public final class DerbyTable extends Table {
             Iterator<String> it = tempSet.iterator();
             while (it.hasNext()) {
                 if (constraint.isEmpty()) {
-                    constraint = SPACE + CONSTRAINT + SPACE + col.getColumnName() + UNDERSCORE + CONSTRAINT + SPACE + CHECK + SPACE+ LEFT_PAR;
+                    constraint = SPACE + CONSTRAINT + SPACE + col.getColumnName() + UNDERSCORE + CONSTRAINT + SPACE + CHECK + SPACE + LEFT_PAR;
                     constraint += it.next();
                 } else {
                     constraint += SPACE + LogicalOperator.AND + SPACE + it.next();
@@ -196,5 +229,4 @@ public final class DerbyTable extends Table {
         }
         return constraint;
     }
-
 }

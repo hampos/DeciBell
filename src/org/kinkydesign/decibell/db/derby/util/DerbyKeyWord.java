@@ -65,6 +65,7 @@ public class DerbyKeyWord {
             COMMA = ",",
             DOT = ".",
             STAR = "*",
+            DASH = "_",
             DOT_REG = "\\.",
             NEWLINE = "\n",
             DEFAULT = "DEFAULT",

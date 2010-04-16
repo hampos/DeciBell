@@ -42,7 +42,7 @@ import java.util.Map.Entry;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.db.query.Join;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.TableColumn;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 /**
  * @author Pantelis Sopasakis

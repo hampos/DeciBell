@@ -42,6 +42,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import org.kinkydesign.decibell.annotations.Constraint;
 import org.kinkydesign.decibell.annotations.Entry;
@@ -51,8 +52,6 @@ import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.TypeMap;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
 import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;
 
 /**
@@ -257,12 +256,20 @@ public abstract class TablesGenerator {
 //        }
 //    }
 
-    public boolean isComponent(Class c) {
+    protected boolean isComponent(Class c) {
         return TypeMap.isSubClass(c, Component.class);
     }
 
-    public boolean isCollection(Class c) {
+    protected boolean isCollection(Class c) {
         return TypeMap.isSubClass(c, Collection.class);
+    }
+
+    protected boolean isList(Class c){
+        return TypeMap.isSubClass(c, List.class);
+    }
+
+    protected boolean isSet(Class c){
+        return TypeMap.isSubClass(c, Set.class);
     }
 
 //    private Set<Field> getPrimaryKeys(Class c) {

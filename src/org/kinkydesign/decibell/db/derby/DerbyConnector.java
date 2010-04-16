@@ -45,7 +45,7 @@ import java.util.Properties;
 import org.apache.derby.jdbc.ClientDataSource;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.DbConnector;
-import org.kinkydesign.decibell.db.table.Table;
+import org.kinkydesign.decibell.db.Table;
 
 /**
  *

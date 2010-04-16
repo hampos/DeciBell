@@ -46,8 +46,8 @@ import java.util.Set;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.db.DbConnector;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.TableColumn;
 
 
 /**

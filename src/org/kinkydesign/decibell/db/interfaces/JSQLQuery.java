@@ -35,9 +35,7 @@
  */
 package org.kinkydesign.decibell.db.interfaces;
 
-import java.util.Collection;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.Table;
 
 /**
  *

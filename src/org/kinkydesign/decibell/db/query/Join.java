@@ -37,8 +37,8 @@ package org.kinkydesign.decibell.db.query;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.TableColumn;
 
 /**
  * @author Pantelis Sopasakis

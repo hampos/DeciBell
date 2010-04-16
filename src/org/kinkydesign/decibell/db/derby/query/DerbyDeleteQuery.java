@@ -37,18 +37,16 @@
  */
 package org.kinkydesign.decibell.db.derby.query;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.OnModification;
-import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.derby.DerbyTable;
 import org.kinkydesign.decibell.db.query.DeleteQuery;
 import org.kinkydesign.decibell.db.query.Proposition;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
-import org.kinkydesign.decibell.db.table.Table;
-import org.kinkydesign.decibell.db.table.TableColumn;
+import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.TableColumn;
 
 /**
  *
