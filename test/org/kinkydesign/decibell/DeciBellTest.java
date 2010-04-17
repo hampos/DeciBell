@@ -63,6 +63,7 @@ public class DeciBellTest {
         user.setGroup(group);
 
         group.register(db);
+        System.out.println("Group passed");
         user.register(db);
         
 

@@ -5,10 +5,12 @@
 
 package examples;
 
+import java.io.Serializable;
+
 /**
  *
  * @author hampos
  */
-public class Resource {
+public class Resource implements Serializable{
 
 }

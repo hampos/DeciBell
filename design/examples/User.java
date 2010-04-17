@@ -56,6 +56,9 @@ public class User extends Component<User> {
      */
     @ForeignKey
     private UserGroup group;
+
+    @Entry
+    private Resource resource = new Resource();
 //
 //    /*
 //    Establish a K-to-N correspondence between a user and many resources, So this will

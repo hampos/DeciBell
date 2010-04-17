@@ -37,7 +37,7 @@ package org.kinkydesign.decibell.db.util;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Map;
+import java.util.Map.Entry;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.derby.query.DerbySelectQuery;
 import org.kinkydesign.decibell.db.query.SelectQuery;
@@ -89,31 +89,12 @@ public class StatementFactory {
         }
     }
 
-    public static Map.Entry<PreparedStatement,InsertQuery> createRegister(Table table, DbConnector con) {
+    public static Entry<PreparedStatement,InsertQuery> createRegister(Table table, DbConnector con) {
         InsertQuery query= new DerbyInsertQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL());
-            Map.Entry<PreparedStatement,InsertQuery> entry = new Map.Entry<PreparedStatement, InsertQuery>() {
-                PreparedStatement ps;
-                InsertQuery query;
-
-                public void setKey(PreparedStatement ps){
-                    this.ps = ps;
-                }
-
-                public PreparedStatement getKey() {
-                    return ps;
-                }
-
-                public InsertQuery getValue() {
-                    return query;
-                }
-
-                public InsertQuery setValue(InsertQuery value) {
-                    return this.query = value;
-                }
-            };
-            return entry;
+            Pair pair = new Pair(ps, query);
+            return pair;
         } catch (SQLException ex) {
             System.out.println("buggy SQL statement: "+query.getSQL());
             throw new RuntimeException(ex);
@@ -141,6 +122,4 @@ public class StatementFactory {
             throw new RuntimeException(ex);
         }
     }
-
-
 }

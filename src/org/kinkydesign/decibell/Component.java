@@ -35,9 +35,14 @@
  */
 package org.kinkydesign.decibell;
 
+import examples.Pool;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -79,27 +84,40 @@ public abstract class Component<T extends Component> implements JComponent<T> {
         for (TableColumn col : table.getTableColumns()) {
             Field field = col.getField();
             field.setAccessible(true);
-            try {
-        //        field.get(this);
-        //        ps.setObject(i, (Object)field.get(this), col.getColumnType().getType());
-                switch(col.getColumnType()){
-                    case INTEGER:
-                        ps.setInt(i, (Integer)field.get(this));
-                        break;
-                    case VARCHAR:
-                        ps.setString(i, (String)field.get(this));
-                        break;
+            {
+                ObjectOutputStream oout = null;
+                try {
+                    if (col.isForeignKey()) {
+                        TableColumn refcol = col.getReferenceColumn();
+                        Field f = col.getReferenceColumn().getField();
+                        ps.setObject(i, (Object) f.get(field.get(this)), col.getColumnType().getType());
+                    } else if (!col.getColumnType().equals(SQLType.BLOB)) {
+                        ps.setObject(i, (Object) field.get(this), col.getColumnType().getType());
+                    } else {
+                        Blob blob = db.getDbConnector().createBlob();
+                        
+                        Object obj = (Object) field.get(this);
+                        Pool somepool = new Pool(obj);
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        oout = new ObjectOutputStream(baos);
+                        oout.writeObject((Object)somepool);
+                        oout.close();
+                        ps.setBytes(i, baos.toByteArray());
+                    }
+                    i++;
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                } catch (IllegalArgumentException ex) {
+                    throw new RuntimeException(ex);
+                } catch (IllegalAccessException ex) {
+                    throw new RuntimeException(ex);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                } catch (NullPointerException ex) {
+                    throw new RuntimeException(ex);
                 }
-                i++;
-            } catch (IllegalArgumentException ex) {
-                throw new RuntimeException(ex);
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            } catch (NullPointerException ex){
-                ex.printStackTrace();
-                throw new RuntimeException(ex);
+
             }
         }
     }

@@ -59,7 +59,7 @@ public class UserTest {
     public void testClass() throws NoUniqueFieldException{
         User user = new User();
         ArrayList<User> list = user.search();
-        System.out.println(list.get(0).id);
+    //    System.out.println(list.get(0).id);
         user.delete();
         DeciBell db = new DeciBell();
         db.start();
