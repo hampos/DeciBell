@@ -1,11 +1,13 @@
 package examples;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 
-public class Pool implements Serializable{
-    Object obj;
+public class Pool {
+    ArrayList<Integer> list = new ArrayList<Integer>();
 
-    public Pool(Object obj){
-        this.obj = obj;
+    public Pool(){
+        list.add(1);
+        list.add(3);
+        list.add(13);
     }
 }

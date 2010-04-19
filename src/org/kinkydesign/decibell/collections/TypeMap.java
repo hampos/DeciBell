@@ -94,7 +94,7 @@ public class TypeMap {
      *      was found.
      */
     public static SQLType getSQLType(Class c){
-        return (typeMap.get(c)!=null)?typeMap.get(c):SQLType.BLOB;
+        return (typeMap.get(c)!=null)?typeMap.get(c):SQLType.LONG_VARCHAR;
     }
 
     /**

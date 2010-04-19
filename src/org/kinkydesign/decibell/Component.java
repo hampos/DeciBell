@@ -35,6 +35,7 @@
  */
 package org.kinkydesign.decibell;
 
+import com.thoughtworks.xstream.XStream;
 import examples.Pool;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -80,46 +81,40 @@ public abstract class Component<T extends Component> implements JComponent<T> {
         PreparedStatement ps = entry.getKey();
         InsertQuery query = entry.getValue();
 
-        int i = 1;
-        for (TableColumn col : table.getTableColumns()) {
-            Field field = col.getField();
-            field.setAccessible(true);
-            {
-                ObjectOutputStream oout = null;
-                try {
-                    if (col.isForeignKey()) {
-                        TableColumn refcol = col.getReferenceColumn();
-                        Field f = col.getReferenceColumn().getField();
-                        ps.setObject(i, (Object) f.get(field.get(this)), col.getColumnType().getType());
-                    } else if (!col.getColumnType().equals(SQLType.BLOB)) {
-                        ps.setObject(i, (Object) field.get(this), col.getColumnType().getType());
-                    } else {
-                        Blob blob = db.getDbConnector().createBlob();
-                        
-                        Object obj = (Object) field.get(this);
-                        Pool somepool = new Pool(obj);
+        try {
+            int i = 1;
+            for (TableColumn col : table.getTableColumns()) {
+                Field field = col.getField();
+                field.setAccessible(true);
 
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        oout = new ObjectOutputStream(baos);
-                        oout.writeObject((Object)somepool);
-                        oout.close();
-                        ps.setBytes(i, baos.toByteArray());
-                    }
-                    i++;
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IllegalArgumentException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IllegalAccessException ex) {
-                    throw new RuntimeException(ex);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                } catch (NullPointerException ex) {
-                    throw new RuntimeException(ex);
+
+                if (col.isForeignKey()) {
+                    Field f = col.getReferenceColumn().getField();
+                    ps.setObject(i, (Object) f.get(field.get(this)), col.getColumnType().getType());
+                } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                    ps.setObject(i, (Object) field.get(this), col.getColumnType().getType());
+                } else {
+                    XStream xstream = new XStream();
+                    String xml = xstream.toXML(field.get(this));
+                    System.out.println(xml);
+                    ps.setString(i, xml);
                 }
-
+                i++;
             }
+            ps.execute();
+            pool.recycleRegister(entry, table);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        } catch (NullPointerException ex) {
+            throw new RuntimeException(ex);
         }
+
+
+
     }
 
     public ArrayList<T> search() {

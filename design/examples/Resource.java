@@ -11,6 +11,14 @@ import java.io.Serializable;
  *
  * @author hampos
  */
-public class Resource implements Serializable{
+public class Resource {
+        private int id;
+        private String whatever;
 
+        private Pool pool = new Pool();
+
+        public Resource(int id, String whatever){
+            this.id = id;
+            this.whatever = whatever;
+        }
 }

@@ -45,7 +45,7 @@ public class DeciBellTest {
         DeciBell db = new DeciBell();
 
         db.setDriverHome("/Applications/NetBeans/sges-v3/javadb");
-        db.setDbName("chamo2");
+        db.setDbName("chamo3");
 
         db.attach(SubSubUser.class);
         db.attach(UserGroup.class);

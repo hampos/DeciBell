@@ -58,7 +58,7 @@ public class User extends Component<User> {
     private UserGroup group;
 
     @Entry
-    private Resource resource = new Resource();
+    private Resource resource = new Resource(5,"smthng");
 //
 //    /*
 //    Establish a K-to-N correspondence between a user and many resources, So this will

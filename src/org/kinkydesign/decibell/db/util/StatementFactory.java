@@ -92,6 +92,7 @@ public class StatementFactory {
     public static Entry<PreparedStatement,InsertQuery> createRegister(Table table, DbConnector con) {
         InsertQuery query= new DerbyInsertQuery(table);
         try {
+            System.out.println(query.getSQL());
             PreparedStatement ps = con.prepareStatement(query.getSQL());
             Pair pair = new Pair(ps, query);
             return pair;
