@@ -40,8 +40,11 @@
 package org.kinkydesign.decibell.db.query;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import org.kinkydesign.decibell.collections.Qualifier;
-import org.kinkydesign.decibell.db.interfaces.JSQLQuery;
+import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
 
@@ -50,37 +53,269 @@ import org.kinkydesign.decibell.db.TableColumn;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public abstract class DeleteQuery implements JSQLQuery {
+public abstract class DeleteQuery implements SQLQuery {
 
     private Table table;
     protected ArrayList<Proposition> propositions = new ArrayList<Proposition>();
-    
 
-    public DeleteQuery(Table table){
-        this.table = table;
-        initPropositions();
+    public DeleteQuery(){
+
     }
 
-    private void initPropositions(){
-        for (TableColumn tc : table.getTableColumns()){
+    public DeleteQuery(Table table){
+        setTable(table);
+    }
+
+    private void initPropositions(Collection<? extends TableColumn> columns){
+        for (TableColumn tc : columns){
             Proposition p = new Proposition();
             p.setTableColumn(tc);
-            p.setUnknown();
-            p.setQualifier(Qualifier.EQUAL);
-            propositions.add(p);
+            if (tc.getColumnType().equals(SQLType.VARCHAR)
+                    || tc.getColumnType().equals(SQLType.CHAR)) {
+                p.setQualifier(Qualifier.LIKE);
+                p.setUnknown();
+                propositions.add(p);
+            } else if (tc.getColumnType().equals(SQLType.BIGINT)
+                    || tc.getColumnType().equals(SQLType.DECIMAL)
+                    || tc.getColumnType().equals(SQLType.DOUBLE)
+                    || tc.getColumnType().equals(SQLType.INTEGER)
+                    || tc.getColumnType().equals(SQLType.REAL)
+                    || tc.getColumnType().equals(SQLType.SMALLINT)) {
+                Proposition p1 = (Proposition) p.clone();
+                p.setQualifier(Qualifier.GREATER_EQUAL);
+                p1.setQualifier(Qualifier.LESS_EQUAL);
+                p.setUnknown();
+                p1.setUnknown();
+                propositions.add(p);
+                propositions.add(p1);
+            }
         }
     }
 
     public abstract String getSQL(boolean usePKonly);
 
-
     public void setTable(Table table) {
         this.table = table;
+        initPropositions(table.getTableColumns());
     }
 
     public Table getTable() {
         return table;
     }
+
+    public Collection<? extends TableColumn> getColumns() {
+        Set<TableColumn> columns = new HashSet<TableColumn>();
+        for(Proposition p : propositions){
+            columns.add(p.getTableColumn());
+        }
+        return columns;
+    }
+
+    public void setColumns(Collection<? extends TableColumn> tableColumns) {
+        initPropositions(tableColumns);
+    }
+
+    public ArrayList<Proposition> getPropositions() {
+        return propositions;
+    }
+
+    public void setPropositions(ArrayList<Proposition> propositions) {
+        this.propositions = propositions;
+    }
+
+    public boolean addProposition(Proposition proposition) {
+        return propositions.add(proposition);
+    }
+
+    public Proposition removeProposition(Proposition proposition) {
+        return removeProposition(propositions.indexOf(proposition));
+    }
+
+    public Proposition removeProposition(int position) {
+        return propositions.remove(position);
+    }
+
+    public Proposition replaceProposition(int position, Proposition proposition) {
+        Proposition p = propositions.get(position);
+        propositions.add(position, proposition);
+        return p;
+    }
+
+    public void setString(TableColumn column, String stringValue) {
+        if (!(column.getColumnType().equals(SQLType.VARCHAR)
+                || column.getColumnType().equals(SQLType.CHAR))) {
+            throw new IllegalArgumentException("Tried to assign String value to non-String"
+                    + " Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setString(stringValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setLong(TableColumn column, long longValue) {
+        if (!column.getColumnType().equals(SQLType.BIGINT)) {
+            throw new IllegalArgumentException("Tried to assign Long value to non-Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setInt(longValue);
+            }
+        }
+    }
+
+    public void setLeftLong(TableColumn column, long longValue) {
+        if (!column.getColumnType().equals(SQLType.BIGINT)) {
+            throw new IllegalArgumentException("Tried to assign Long value to non-Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.GREATER_EQUAL)) {
+                p.setInt(longValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setRightLong(TableColumn column, long longValue) {
+        if (!column.getColumnType().equals(SQLType.BIGINT)) {
+            throw new IllegalArgumentException("Tried to assign Long value to non-Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
+                p.setInt(longValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setInt(TableColumn column, int integerValue) {
+        if (!(column.getColumnType().equals(SQLType.INTEGER)
+                || column.getColumnType().equals(SQLType.BIGINT))) {
+            throw new IllegalArgumentException("Tried to assign Integer value to non-Integer/Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setInt(integerValue);
+            }
+        }
+    }
+
+    public void setLeftInt(TableColumn column, int integerValue) {
+        if (!(column.getColumnType().equals(SQLType.INTEGER)
+                || column.getColumnType().equals(SQLType.BIGINT))) {
+            throw new IllegalArgumentException("Tried to assign Integer value to non-Integer/Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.GREATER_EQUAL)) {
+                p.setInt(integerValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setRightInt(TableColumn column, int integerValue) {
+        if (!(column.getColumnType().equals(SQLType.INTEGER)
+                || column.getColumnType().equals(SQLType.BIGINT))) {
+            throw new IllegalArgumentException("Tried to assign Integer value to non-Integer/Long Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
+                p.setInt(integerValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setDouble(TableColumn column, double doubleValue) {
+        if (!(column.getColumnType().equals(SQLType.DOUBLE)
+                || column.getColumnType().equals(SQLType.DECIMAL)
+                || column.getColumnType().equals(SQLType.REAL))) {
+            throw new IllegalArgumentException("Tried to assign Double value to"
+                    + " non-Double Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setDouble(doubleValue);
+            }
+        }
+    }
+
+    public void setLeftDouble(TableColumn column, double doubleValue) {
+        if (!(column.getColumnType().equals(SQLType.DOUBLE)
+                || column.getColumnType().equals(SQLType.DECIMAL)
+                || column.getColumnType().equals(SQLType.REAL))) {
+            throw new IllegalArgumentException("Tried to assign Double value to"
+                    + " non-Double Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.GREATER_EQUAL)) {
+                p.setDouble(doubleValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName()
+                + " does not belong to any proposition.");
+    }
+
+    public void setRightDouble(TableColumn column, double doubleValue) {
+        if (!(column.getColumnType().equals(SQLType.DOUBLE)
+                || column.getColumnType().equals(SQLType.DECIMAL)
+                || column.getColumnType().equals(SQLType.REAL))) {
+            throw new IllegalArgumentException("Tried to assign Double value to "
+                    + "non-Double Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
+                p.setDouble(doubleValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName()
+                + " does not belong to any proposition.");
+    }
+
+    public void setNull(TableColumn column) {
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setNull();
+                p.setQualifier(Qualifier.IS);
+            }
+        }
+    }
+
+    public void setUnknown(TableColumn column) {
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setUnknown();
+                p.setQualifier(Qualifier.EQUAL);
+            }
+        }
+    }
+
+    public abstract void setInfinity(TableColumn column);
+
+
+
+
+
 
     
 

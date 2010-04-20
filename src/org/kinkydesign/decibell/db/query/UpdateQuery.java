@@ -39,9 +39,10 @@ package org.kinkydesign.decibell.db.query;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
+import java.util.Set;
 import org.kinkydesign.decibell.collections.Qualifier;
-import org.kinkydesign.decibell.db.interfaces.JSQLQuery;
+import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
 
@@ -50,39 +51,143 @@ import org.kinkydesign.decibell.db.TableColumn;
  * @author Pantelius Sopasakius
  * @author Charalampius Chomenidius
  */
-public abstract class UpdateQuery implements JSQLQuery {
+public abstract class UpdateQuery implements SQLQuery {
 
     private Table table;
     protected ArrayList<Proposition> setPropositions = new ArrayList<Proposition>();
     protected ArrayList<Proposition> wherePropositions = new ArrayList<Proposition>();
 
-    public UpdateQuery(Table table) {
-        this.table = table;
-        initPropositions();
+    public UpdateQuery() {
     }
+
+    public UpdateQuery(Table table) {
+        setTable(table);
+    }
+
+    public abstract String getSQL(boolean usePKonly);
 
     public Table getTable() {
         return table;
     }
 
+    public void setTable(Table table) {
+        this.table = table;
+        initPropositions(table.getTableColumns(), table.getTableColumns());
+    }
+
     public void setColumns(Collection<? extends TableColumn> tableColumns) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        initPropositions(tableColumns, tableColumns);
+    }
+
+    public void setColumns(Collection<? extends TableColumn> setColumns,
+            Collection<? extends TableColumn> whereColumns) {
+        initPropositions(setColumns, whereColumns);
     }
 
     public Collection<? extends TableColumn> getColumns() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Set<TableColumn> columns = new HashSet<TableColumn>();
+        for (Proposition p : setPropositions) {
+            columns.add(p.getTableColumn());
+        }
+        for (Proposition p : wherePropositions) {
+            columns.add(p.getTableColumn());
+        }
+        return columns;
     }
 
-    private void initPropositions() {
-        for (TableColumn col : table.getTableColumns()) {
+    public void setPropositions(ArrayList<Proposition> propositions) {
+        setPropositions(propositions,propositions);
+    }
+
+    public void setPropositions(ArrayList<Proposition> setPropositions,
+            ArrayList<Proposition> wherePropositions) {
+        this.setPropositions = setPropositions;
+        this.wherePropositions = wherePropositions;
+    }
+
+    public ArrayList<Proposition> getPropositions() {
+        ArrayList<Proposition> propositions = new ArrayList<Proposition>();
+        propositions.addAll(setPropositions);
+        propositions.addAll(wherePropositions);
+        return propositions;
+    }
+
+    private void initPropositions(Collection<? extends TableColumn> setColumns,
+            Collection<? extends TableColumn> whereColumns) {
+        for (TableColumn col : setColumns) {
             Proposition p = new Proposition();
             p.setTableColumn(col);
             p.setQualifier(Qualifier.EQUAL);
             p.setUnknown();
             setPropositions.add(p);
-            if (col.isPrimaryKey()) {
+        }
+        for (TableColumn tc : whereColumns) {
+            Proposition p = new Proposition();
+            p.setTableColumn(tc);
+            if (tc.getColumnType().equals(SQLType.VARCHAR)
+                    || tc.getColumnType().equals(SQLType.CHAR)) {
+                p.setQualifier(Qualifier.LIKE);
+                p.setUnknown();
                 wherePropositions.add(p);
-            } 
+            } else if (tc.getColumnType().equals(SQLType.BIGINT)
+                    || tc.getColumnType().equals(SQLType.DECIMAL)
+                    || tc.getColumnType().equals(SQLType.DOUBLE)
+                    || tc.getColumnType().equals(SQLType.INTEGER)
+                    || tc.getColumnType().equals(SQLType.REAL)
+                    || tc.getColumnType().equals(SQLType.SMALLINT)) {
+                Proposition p1 = (Proposition) p.clone();
+                p.setQualifier(Qualifier.GREATER_EQUAL);
+                p1.setQualifier(Qualifier.LESS_EQUAL);
+                p.setUnknown();
+                p1.setUnknown();
+                wherePropositions.add(p);
+                wherePropositions.add(p1);
+            }
         }
     }
+
+    public boolean addProposition(Proposition proposition) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Proposition removeProposition(Proposition proposition) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Proposition removeProposition(int position) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Proposition replaceProposition(int position, Proposition proposition) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setDouble(TableColumn column, double value) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setInfinity(TableColumn column) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setInt(TableColumn column, int value) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setLong(TableColumn column, long value) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setNull(TableColumn column) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setString(TableColumn column, String value) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setUnknown(TableColumn column) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

@@ -39,6 +39,8 @@
 
 package org.kinkydesign.decibell.db.query;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
@@ -48,7 +50,7 @@ import org.kinkydesign.decibell.db.TableColumn;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public abstract class InsertQuery  {
+public abstract class InsertQuery implements SQLQuery {
 
     private Table table;
    
@@ -80,8 +82,55 @@ public abstract class InsertQuery  {
     public Table getTable() {
         return table;
     }
-    
 
+    public Collection<? extends TableColumn> getColumns() {
+        return ColumnValuesMap.keySet();
+    }
+
+    public void setColumns(Collection<? extends TableColumn> tableColumns) {
+        for (TableColumn tc : tableColumns){
+            ColumnValuesMap.put(tc, null);
+        }
+    }
+
+    public boolean addProposition(Proposition proposition) {
+        throw new UnsupportedOperationException("Insert Queries do not support Propositions");
+    }
+
+    public ArrayList<Proposition> getPropositions() {
+        throw new UnsupportedOperationException("Insert Queries do not support Propositions");
+    }
+
+    public Proposition removeProposition(Proposition proposition) {
+        throw new UnsupportedOperationException("Insert Queries do not support Propositions");
+    }
+
+    public Proposition removeProposition(int position) {
+        throw new UnsupportedOperationException("Insert Queries do not support Propositions");
+    }
+
+    public void setPropositions(ArrayList<Proposition> propositions) {
+        throw new UnsupportedOperationException("Insert Queries do not support Propositions");
+    }
+
+    public Proposition replaceProposition(int position, Proposition proposition) {
+        throw new UnsupportedOperationException("Insert Queries do not support Propositions");
+    }
+
+    public void setNull(TableColumn tableColumn) {
+        if (!ColumnValuesMap.containsKey(tableColumn)){
+            throw new IllegalArgumentException("TableColumn not in specified table!");
+        }
+        ColumnValuesMap.put(tableColumn, null);
+    }
+
+    public void setUnknown(TableColumn tableColumn) {
+        if (!ColumnValuesMap.containsKey(tableColumn)){
+            throw new IllegalArgumentException("TableColumn not in specified table!");
+        }
+        ColumnValuesMap.put(tableColumn, "?");
+    }
+    
     public void setLong(TableColumn tableColumn, long longValue){
         if (!ColumnValuesMap.containsKey(tableColumn)){
             throw new IllegalArgumentException("TableColumn not in specified table!");
@@ -109,6 +158,12 @@ public abstract class InsertQuery  {
         }
         ColumnValuesMap.put(tableColumn, "'"+stringValue+"'");
     }
+
+    public void setInfinity(TableColumn column){
+        throw new UnsupportedOperationException("Insert Queries do not support infinite Values.");
+    }
+
+
 
 
 

@@ -92,8 +92,13 @@ public class User extends Component<User> {
 //    So this creates a table with two columns: The primary key of User (ID) and another column of
 //    type VarChar(255).
 //     */
-//    @Entry
-//    ArrayList<String> childName;
+    @Entry
+    ArrayList<Resource> childName = new ArrayList<Resource>();
+    {
+        childName.add(new Resource(15, "child1"));
+        childName.add(new Resource(16, "child3"));
+    }
+
 //
 //// To be discussed:
 //// What is the effect of private/protected keywords on the fields

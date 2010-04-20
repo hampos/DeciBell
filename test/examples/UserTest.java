@@ -60,7 +60,7 @@ public class UserTest {
         User user = new User();
         ArrayList<User> list = user.search();
     //    System.out.println(list.get(0).id);
-        user.delete();
+      //  user.delete();
         DeciBell db = new DeciBell();
         db.start();
     }

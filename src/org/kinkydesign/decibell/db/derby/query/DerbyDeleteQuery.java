@@ -47,6 +47,7 @@ import org.kinkydesign.decibell.db.query.Proposition;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.derby.util.DerbyInfinity;
 
 /**
  *
@@ -61,7 +62,7 @@ public class DerbyDeleteQuery extends DeleteQuery {
 
     @Override
     public String getSQL() {
-        return getSQL(true);
+        return getSQL(false);
     }
 
     @Override
@@ -83,6 +84,28 @@ public class DerbyDeleteQuery extends DeleteQuery {
 
         }
         return sql;
+    }
+
+    public void setInfinity(TableColumn column) {
+        SQLType columnType = column.getColumnType();
+        switch (columnType) {
+            case INTEGER:
+                setLeftInt(column, DerbyInfinity.LEFT_INT_INF);
+                setRightInt(column, DerbyInfinity.RIGHT_INT_INF);
+                break;
+            case DECIMAL:
+            case DOUBLE:
+                setLeftDouble(column, DerbyInfinity.LEFT_REAL_INF);
+                setRightDouble(column, DerbyInfinity.RIGHT_REAL_INF);
+                break;
+            case BIGINT:
+                setLeftLong(column, DerbyInfinity.LEFT_LONG_INF);
+                setRightLong(column, DerbyInfinity.RIGHT_LONG_INF);
+                break;
+            default:
+                setString(column, "%%");
+
+        }
     }
 
     public static void main(String... args) {

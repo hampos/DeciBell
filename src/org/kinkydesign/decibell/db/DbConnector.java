@@ -210,4 +210,33 @@ public abstract class DbConnector {
     public Blob createBlob() throws SQLException {
         return connection.createBlob();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null || !obj.getClass().equals(this.getClass())){
+            return false;
+        }
+        DbConnector other = (DbConnector)obj;
+        if(other.getDbName().equals(this.getDbName())
+                && other.getUser().equals(this.getUser())
+                && other.getUrlBase().equals(this.getUrlBase())
+                && other.getDriverHome().equals(this.getDriverHome())
+                && other.getHost().equals(this.getHost())
+                && other.getPort() == this.getPort()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + (this.user != null ? this.user.hashCode() : 0);
+        hash = 67 * hash + (this.dbName != null ? this.dbName.hashCode() : 0);
+        hash = 67 * hash + (this.host != null ? this.host.hashCode() : 0);
+        hash = 67 * hash + this.port;
+        return hash;
+    }
+
 }

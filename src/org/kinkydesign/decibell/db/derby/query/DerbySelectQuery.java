@@ -72,43 +72,43 @@ public class DerbySelectQuery extends SelectQuery {
         return getSQL(false);
     }
 
-    private void initializeJoins() {
-        Table table = getTable();
-        Map<TableColumn, TableColumn> relations = table.referenceRelation();
-        Set<Table> remoteTables = new HashSet<Table>();
-        for (TableColumn remote : relations.values()) {
-            remoteTables.add(remote.getMasterTable());
-        }
-        for (Table remoteTable : remoteTables) {
-            relations.putAll(remoteTable.referenceRelation());
-        }
-
-        Iterator<Entry<TableColumn, TableColumn>> it = relations.entrySet().iterator();
-        if (!relations.isEmpty()) {
-            while (it.hasNext()) {
-                Entry<TableColumn, TableColumn> e = it.next();
-                Join join = new DerbyJoin();
-                join.setJoinType(JOIN_TYPE.INNER);
-                join.addColumns(e.getKey(), e.getValue());
-                if (!joins.contains(join)) {
-                    joins.add(join);
-                } else {
-                    joins.get(joins.indexOf(join)).addColumns(e.getKey(), e.getValue());
-                }
-            }
-        }
-    }
+//    private void initializeJoins() {
+//        Table table = getTable();
+//        Map<TableColumn, TableColumn> relations = table.referenceRelation();
+//        Set<Table> remoteTables = new HashSet<Table>();
+//        for (TableColumn remote : relations.values()) {
+//            remoteTables.add(remote.getMasterTable());
+//        }
+//        for (Table remoteTable : remoteTables) {
+//            relations.putAll(remoteTable.referenceRelation());
+//        }
+//
+//        Iterator<Entry<TableColumn, TableColumn>> it = relations.entrySet().iterator();
+//        if (!relations.isEmpty()) {
+//            while (it.hasNext()) {
+//                Entry<TableColumn, TableColumn> e = it.next();
+//                Join join = new DerbyJoin();
+//                join.setJoinType(JOIN_TYPE.INNER);
+//                join.addColumns(e.getKey(), e.getValue());
+//                if (!joins.contains(join)) {
+//                    joins.add(join);
+//                } else {
+//                    joins.get(joins.indexOf(join)).addColumns(e.getKey(), e.getValue());
+//                }
+//            }
+//        }
+//    }
 
     public String getSQL(boolean searchPKonly) {
         Table table = getTable();
         String sql = SELECT + SPACE + STAR + SPACE + FROM + SPACE + table.getTableName() + SPACE;
 
-//        for (int i=joins.size()-1;i>=0;i--) {
-//            sql += joins.get(i).getSQL() + SPACE;
-//        }
-//        for (Join j : joins){
-//            sql += j.getSQL() + SPACE;
-//        }
+        for (int i=joins.size()-1;i>=0;i--) {
+            sql += joins.get(i).getSQL() + SPACE;
+        }
+        for (Join j : joins){
+            sql += j.getSQL() + SPACE;
+        }
 
         if (searchPKonly) {
             ArrayList<Proposition> props = new ArrayList<Proposition>();
@@ -153,8 +153,6 @@ public class DerbySelectQuery extends SelectQuery {
                 setString(column, "%%");
 
         }
-
-
     }
 
     public static void main(String... args) {

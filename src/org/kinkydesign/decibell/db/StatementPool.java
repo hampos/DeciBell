@@ -39,9 +39,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.query.InsertQuery;
+import org.kinkydesign.decibell.db.query.SQLQuery;
 import org.kinkydesign.decibell.db.query.SelectQuery;
 import org.kinkydesign.decibell.db.util.StatementFactory;
 
@@ -52,42 +54,37 @@ import org.kinkydesign.decibell.db.util.StatementFactory;
  */
 public class StatementPool {
 
-    private static Map<DbConnector,StatementPool> pools = new HashMap<DbConnector,StatementPool>();
-
-    private Map<Table, ArrayBlockingQueue<PreparedStatement>> search =
-            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
-    private Map<Table, ArrayBlockingQueue<PreparedStatement>> searchpk =
-            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
-    private Map<Table, ArrayBlockingQueue<PreparedStatement>> update =
-            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
-    private Map<Table, ArrayBlockingQueue<Map.Entry<PreparedStatement,InsertQuery>>> register =
-            new HashMap<Table, ArrayBlockingQueue<Map.Entry<PreparedStatement,InsertQuery>>>();
-    private Map<Table, ArrayBlockingQueue<PreparedStatement>> delete =
-            new HashMap<Table, ArrayBlockingQueue<PreparedStatement>>();
+    private int poolSize = 10;
+    private int queueSize = 50;
+    private DbConnector con = null;
+    private static Map<DbConnector, StatementPool> pools = new HashMap<DbConnector, StatementPool>();
+    private Map<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> search =
+            new HashMap<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+    private Map<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> searchpk =
+            new HashMap<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+    private Map<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> update =
+            new HashMap<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+    private Map<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> register =
+            new HashMap<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+    private Map<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> delete =
+            new HashMap<Table, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
 
     public StatementPool(DbConnector con, int poolSize) {
+        this.con = con;
         for (Table t : ComponentRegistry.getRegistry(con).values()) {
-            search.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
-            searchpk.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
-            register.put(t, new ArrayBlockingQueue<Map.Entry<PreparedStatement,InsertQuery>>(50));
-            delete.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
-            update.put(t, new ArrayBlockingQueue<PreparedStatement>(50));
-            for (int i = 0; i < poolSize; i++) {
-                register.get(t).add(StatementFactory.createRegister(t, con));
-                delete.get(t).add(StatementFactory.createDelete(t, con));
-                search.get(t).add(StatementFactory.createSearch(t, con));
-                searchpk.get(t).add(StatementFactory.createSearchPK(t, con));
-                update.get(t).add(StatementFactory.createUpdate(t, con));
-           }
+            initTable(t);
+        }
+        for (Table rel : ComponentRegistry.getRegistry(con).getRelationTables()) {
+            initTable(rel);
         }
         pools.put(con, this);
     }
 
-    public static StatementPool getPool(DbConnector con){
+    public static StatementPool getPool(DbConnector con) {
         return pools.get(con);
     }
 
-    public Map.Entry<PreparedStatement,InsertQuery> getRegister(Table t) {
+    public Entry<PreparedStatement, SQLQuery> getRegister(Table t) {
         try {
             return register.get(t).take();
         } catch (InterruptedException ex) {
@@ -95,16 +92,16 @@ public class StatementPool {
         }
     }
 
-    public void recycleRegister(Map.Entry<PreparedStatement,InsertQuery> ps, Table t) {
+    public void recycleRegister(Entry<PreparedStatement, SQLQuery> pair, Table t) {
         try {
-            ps.getKey().clearParameters();
-            register.get(t).add(ps);
+            pair.getKey().clearParameters();
+            register.get(t).add(pair);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public PreparedStatement getSearch(Table t) {
+    public Entry<PreparedStatement, SQLQuery> getSearch(Table t) {
         try {
             return search.get(t).take();
         } catch (InterruptedException ex) {
@@ -112,16 +109,16 @@ public class StatementPool {
         }
     }
 
-    public void recycleSearch(PreparedStatement ps, Table t) {
+    public void recycleSearch(Entry<PreparedStatement, SQLQuery> pair, Table t) {
         try {
-            ps.clearParameters();
-            search.get(t).add(ps);
+            pair.getKey().clearParameters();
+            search.get(t).add(pair);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public PreparedStatement getSearchPK(Table t) {
+    public Entry<PreparedStatement, SQLQuery> getSearchPK(Table t) {
         try {
             return searchpk.get(t).take();
         } catch (InterruptedException ex) {
@@ -129,16 +126,16 @@ public class StatementPool {
         }
     }
 
-    public void recycleSearchPK(PreparedStatement ps, Table t) {
+    public void recycleSearchPK(Entry<PreparedStatement, SQLQuery> pair, Table t) {
         try {
-            ps.clearParameters();
-            searchpk.get(t).add(ps);
+            pair.getKey().clearParameters();
+            searchpk.get(t).add(pair);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public PreparedStatement getUpdate(Table t) {
+    public Entry<PreparedStatement, SQLQuery> getUpdate(Table t) {
         try {
             return update.get(t).take();
         } catch (InterruptedException ex) {
@@ -146,16 +143,16 @@ public class StatementPool {
         }
     }
 
-    public void recycleUpdate(PreparedStatement ps, Table t) {
+    public void recycleUpdate(Entry<PreparedStatement, SQLQuery> pair, Table t) {
         try {
-            ps.clearParameters();
-            update.get(t).add(ps);
+            pair.getKey().clearParameters();
+            update.get(t).add(pair);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public PreparedStatement getDelete(Table t) {
+    public Entry<PreparedStatement, SQLQuery> getDelete(Table t) {
         try {
             return delete.get(t).take();
         } catch (InterruptedException ex) {
@@ -163,12 +160,27 @@ public class StatementPool {
         }
     }
 
-    public void recycleDelete(PreparedStatement ps, Table t) {
+    public void recycleDelete(Entry<PreparedStatement, SQLQuery> pair, Table t) {
         try {
-            ps.clearParameters();
-            delete.get(t).add(ps);
+            pair.getKey().clearParameters();
+            delete.get(t).add(pair);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    private void initTable(Table table) {
+        search.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        searchpk.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        register.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        delete.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        update.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        for (int i = 0; i < poolSize; i++) {
+            register.get(table).add(StatementFactory.createRegister(table, con));
+            delete.get(table).add(StatementFactory.createDelete(table, con));
+            search.get(table).add(StatementFactory.createSearch(table, con));
+            searchpk.get(table).add(StatementFactory.createSearchPK(table, con));
+            update.get(table).add(StatementFactory.createUpdate(table, con));
         }
     }
 }

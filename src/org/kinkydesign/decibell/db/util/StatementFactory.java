@@ -47,6 +47,7 @@ import org.kinkydesign.decibell.db.derby.query.DerbyInsertQuery;
 import org.kinkydesign.decibell.db.derby.query.DerbyUpdateQuery;
 import org.kinkydesign.decibell.db.query.DeleteQuery;
 import org.kinkydesign.decibell.db.query.InsertQuery;
+import org.kinkydesign.decibell.db.query.SQLQuery;
 import org.kinkydesign.decibell.db.query.UpdateQuery;
 
 /**
@@ -56,43 +57,45 @@ import org.kinkydesign.decibell.db.query.UpdateQuery;
  */
 public class StatementFactory {
 
-    public static PreparedStatement createSearch(Table table, DbConnector con) {
+    public static Entry<PreparedStatement,SQLQuery> createSearch(Table table, DbConnector con) {
         SelectQuery query = new DerbySelectQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL());
-            return ps;
+            Pair pair = new Pair(ps, query);
+            return pair;
         } catch (SQLException ex) {
             System.out.println("buggy SQL statement: "+query.getSQL());
             throw new RuntimeException(ex);
         }       
     }
 
-    public static PreparedStatement createSearchPK(Table table, DbConnector con) {
+    public static Entry<PreparedStatement,SQLQuery> createSearchPK(Table table, DbConnector con) {
         SelectQuery query = new DerbySelectQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL(true));
-            return ps;
+            Pair pair = new Pair(ps, query);
+            return pair;
         } catch (SQLException ex) {
             System.out.println("buggy SQL statement: "+query.getSQL(true));
             throw new RuntimeException(ex);
         }
     }
 
-    public static PreparedStatement createUpdate(Table table, DbConnector con) {
+    public static Entry<PreparedStatement,SQLQuery> createUpdate(Table table, DbConnector con) {
         UpdateQuery query= new DerbyUpdateQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL());
-            return ps;
+            Pair pair = new Pair(ps, query);
+            return pair;
         } catch (SQLException ex) {
             System.out.println("buggy SQL statement: "+query.getSQL());
             throw new RuntimeException(ex);
         }
     }
 
-    public static Entry<PreparedStatement,InsertQuery> createRegister(Table table, DbConnector con) {
+    public static Entry<PreparedStatement,SQLQuery> createRegister(Table table, DbConnector con) {
         InsertQuery query= new DerbyInsertQuery(table);
         try {
-            System.out.println(query.getSQL());
             PreparedStatement ps = con.prepareStatement(query.getSQL());
             Pair pair = new Pair(ps, query);
             return pair;
@@ -113,11 +116,12 @@ public class StatementFactory {
      * @return
      *      PreparedStatement for the deletion.
      */
-    public static PreparedStatement createDelete(Table table, DbConnector con) {
+    public static Entry<PreparedStatement,SQLQuery> createDelete(Table table, DbConnector con) {
         DeleteQuery query= new DerbyDeleteQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL());
-            return ps;
+            Pair pair = new Pair(ps, query);
+            return pair;
         } catch (SQLException ex) {
             System.out.println("buggy SQL statement: "+query.getSQL());
             throw new RuntimeException(ex);

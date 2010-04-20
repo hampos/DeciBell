@@ -33,21 +33,55 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.db.interfaces;
+package org.kinkydesign.decibell.db.query;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import org.kinkydesign.decibell.db.Table;
+import org.kinkydesign.decibell.db.TableColumn;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public interface JSQLQuery {
+public interface SQLQuery {
 
     public String getSQL();
 
     public Table getTable();
 
+    public void setTable(Table table);
+
+    public void setColumns(Collection<? extends TableColumn> tableColumns);
+
+    public Collection<? extends TableColumn> getColumns();
+
+    public void setPropositions(ArrayList<Proposition> propositions);
+
+    public ArrayList<Proposition> getPropositions();
+
+    public boolean addProposition(Proposition proposition);
+
+    public Proposition replaceProposition(int position, Proposition proposition);
+
+    public Proposition removeProposition(Proposition proposition);
+
+    public Proposition removeProposition(int position);
+
+    public void setLong(TableColumn column, long value);
+
+    public void setInt(TableColumn column, int value);
+
+    public void setDouble(TableColumn column, double value);
+
+    public void setString(TableColumn column, String value);
+
+    public void setNull(TableColumn column);
+
+    public void setUnknown(TableColumn column);
+
+    public void setInfinity(TableColumn column);
 
 
 }

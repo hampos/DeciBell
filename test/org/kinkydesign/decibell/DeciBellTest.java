@@ -45,7 +45,7 @@ public class DeciBellTest {
         DeciBell db = new DeciBell();
 
         db.setDriverHome("/Applications/NetBeans/sges-v3/javadb");
-        db.setDbName("chamo3");
+        db.setDbName("chamo4");
 
         db.attach(SubSubUser.class);
         db.attach(UserGroup.class);
@@ -62,14 +62,21 @@ public class DeciBellTest {
         user.setAge(25);
         user.setGroup(group);
 
-        group.register(db);
+     //   group.register(db);
         System.out.println("Group passed");
-        user.register(db);
+     //   user.register(db);
+
+     //   user.delete(db);
+        User u = new User();
+        u.setId(5);
+        u.setAge(25);
+        u.delete(db);
+
         
 
-        db.reset();
+     //   db.reset();
 
-        db.stop();
+     //   db.stop();
 
 
     }

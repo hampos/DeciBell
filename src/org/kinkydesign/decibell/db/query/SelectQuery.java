@@ -44,7 +44,6 @@ import java.util.Iterator;
 import java.util.Set;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.interfaces.JSQLQuery;
 import org.kinkydesign.decibell.db.query.Join.JOIN_TYPE;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
@@ -54,29 +53,67 @@ import org.kinkydesign.decibell.db.TableColumn;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public abstract class SelectQuery implements JSQLQuery {
+public abstract class SelectQuery implements SQLQuery {
 
     private Table table;
-    private Collection<? extends TableColumn> tableColumns;
     protected ArrayList<Proposition> propositions = new ArrayList<Proposition>();
     protected ArrayList<Join> joins = new ArrayList<Join>();
-    private Set<TableColumn> columnsAdded = new HashSet<TableColumn>();
 
-    public SelectQuery(Table table) {
-        this.table = table;
-        updatePropositions();
+    public SelectQuery(){
+
     }
 
-    public void setJoinType(JOIN_TYPE joinType) {
-        for (Join j : joins) {
-            j.setJoinType(joinType);
+    public SelectQuery(Table table) {
+        setTable(table);
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public void setTable(Table table){
+        this.table = table;
+        initPropositions(table.getTableColumns());
+    }
+
+    public void setColumns(Collection<? extends TableColumn> tableColumns) {
+        initPropositions(tableColumns);
+    }
+
+    public Collection<? extends TableColumn> getColumns() {
+        Set<TableColumn> columns = new HashSet<TableColumn>();
+        for(Proposition p : propositions){
+            columns.add(p.getTableColumn());
         }
+        return columns;
+    }
+
+    public ArrayList<Join> getJoins() {
+        return joins;
+    }
+
+    public void setJoins(ArrayList<Join> joins) {
+        this.joins = joins;
+    }
+
+    public void addJoin(Join join) {
+        joins.add(join);
     }
 
     public abstract String getSQL(boolean searchPKonly);
 
-    public Proposition removeProposition(int index) {
-        return propositions.remove(index);
+    public Proposition removeProposition(Proposition proposition) {
+        return removeProposition(propositions.indexOf(proposition));
+    }
+
+    public Proposition removeProposition(int position) {
+        return propositions.remove(position);
+    }
+
+    public Proposition replaceProposition(int position, Proposition proposition) {
+        Proposition p = propositions.get(position);
+        propositions.add(position, proposition);
+        return p;
     }
 
     public boolean addProposition(Proposition e) {
@@ -91,8 +128,8 @@ public abstract class SelectQuery implements JSQLQuery {
         return propositions;
     }
 
-    protected void updatePropositions() {
-        for (TableColumn tc : table.getTableColumns()) {
+    private void initPropositions(Collection<? extends TableColumn> columns) {
+        for (TableColumn tc : columns) {
             Proposition p = new Proposition();
             p.setTableColumn(tc);
             if (tc.getColumnType().equals(SQLType.VARCHAR)
@@ -117,52 +154,52 @@ public abstract class SelectQuery implements JSQLQuery {
         }
     }
 
-    private void updatePropositions(Table table) {
-        Proposition p;
-        for (TableColumn tc : table.getTableColumns()) {
-            boolean shouldBeAdded = true;
-            for (Join j : joins) {
-                if (j.column2column.containsValue(tc)) {
-                    shouldBeAdded = false;
-                }
-            }
-            boolean alreadyAdded = columnsAdded.contains(tc);
-            if (!alreadyAdded && shouldBeAdded) {
-                // <editor-fold defaultstate="collapsed" desc="add proposition if not added as a joint">
-                columnsAdded.add(tc);
-                p = new Proposition();
-                p.setTableColumn(tc);
-                if (tc.getColumnType().equals(SQLType.VARCHAR)
-                        || tc.getColumnType().equals(SQLType.CHAR)) {
-                    p.setQualifier(Qualifier.LIKE);
-                    p.setUnknown();
-                    propositions.add(p);
-                } else if (tc.getColumnType().equals(SQLType.BIGINT)
-                        || tc.getColumnType().equals(SQLType.DECIMAL)
-                        || tc.getColumnType().equals(SQLType.DOUBLE)
-                        || tc.getColumnType().equals(SQLType.INTEGER)
-                        || tc.getColumnType().equals(SQLType.REAL)
-                        || tc.getColumnType().equals(SQLType.SMALLINT)) {
-                    Proposition p1 = null;
-
-                    p1 = (Proposition) p.clone();
-
-
-                    p.setQualifier(Qualifier.GREATER_EQUAL);
-                    p1.setQualifier(Qualifier.LESS_EQUAL);
-                    p.setUnknown();
-                    p1.setUnknown();
-                    propositions.add(p);
-                    propositions.add(p1);
-                }// </editor-fold>
-            }
-        }
-        Iterator<Table> remoteTables = table.getReferencedTables().iterator();
-        while (remoteTables.hasNext()) {
-            Table tt = remoteTables.next();
-            updatePropositions(tt);
-        }
-    }
+//    private void updatePropositions(Table table) {
+//        Proposition p;
+//        for (TableColumn tc : table.getTableColumns()) {
+//            boolean shouldBeAdded = true;
+//            for (Join j : joins) {
+//                if (j.column2column.containsValue(tc)) {
+//                    shouldBeAdded = false;
+//                }
+//            }
+//            boolean alreadyAdded = columnsAdded.contains(tc);
+//            if (!alreadyAdded && shouldBeAdded) {
+//                // <editor-fold defaultstate="collapsed" desc="add proposition if not added as a joint">
+//                columnsAdded.add(tc);
+//                p = new Proposition();
+//                p.setTableColumn(tc);
+//                if (tc.getColumnType().equals(SQLType.VARCHAR)
+//                        || tc.getColumnType().equals(SQLType.CHAR)) {
+//                    p.setQualifier(Qualifier.LIKE);
+//                    p.setUnknown();
+//                    propositions.add(p);
+//                } else if (tc.getColumnType().equals(SQLType.BIGINT)
+//                        || tc.getColumnType().equals(SQLType.DECIMAL)
+//                        || tc.getColumnType().equals(SQLType.DOUBLE)
+//                        || tc.getColumnType().equals(SQLType.INTEGER)
+//                        || tc.getColumnType().equals(SQLType.REAL)
+//                        || tc.getColumnType().equals(SQLType.SMALLINT)) {
+//                    Proposition p1 = null;
+//
+//                    p1 = (Proposition) p.clone();
+//
+//
+//                    p.setQualifier(Qualifier.GREATER_EQUAL);
+//                    p1.setQualifier(Qualifier.LESS_EQUAL);
+//                    p.setUnknown();
+//                    p1.setUnknown();
+//                    propositions.add(p);
+//                    propositions.add(p1);
+//                }// </editor-fold>
+//            }
+//        }
+//        Iterator<Table> remoteTables = table.getReferencedTables().iterator();
+//        while (remoteTables.hasNext()) {
+//            Table tt = remoteTables.next();
+//            updatePropositions(tt);
+//        }
+//    }
 
     public void setString(TableColumn column, String stringValue) {
         if (!(column.getColumnType().equals(SQLType.VARCHAR)
@@ -333,27 +370,7 @@ public abstract class SelectQuery implements JSQLQuery {
         }
     }
 
-    public Table getTable() {
-        return table;
-    }
+    public abstract void setInfinity(TableColumn column);
 
-    public void setColumns(Collection<? extends TableColumn> tableColumns) {
-        this.tableColumns = tableColumns;
-    }
-
-    public Collection<? extends TableColumn> getColumns() {
-        return tableColumns;
-    }
-
-    public ArrayList<Join> getJoins() {
-        return joins;
-    }
-
-    public void setJoins(ArrayList<Join> joins) {
-        this.joins = joins;
-    }
-
-    public void addJoin(Join join) {
-        joins.add(join);
-    }
+    
 }

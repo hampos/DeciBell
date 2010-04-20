@@ -60,7 +60,11 @@ public class DerbyUpdateQuery extends UpdateQuery {
         super(table);
     }
 
-    public String getSQL() {
+    public String getSQL(){
+        return getSQL(false);
+    }
+
+    public String getSQL(boolean usePKonly) {
         String sql = UPDATE + SPACE + getTable().getTableName() + SPACE + SET + SPACE;
         Iterator<Proposition> it = setPropositions.iterator();
         while (it.hasNext()){

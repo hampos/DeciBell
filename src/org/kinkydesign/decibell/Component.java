@@ -48,6 +48,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.kinkydesign.decibell.collections.SQLType;
@@ -57,6 +58,9 @@ import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.query.InsertQuery;
+import org.kinkydesign.decibell.db.query.Proposition;
+import org.kinkydesign.decibell.db.query.SQLQuery;
+import org.kinkydesign.decibell.db.util.Infinity;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
@@ -65,10 +69,56 @@ import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public abstract class Component<T extends Component> implements JComponent<T> {
+public abstract class Component<T extends Component> {
 
-    public void delete() throws NoUniqueFieldException {
-        System.out.println(this.getClass());
+    public void delete(DeciBell db) throws NoUniqueFieldException {
+        Class c = this.getClass();
+        ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
+        Table table = registry.get(c);
+        StatementPool pool = StatementPool.getPool(db.getDbConnector());
+        Entry<PreparedStatement, SQLQuery> entry = pool.getDelete(table);
+        PreparedStatement ps = entry.getKey();
+        SQLQuery query = entry.getValue();
+        try {
+            int i = 1;
+            for (Proposition p : query.getPropositions()) {
+                TableColumn col = p.getTableColumn();
+                Field field = col.getField();
+                field.setAccessible(true);
+                Object obj = null;
+                try {
+                    obj = field.get(this);
+                    if (col.isForeignKey()) {
+                    Field f = col.getReferenceColumn().getField();
+                    f.setAccessible(true);
+                    System.out.println((Object)f.get(obj));
+                    ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
+                } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                    System.out.println(obj);
+                    ps.setObject(i, obj, col.getColumnType().getType());
+                } else {
+                    XStream xstream = new XStream();
+                    String xml = xstream.toXML(obj);
+                    System.out.println(xml);
+                    ps.setString(i, xml);
+                }
+                } catch (NullPointerException ex) {
+                    Infinity inf = new Infinity(db.getDbConnector());
+                    System.out.println("Column: "+col.getColumnName()+" "+inf.getInfinity(p));
+                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                }
+                
+                i++;
+            }
+            ps.execute();
+            pool.recycleDelete(entry, table);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public void register(DeciBell db) throws DuplicateKeyException {
@@ -76,20 +126,16 @@ public abstract class Component<T extends Component> implements JComponent<T> {
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
         Table table = registry.get(c);
         StatementPool pool = StatementPool.getPool(db.getDbConnector());
-        Map.Entry<PreparedStatement, InsertQuery> entry = pool.getRegister(table);
-
+        Entry<PreparedStatement, SQLQuery> entry = pool.getRegister(table);
         PreparedStatement ps = entry.getKey();
-        InsertQuery query = entry.getValue();
-
         try {
             int i = 1;
             for (TableColumn col : table.getTableColumns()) {
                 Field field = col.getField();
                 field.setAccessible(true);
-
-
                 if (col.isForeignKey()) {
                     Field f = col.getReferenceColumn().getField();
+                    f.setAccessible(true);
                     ps.setObject(i, (Object) f.get(field.get(this)), col.getColumnType().getType());
                 } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
                     ps.setObject(i, (Object) field.get(this), col.getColumnType().getType());
@@ -108,7 +154,11 @@ public abstract class Component<T extends Component> implements JComponent<T> {
         } catch (IllegalAccessException ex) {
             throw new RuntimeException(ex);
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            if (ex.getErrorCode() == 23505) {
+                throw new DuplicateKeyException();
+            } else {
+                throw new RuntimeException(ex);
+            }
         } catch (NullPointerException ex) {
             throw new RuntimeException(ex);
         }
