@@ -224,7 +224,7 @@ public abstract class SelectQuery implements SQLQuery {
         }
         for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column)) {
-                p.setInt(longValue);
+                p.setLong(longValue);
             }
         }
     }
@@ -236,7 +236,7 @@ public abstract class SelectQuery implements SQLQuery {
         }
         for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.GREATER_EQUAL)) {
-                p.setInt(longValue);
+                p.setLong(longValue);
                 return;
             }
         }
@@ -251,7 +251,49 @@ public abstract class SelectQuery implements SQLQuery {
         }
         for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
-                p.setInt(longValue);
+                p.setLong(longValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setShort(TableColumn column, short shortValue) {
+        if (!column.getColumnType().equals(SQLType.SMALLINT)) {
+            throw new IllegalArgumentException("Tried to assign Short value to non-Short Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setShort(shortValue);
+            }
+        }
+    }
+
+    public void setLeftShort(TableColumn column, short shortValue) {
+        if (!column.getColumnType().equals(SQLType.SMALLINT)) {
+            throw new IllegalArgumentException("Tried to assign Short value to non-Short Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.GREATER_EQUAL)) {
+                p.setShort(shortValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName() + " "
+                + "does not belong to any proposition.");
+    }
+
+    public void setRightShort(TableColumn column, short shortValue) {
+        if (!column.getColumnType().equals(SQLType.SMALLINT)) {
+            throw new IllegalArgumentException("Tried to assign Short value to non-Short Column. "
+                    + "Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
+                p.setShort(shortValue);
                 return;
             }
         }
@@ -345,6 +387,54 @@ public abstract class SelectQuery implements SQLQuery {
         for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
                 p.setDouble(doubleValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName()
+                + " does not belong to any proposition.");
+    }
+    
+    public void setFloat(TableColumn column, float floatValue) {
+        if (!(column.getColumnType().equals(SQLType.DOUBLE)
+                || column.getColumnType().equals(SQLType.DECIMAL)
+                || column.getColumnType().equals(SQLType.REAL))) {
+            throw new IllegalArgumentException("Tried to assign Float value to"
+                    + " non-Float Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setFloat(floatValue);
+            }
+        }
+    }
+
+    public void setLeftFloat(TableColumn column, float floatValue) {
+        if (!(column.getColumnType().equals(SQLType.DOUBLE)
+                || column.getColumnType().equals(SQLType.DECIMAL)
+                || column.getColumnType().equals(SQLType.REAL))) {
+            throw new IllegalArgumentException("Tried to assign Float value to"
+                    + " non-Float Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.GREATER_EQUAL)) {
+                p.setFloat(floatValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Column: " + column.getFullName()
+                + " does not belong to any proposition.");
+    }
+
+    public void setRightFloat(TableColumn column, float floatValue) {
+        if (!(column.getColumnType().equals(SQLType.DOUBLE)
+                || column.getColumnType().equals(SQLType.DECIMAL)
+                || column.getColumnType().equals(SQLType.REAL))) {
+            throw new IllegalArgumentException("Tried to assign Float value to "
+                    + "non-Float Column. Column Type: " + column.getColumnType().toString());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column) && p.getQualifier().equals(Qualifier.LESS_EQUAL)) {
+                p.setFloat(floatValue);
                 return;
             }
         }

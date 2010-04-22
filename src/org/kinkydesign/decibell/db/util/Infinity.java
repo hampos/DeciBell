@@ -68,7 +68,6 @@ public class Infinity {
     }
 
     public Object getInfinity(Proposition p){
-        Object obj = null;
         switch (p.getTableColumn().getColumnType()) {
             case INTEGER:
                 if(p.getQualifier().equals(Qualifier.GREATER_EQUAL)
@@ -80,7 +79,16 @@ public class Infinity {
                 } else {
                     return 0;
                 }
-            case DECIMAL:
+            case REAL:
+                if(p.getQualifier().equals(Qualifier.GREATER_EQUAL)
+                        || p.getQualifier().equals(Qualifier.GREATER_THAN) ){
+                    return getLeftFloat();
+                } else if(p.getQualifier().equals(Qualifier.LESS_EQUAL)
+                        || p.getQualifier().equals(Qualifier.LESS_THAN)){
+                    return getRightFloat();
+                } else {
+                    return 0;
+                }
             case DOUBLE:
                 if(p.getQualifier().equals(Qualifier.GREATER_EQUAL)
                         || p.getQualifier().equals(Qualifier.GREATER_THAN) ){
@@ -109,54 +117,72 @@ public class Infinity {
     public int getLeftInt(){
         switch (con){
             case DERBY:
-                return DerbyInfinity.LEFT_INT_INF;
+                return DerbyInfinity.getLeftInt();
             default:
-                return 0;
+                return Integer.MIN_VALUE;
         }
     }
 
     public int getRightInt(){
         switch(con){
             case DERBY:
-                return DerbyInfinity.RIGHT_INT_INF;
+                return DerbyInfinity.getRightInt();
             default:
-                return 0;
+                return Integer.MAX_VALUE;
+        }
+    }
+
+    public double getLeftFloat(){
+        switch (con){
+            case DERBY:
+                return DerbyInfinity.getLeftFloat();
+            default:
+                return Float.MIN_VALUE;
+        }
+    }
+
+    public double getRightFloat(){
+        switch (con){
+            case DERBY:
+                return DerbyInfinity.getRightFloat();
+            default:
+                return Float.MAX_VALUE;
         }
     }
 
     public double getLeftDouble(){
         switch (con){
             case DERBY:
-                return DerbyInfinity.LEFT_REAL_INF;
+                return DerbyInfinity.getLeftDouble();
             default:
-                return 0;
+                return Double.MIN_VALUE;
         }
     }
 
     public double getRightDouble(){
         switch (con){
             case DERBY:
-                return DerbyInfinity.RIGHT_REAL_INF;
+                return DerbyInfinity.getRightDouble();
             default:
-                return 0;
+                return Double.MAX_VALUE;
         }
     }
 
     public long getLeftLong(){
         switch (con){
             case DERBY:
-                return DerbyInfinity.LEFT_LONG_INF;
+                return DerbyInfinity.getLeftLong();
             default:
-                return 0;
+                return Long.MIN_VALUE;
         }
     }
 
     public long getRightLong(){
         switch (con){
             case DERBY:
-                return DerbyInfinity.RIGHT_LONG_INF;
+                return DerbyInfinity.getRightLong();
             default:
-                return 0;
+                return Long.MAX_VALUE;
         }
     }
 

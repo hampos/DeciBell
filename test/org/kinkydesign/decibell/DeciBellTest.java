@@ -69,7 +69,7 @@ public class DeciBellTest {
      //   user.delete(db);
         User u = new User();
         u.setId(5);
-        u.setAge(25);
+    //    u.setAge(25);
         u.delete(db);
 
         

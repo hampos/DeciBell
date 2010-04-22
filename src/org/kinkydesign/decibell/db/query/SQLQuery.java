@@ -71,9 +71,13 @@ public interface SQLQuery {
 
     public void setLong(TableColumn column, long value);
 
+    public void setShort(TableColumn column, short value);
+
     public void setInt(TableColumn column, int value);
 
     public void setDouble(TableColumn column, double value);
+
+    public void setFloat(TableColumn column, float value);
 
     public void setString(TableColumn column, String value);
 

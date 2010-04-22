@@ -45,14 +45,59 @@ package org.kinkydesign.decibell.db.derby.util;
  */
 public class DerbyInfinity {
 
-    public static final int
+    private static final int
             LEFT_INT_INF = -2147483648,
             RIGHT_INT_INF = 2147483647;
-    public static final double
+    private static final double
             LEFT_REAL_INF = -3.402E+38,
             RIGHT_REAL_INF = 3.402E+38;
-    public static final long
+    private static final double
+            LEFT_DOUBLE_INF =  -1.79769E+308,
+            RIGHT_DOUBLE_INF =  1.79769E+308;
+    private static final long
             LEFT_LONG_INF = -9223372036854775808L,
             RIGHT_LONG_INF = 9223372036854775807L;
+    private static final short
+            LEFT_SMALLINT_INF = -32768,
+            RIGHT_SMALLINT_INF = 32767;
 
+    public static int getLeftInt(){
+        return LEFT_INT_INF;
+    }
+
+    public static int getRightInt(){
+        return RIGHT_INT_INF;
+    }
+
+    public static float getLeftFloat(){
+        return (float) LEFT_REAL_INF;
+    }
+
+    public static float getRightFloat(){
+        return (float) RIGHT_REAL_INF;
+    }
+
+    public static double getRightDouble(){
+        return RIGHT_DOUBLE_INF;
+    }
+
+    public static double getLeftDouble(){
+        return LEFT_DOUBLE_INF;
+    }
+
+    public static short getLeftShort(){
+        return LEFT_SMALLINT_INF;
+    }
+
+    public static short getRightShort(){
+        return RIGHT_SMALLINT_INF;
+    }
+
+    public static long getLeftLong(){
+        return LEFT_LONG_INF;
+    }
+
+    public static long getRightLong(){
+        return RIGHT_LONG_INF;
+    }
 }

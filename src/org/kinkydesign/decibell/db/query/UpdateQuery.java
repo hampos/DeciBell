@@ -174,6 +174,14 @@ public abstract class UpdateQuery implements SQLQuery {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public void setFloat(TableColumn column, float value) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setShort(TableColumn column, short value) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     public void setLong(TableColumn column, long value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

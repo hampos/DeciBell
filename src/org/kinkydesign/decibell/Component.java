@@ -89,25 +89,29 @@ public abstract class Component<T extends Component> {
                 try {
                     obj = field.get(this);
                     if (col.isForeignKey()) {
-                    Field f = col.getReferenceColumn().getField();
-                    f.setAccessible(true);
-                    System.out.println((Object)f.get(obj));
-                    ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
-                } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                    System.out.println(obj);
-                    ps.setObject(i, obj, col.getColumnType().getType());
-                } else {
-                    XStream xstream = new XStream();
-                    String xml = xstream.toXML(obj);
-                    System.out.println(xml);
-                    ps.setString(i, xml);
-                }
+                        Field f = col.getReferenceColumn().getField();
+                        f.setAccessible(true);
+                        System.out.println("***" + (Object) f.get(obj));
+                        ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
+                    } else if (obj == null || (col.isTypeNumeric() && obj.equals(0))) {
+                        Infinity inf = new Infinity(db.getDbConnector());
+                        System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
+                        ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                    } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                        System.out.println(obj);
+                        ps.setObject(i, obj, col.getColumnType().getType());
+                    } else {
+                        XStream xstream = new XStream();
+                        String xml = xstream.toXML(obj);
+                        System.out.println(xml);
+                        ps.setString(i, xml);
+                    }
                 } catch (NullPointerException ex) {
                     Infinity inf = new Infinity(db.getDbConnector());
-                    System.out.println("Column: "+col.getColumnName()+" "+inf.getInfinity(p));
+                    System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
                     ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
                 }
-                
+
                 i++;
             }
             ps.execute();

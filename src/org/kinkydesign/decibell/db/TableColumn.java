@@ -252,6 +252,19 @@ final public class TableColumn implements Cloneable {
         this.field = field;
     }
 
+    public boolean isTypeNumeric() {
+        if (columnType.equals(SQLType.INTEGER)
+                || columnType.equals(SQLType.BIGINT)
+                || columnType.equals(SQLType.SMALLINT)
+                || columnType.equals(SQLType.DECIMAL)
+                || columnType.equals(SQLType.DOUBLE)
+                || columnType.equals(SQLType.REAL)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @Override
     public TableColumn clone() {
         try {

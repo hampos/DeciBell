@@ -137,17 +137,24 @@ public class DerbySelectQuery extends SelectQuery {
         SQLType columnType = column.getColumnType();
         switch (columnType) {
             case INTEGER:
-                setLeftInt(column, DerbyInfinity.LEFT_INT_INF);
-                setRightInt(column, DerbyInfinity.RIGHT_INT_INF);
+                setLeftInt(column, DerbyInfinity.getLeftInt());
+                setRightInt(column, DerbyInfinity.getRightInt());
                 break;
-            case DECIMAL:
+            case REAL:
+                setLeftFloat(column, DerbyInfinity.getLeftFloat());
+                setRightFloat(column, DerbyInfinity.getRightFloat());
+                break;
             case DOUBLE:
-                setLeftDouble(column, DerbyInfinity.LEFT_REAL_INF);
-                setRightDouble(column, DerbyInfinity.RIGHT_REAL_INF);
+                setLeftDouble(column, DerbyInfinity.getLeftDouble());
+                setRightDouble(column, DerbyInfinity.getRightDouble());
                 break;
             case BIGINT:
-                setLeftLong(column, DerbyInfinity.LEFT_LONG_INF);
-                setRightLong(column, DerbyInfinity.RIGHT_LONG_INF);
+                setLeftLong(column, DerbyInfinity.getLeftLong());
+                setRightLong(column, DerbyInfinity.getRightLong());
+                break;
+            case SMALLINT:
+                setLeftShort(column, DerbyInfinity.getLeftShort());
+                setRightShort(column, DerbyInfinity.getRightShort());
                 break;
             default:
                 setString(column, "%%");

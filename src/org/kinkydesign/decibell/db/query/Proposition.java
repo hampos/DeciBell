@@ -78,8 +78,6 @@ public class Proposition
         }
     }
 
-
-
     public Qualifier getQualifier() {
         return qualifier;
     }
@@ -96,8 +94,26 @@ public class Proposition
         this.tableColumn = tableColumn;
     }
 
-    public void setInt(long longValue) throws IllegalArgumentException {
-        if ((!tableColumn.getColumnType().equals(SQLType.INTEGER)) && (!tableColumn.getColumnType().equals(SQLType.BIGINT))) {
+    public void setInt(int intValue) throws IllegalArgumentException {
+        if ((!tableColumn.getColumnType().equals(SQLType.INTEGER)) ) {
+            throw new IllegalArgumentException("Cannot set an integer/long value to a non-integer type table column."
+                    + "Table Column: " + tableColumn.getColumnName() + " with type: " + tableColumn.getColumnType());
+        }
+        columnType[0] = true;
+        stringValue = Integer.toString(intValue);
+    }
+
+    public void setShort(short shortValue) throws IllegalArgumentException {
+        if ((!tableColumn.getColumnType().equals(SQLType.SMALLINT))) {
+            throw new IllegalArgumentException("Cannot set an integer/long value to a non-integer type table column."
+                    + "Table Column: " + tableColumn.getColumnName() + " with type: " + tableColumn.getColumnType());
+        }
+        columnType[0] = true;
+        stringValue = Short.toString(shortValue);
+    }
+
+    public void setLong(long longValue) throws IllegalArgumentException {
+        if (!tableColumn.getColumnType().equals(SQLType.BIGINT)) {
             throw new IllegalArgumentException("Cannot set an integer/long value to a non-integer type table column."
                     + "Table Column: " + tableColumn.getColumnName() + " with type: " + tableColumn.getColumnType());
         }
@@ -112,6 +128,15 @@ public class Proposition
         }
         columnType[1] = true;
         stringValue = Double.toString(numericValue);
+    }
+
+    public void setFloat(float numericValue) throws IllegalArgumentException {
+        if ((!tableColumn.getColumnType().equals(SQLType.REAL)) && (!tableColumn.getColumnType().equals(SQLType.DOUBLE))) {
+            throw new IllegalArgumentException("Cannot set a numeric value to a non-numeric type table column."
+                    + "Table Column: " + tableColumn.getColumnName() + " with type: " + tableColumn.getColumnType());
+        }
+        columnType[1] = true;
+        stringValue = Float.toString(numericValue);
     }
 
     public void setString(String stringValue) {

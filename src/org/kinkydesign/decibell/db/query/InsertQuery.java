@@ -144,6 +144,20 @@ public abstract class InsertQuery implements SQLQuery {
         }
         ColumnValuesMap.put(tableColumn, Double.toString(doubleValue));
     }
+    
+    public void setFloat(TableColumn tableColumn, float floatValue){
+        if (!ColumnValuesMap.containsKey(tableColumn)){
+            throw new IllegalArgumentException("TableColumn not in specified table!");
+        }
+        ColumnValuesMap.put(tableColumn, Float.toString(floatValue));
+    }
+
+    public void setShort(TableColumn tableColumn, short shortValue) {
+        if (!ColumnValuesMap.containsKey(tableColumn)){
+            throw new IllegalArgumentException("TableColumn not in specified table!");
+        }
+        ColumnValuesMap.put(tableColumn, Short.toString(shortValue));
+    }
 
     public void setInt(TableColumn tableColumn, int integerValue){
         if (!ColumnValuesMap.containsKey(tableColumn)){
