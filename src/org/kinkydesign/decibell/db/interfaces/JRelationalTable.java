@@ -1,4 +1,6 @@
 /**
+ *  Class : JRelationalTable
+ *  Date  : 23 Απρ 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -33,60 +35,28 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.db.query;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-import java.util.ArrayList;
-import java.util.Collection;
-import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
-import org.kinkydesign.decibell.db.interfaces.JTable;
+package org.kinkydesign.decibell.db.interfaces;
+
+import java.lang.reflect.Field;
+import org.kinkydesign.decibell.db.derby.DerbyTable;
 
 /**
  *
- * @author Pantelis Sopasakis
- * @author Charalampos Chomenides
+ * @author hampos
  */
-public interface SQLQuery {
+public interface JRelationalTable extends JTable{
 
-    public String getSQL();
+    JTable getMasterTable();
 
-    public JTable getTable();
+    Field getOnField();
 
-    public void setTable(JTable table);
+    void setMasterTable(JTable masterTable);
 
-    public void setColumns(Collection<? extends TableColumn> tableColumns);
-
-    public Collection<? extends TableColumn> getColumns();
-
-    public void setPropositions(ArrayList<Proposition> propositions);
-
-    public ArrayList<Proposition> getPropositions();
-
-    public boolean addProposition(Proposition proposition);
-
-    public Proposition replaceProposition(int position, Proposition proposition);
-
-    public Proposition removeProposition(Proposition proposition);
-
-    public Proposition removeProposition(int position);
-
-    public void setLong(TableColumn column, long value);
-
-    public void setShort(TableColumn column, short value);
-
-    public void setInt(TableColumn column, int value);
-
-    public void setDouble(TableColumn column, double value);
-
-    public void setFloat(TableColumn column, float value);
-
-    public void setString(TableColumn column, String value);
-
-    public void setNull(TableColumn column);
-
-    public void setUnknown(TableColumn column);
-
-    public void setInfinity(TableColumn column);
-
+    void setOnField(Field onField);
 
 }

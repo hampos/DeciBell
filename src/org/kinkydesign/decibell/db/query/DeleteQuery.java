@@ -47,6 +47,7 @@ import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 
 /**
  *
@@ -55,14 +56,14 @@ import org.kinkydesign.decibell.db.TableColumn;
  */
 public abstract class DeleteQuery implements SQLQuery {
 
-    private Table table;
+    private JTable table;
     protected ArrayList<Proposition> propositions = new ArrayList<Proposition>();
 
     public DeleteQuery(){
 
     }
 
-    public DeleteQuery(Table table){
+    public DeleteQuery(JTable table){
         setTable(table);
     }
 
@@ -94,12 +95,12 @@ public abstract class DeleteQuery implements SQLQuery {
 
     public abstract String getSQL(boolean usePKonly);
 
-    public void setTable(Table table) {
+    public void setTable(JTable table) {
         this.table = table;
         initPropositions(table.getTableColumns());
     }
 
-    public Table getTable() {
+    public JTable getTable() {
         return table;
     }
 

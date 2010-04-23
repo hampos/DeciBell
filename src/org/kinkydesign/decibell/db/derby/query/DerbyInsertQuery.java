@@ -45,6 +45,7 @@ import org.kinkydesign.decibell.db.query.InsertQuery;
 import org.kinkydesign.decibell.db.query.UpdateQuery;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
@@ -54,7 +55,7 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
  */
 public class DerbyInsertQuery extends InsertQuery {
 
-    public DerbyInsertQuery(Table table) {
+    public DerbyInsertQuery(JTable table) {
         super(table);
     }
 
@@ -89,7 +90,7 @@ public class DerbyInsertQuery extends InsertQuery {
     }
 
     public static void main(String... args){
-        Table t = new DerbyTable();
+        JTable t = new DerbyTable();
         t.setTableName("MY_TABLE");
 
         TableColumn tc1 = new TableColumn("A");

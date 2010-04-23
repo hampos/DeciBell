@@ -55,6 +55,7 @@ import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.SelectQuery;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
@@ -64,7 +65,7 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
  */
 public class DerbySelectQuery extends SelectQuery {
 
-    public DerbySelectQuery(Table table) {
+    public DerbySelectQuery(JTable table) {
         super(table);
     }
 
@@ -100,7 +101,7 @@ public class DerbySelectQuery extends SelectQuery {
 //    }
 
     public String getSQL(boolean searchPKonly) {
-        Table table = getTable();
+        JTable table = getTable();
         String sql = SELECT + SPACE + STAR + SPACE + FROM + SPACE + table.getTableName() + SPACE;
 
         for (int i=joins.size()-1;i>=0;i--) {

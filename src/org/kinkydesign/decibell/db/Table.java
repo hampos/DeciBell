@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 
 /**
  *
@@ -55,7 +56,7 @@ public abstract class Table implements JTable {
 
     private Set<TableColumn> listOfColumns = new LinkedHashSet<TableColumn>();
     private String tableName = null;
-    private Set<Table> relations = new HashSet<Table>();
+    private Set<JRelationalTable> relations = new HashSet<JRelationalTable>();
 
     /**
      * Construct a new Table object.
@@ -75,8 +76,6 @@ public abstract class Table implements JTable {
         }
         this.tableName = tableName;
     }
-
-    public abstract String getCreationSQL();
 
     public Set<TableColumn> getTableColumns() {
         return listOfColumns;
@@ -154,8 +153,16 @@ public abstract class Table implements JTable {
             boolean foundGroup = false;
             for (Set<TableColumn> group : groupedColumns) {
                 for (TableColumn c : group) {
-                    if (c.getReferenceTable().equals(col.getReferenceTable()) && c.getField().equals(col.getField())) {
-                        foundGroup = true;
+                    if (c.getReferenceTable().equals(col.getReferenceTable())) {
+                        if (c.getField().equals(col.getField())) {
+                            foundGroup = true;
+                        } else if (col.getMasterTable() instanceof JRelationalTable && c.getMasterTable() instanceof JRelationalTable) {
+                            JRelationalTable rel1 = (JRelationalTable) col.getMasterTable();
+                            JRelationalTable rel2 = (JRelationalTable) c.getMasterTable();
+                            if (rel1.getOnField().equals(rel2.getOnField())) {
+                                foundGroup = true;
+                            }
+                        }
                     }
                 }
                 if (foundGroup) {
@@ -174,8 +181,8 @@ public abstract class Table implements JTable {
         return groupedColumns;
     }
 
-    public Set<Table> getReferencedTables() {
-        Set<Table> remoteTables = new HashSet<Table>();
+    public Set<JTable> getReferencedTables() {
+        Set<JTable> remoteTables = new HashSet<JTable>();
 
         for (TableColumn remoteTableColumn : getForeignKeyColumns()) {
             remoteTables.add(remoteTableColumn.getReferenceTable());
@@ -183,11 +190,11 @@ public abstract class Table implements JTable {
         return remoteTables;
     }
 
-    public void addRelation(Table t) {
+    public void addRelation(JRelationalTable t) {
         relations.add(t);
     }
 
-    public Set<Table> getRelations() {
+    public Set<JRelationalTable> getRelations() {
         return relations;
     }
 

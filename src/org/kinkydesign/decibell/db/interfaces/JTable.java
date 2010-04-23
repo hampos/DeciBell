@@ -35,6 +35,7 @@
  */
 package org.kinkydesign.decibell.db.interfaces;
 
+import java.util.Map;
 import java.util.Set;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
@@ -54,7 +55,7 @@ public interface JTable {
      */
     void addColumn(TableColumn column);
 
-    void addRelation(Table t);
+    void addRelation(JRelationalTable t);
 
     /**
      * Get the SQL command for the creation of the table.
@@ -72,7 +73,7 @@ public interface JTable {
 
     Set<TableColumn> getPrimaryKeyColumns();
 
-    Set<Table> getRelations();
+    Set<JRelationalTable> getRelations();
 
     /**
      * Retrieve the list of columns of the table.
@@ -103,5 +104,17 @@ public interface JTable {
      * @param tableName the name of the table.
      */
     void setTableName(String tableName);
+
+
+
+    Set<Set<TableColumn>> getForeignColumnsByGroup();
+
+
+
+    Set<JTable> getReferencedTables();
+
+
+
+    Map<TableColumn, TableColumn> referenceRelation();
 
 }

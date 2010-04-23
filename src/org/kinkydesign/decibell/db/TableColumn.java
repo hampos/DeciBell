@@ -39,6 +39,7 @@ import java.lang.reflect.Field;
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 
 /**
  *
@@ -63,12 +64,12 @@ final public class TableColumn implements Cloneable {
     private boolean hasDomain = false;
     private boolean hasDefault = false;
     private boolean isForeignKey = false;
-    private Table referencesTable = null;
+    private JTable referencesTable = null;
     private TableColumn referencesColumn = null;
     private Class<? extends Component> referencesClass = null;
     private OnModification onUpdate = null;
     private OnModification onDelete = null;
-    private Table masterTable = null;
+    private JTable masterTable = null;
     private Field field = null;
 
     public TableColumn() {
@@ -79,7 +80,7 @@ final public class TableColumn implements Cloneable {
         setColumnName(columnName);
     }
 
-    public Table getMasterTable() {
+    public JTable getMasterTable() {
         return masterTable;
     }
 
@@ -119,7 +120,7 @@ final public class TableColumn implements Cloneable {
         return isPrimaryKey;
     }
 
-    public void setForeignKey(Table table, TableColumn ForeignColumn, OnModification onDelete, OnModification onUpdate) {
+    public void setForeignKey(JTable table, TableColumn ForeignColumn, OnModification onDelete, OnModification onUpdate) {
         this.isForeignKey = true;
         this.referencesTable = table;
         this.referencesColumn = ForeignColumn;
@@ -132,7 +133,7 @@ final public class TableColumn implements Cloneable {
         return referencesTable.getTableName();
     }
 
-    public Table getReferenceTable() {
+    public JTable getReferenceTable() {
         return referencesTable;
     }
 

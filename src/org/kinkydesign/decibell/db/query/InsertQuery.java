@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 
 /**
  *
@@ -52,7 +53,7 @@ import org.kinkydesign.decibell.db.TableColumn;
  */
 public abstract class InsertQuery implements SQLQuery {
 
-    private Table table;
+    private JTable table;
    
     /**
      * A map from the table column to its corresponding value in the INSERT query,
@@ -64,14 +65,14 @@ public abstract class InsertQuery implements SQLQuery {
         
     }
 
-    public InsertQuery(Table table){
+    public InsertQuery(JTable table){
         setTable(table);
     }
 
     
     public abstract  String getSQL();
 
-    public void setTable(Table table) {
+    public void setTable(JTable table) {
         this.table = table;
         ColumnValuesMap = new LinkedHashMap<TableColumn, String>();
         for (TableColumn tc : table.getTableColumns()){
@@ -79,7 +80,7 @@ public abstract class InsertQuery implements SQLQuery {
         }
     }
 
-    public Table getTable() {
+    public JTable getTable() {
         return table;
     }
 

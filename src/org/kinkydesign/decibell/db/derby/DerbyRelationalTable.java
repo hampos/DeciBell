@@ -1,4 +1,6 @@
 /**
+ *  Class : DerbyRelationalTable
+ *  Date  : 23 Απρ 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -33,60 +35,61 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.db.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
+package org.kinkydesign.decibell.db.derby;
+
+import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
+import java.lang.reflect.Field;
 import org.kinkydesign.decibell.db.interfaces.JTable;
 
 /**
  *
- * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @author Pantelis Sopasakis
  */
-public interface SQLQuery {
+public class DerbyRelationalTable extends DerbyTable implements JRelationalTable {
 
-    public String getSQL();
+    private Field onField = null;
 
-    public JTable getTable();
+    private JTable masterTable = null;
 
-    public void setTable(JTable table);
+    public DerbyRelationalTable() {
+        super();
+    }
 
-    public void setColumns(Collection<? extends TableColumn> tableColumns);
+    /**
+     *
+     * @param onField
+     *      the {@link java.lang.reflect.Field } on which the relational table
+     *      is created.
+     * @param masterTable
+     *      the Table holding the onField {@link java.lang.reflect.Field }
+     */
+    public DerbyRelationalTable(Field onField, JTable masterTable) {
+        super();
+        this.onField = onField;
+        this.masterTable = masterTable;
+    }
 
-    public Collection<? extends TableColumn> getColumns();
+    public Field getOnField() {
+        return onField;
+    }
 
-    public void setPropositions(ArrayList<Proposition> propositions);
+    public void setOnField(Field onField) {
+        this.onField = onField;
+    }
 
-    public ArrayList<Proposition> getPropositions();
+    public JTable getMasterTable() {
+        return masterTable;
+    }
 
-    public boolean addProposition(Proposition proposition);
+    public void setMasterTable(JTable masterTable) {
+        this.masterTable = masterTable;
+    }
 
-    public Proposition replaceProposition(int position, Proposition proposition);
 
-    public Proposition removeProposition(Proposition proposition);
 
-    public Proposition removeProposition(int position);
 
-    public void setLong(TableColumn column, long value);
-
-    public void setShort(TableColumn column, short value);
-
-    public void setInt(TableColumn column, int value);
-
-    public void setDouble(TableColumn column, double value);
-
-    public void setFloat(TableColumn column, float value);
-
-    public void setString(TableColumn column, String value);
-
-    public void setNull(TableColumn column);
-
-    public void setUnknown(TableColumn column);
-
-    public void setInfinity(TableColumn column);
 
 
 }

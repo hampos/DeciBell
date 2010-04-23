@@ -47,6 +47,8 @@ import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 
 
 /**
@@ -63,8 +65,8 @@ public class ComponentRegistry {
 
     private static Map<DbConnector, ComponentRegistry> registries = new HashMap<DbConnector,ComponentRegistry>();
 
-    private Map<Class<? extends Component>,Table> components = new LinkedHashMap<Class<? extends Component>,Table>();
-    private Set<Table> relations = new HashSet<Table>();
+    private Map<Class<? extends Component>,JTable> components = new LinkedHashMap<Class<? extends Component>,JTable>();
+    private Set<JRelationalTable> relations = new HashSet<JRelationalTable>();
 
     public ComponentRegistry(DbConnector con) {
         if(!registries.containsKey(con)){
@@ -76,7 +78,7 @@ public class ComponentRegistry {
         return registries.get(con);
     }
 
-    public Collection<Table> values() {
+    public Collection<JTable> values() {
         return components.values();
     }
 
@@ -84,7 +86,7 @@ public class ComponentRegistry {
         return components.size();
     }
 
-    public Table remove(Object key) {
+    public JTable remove(Object key) {
         return components.remove((Class<? extends Component>)key);
     }
 
@@ -92,7 +94,7 @@ public class ComponentRegistry {
         components.putAll(m);
     }
 
-    public Table put(Class<? extends Component> key, Table value) {
+    public JTable put(Class<? extends Component> key, Table value) {
         return components.put(key, value);
     }
 
@@ -104,11 +106,11 @@ public class ComponentRegistry {
         return components.isEmpty();
     }
 
-    public Table get(Object key) {
+    public JTable get(Object key) {
         return components.get((Class<? extends Component>)key);
     }
 
-    public Set<Entry<Class<? extends Component>, Table>> entrySet() {
+    public Set<Entry<Class<? extends Component>, JTable>> entrySet() {
         return components.entrySet();
     }
 
@@ -124,11 +126,11 @@ public class ComponentRegistry {
         components.clear();
     }
 
-    public void setRelationTable(Table relTable) {
+    public void setRelationTable(JRelationalTable relTable) {
         relations.add(relTable);
     }
 
-    public Set<Table> getRelationTables() {
+    public Set<JRelationalTable> getRelationTables() {
         return relations;
     }
 

@@ -55,6 +55,8 @@ import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;
 
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
@@ -75,13 +77,13 @@ public class DerbyTablesGenerator extends TablesGenerator {
             tableCreation(c);
         }
         relTableCreation();
-        Iterator<Table> it = ComponentRegistry.getRegistry(connector).values().iterator();
+        Iterator<JTable> it = ComponentRegistry.getRegistry(connector).values().iterator();
         while (it.hasNext()) {
             connector.execute(it.next().getCreationSQL());
         }
-        it = registry.getRelationTables().iterator();
-        while (it.hasNext()) {
-            connector.execute(it.next().getCreationSQL());
+        Iterator<JRelationalTable> relit = registry.getRelationTables().iterator();
+        while (relit.hasNext()) {
+            connector.execute(relit.next().getCreationSQL());
         }
     }
 
@@ -177,7 +179,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
                             foreignColumn.setUnique(column.isUnique());
                             foreignColumn.setColumnName(field.getName() + DASH + col.getColumnName());
                             foreignColumn.setColumnType(col.getColumnType());
-                            foreignColumn.setForeignKey(registry.get((Class<? extends Component>)field.getType()),
+                            foreignColumn.setForeignKey((Table)registry.get((Class<? extends Component>)field.getType()),
                                     col, fk.onDelete(), fk.onUpdate());
                             foreignColumn.setReferencesClass((Class<? extends Component>) field.getType());
                             foreignColumn.setField(field);
@@ -197,7 +199,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
         }
         if (table.getPrimaryKeyColumns().isEmpty()) {
             if (c.getSuperclass() != Component.class) {
-                Table superTable = registry.get((Class<? extends Component>) c.getSuperclass());
+                Table superTable = (Table) registry.get((Class<? extends Component>) c.getSuperclass());
                 for (TableColumn col : superTable.getPrimaryKeyColumns()) {
                     TableColumn column = col.clone();
                     column.setForeignKey(superTable, col, OnModification.CASCADE, OnModification.NO_ACTION);
@@ -213,15 +215,15 @@ public class DerbyTablesGenerator extends TablesGenerator {
 
     private void relTableCreation() {
         for (Field f : relations) {
-            Table table = new DerbyTable();
+            JRelationalTable table = new DerbyRelationalTable();
             ParameterizedType pt = (ParameterizedType) f.getGenericType();
             for (Type arg : pt.getActualTypeArguments()) {
                 Class carg = (Class) arg;
                 table.setTableName(connector.getUser() + DOT
                         + f.getDeclaringClass().getName().replace(DOT, DASH)
                         + DASH+LogicalOperator.AND+DASH + carg.getName().replace(DOT, DASH)+DASH+ON+DASH+f.getName());
-                Table master = registry.get((Class<? extends Component>) f.getDeclaringClass());
-                Table slave = registry.get((Class<? extends Component>) carg);
+                Table master = (Table) registry.get((Class<? extends Component>) f.getDeclaringClass());
+                Table slave = (Table) registry.get((Class<? extends Component>) carg);
                 Set<TableColumn> masterKeys = master.getPrimaryKeyColumns();
                 Set<TableColumn> slaveKeys = slave.getPrimaryKeyColumns();
                 for (TableColumn col : masterKeys) {
@@ -246,6 +248,8 @@ public class DerbyTablesGenerator extends TablesGenerator {
                 master.addRelation(table);
                 slave.addRelation(table);
             }
+            table.setOnField(f);
+            table.setMasterTable(registry.get(f.getDeclaringClass()));
             registry.setRelationTable(table);
         }
     }

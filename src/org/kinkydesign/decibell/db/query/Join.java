@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 
 /**
  * @author Pantelis Sopasakis
@@ -68,14 +69,14 @@ public abstract class Join {
         this.joinType = joinType;
     }
 
-    public Table getBaseTable() {
+    public JTable getBaseTable() {
         if (column2column.isEmpty()) {
             return null;
         }
         return column2column.keySet().iterator().next().getMasterTable();
     }
 
-    public Table getRemoteTable() {
+    public JTable getRemoteTable() {
         if (column2column.isEmpty()) {
             return null;
         }
@@ -102,6 +103,9 @@ public abstract class Join {
 
     @Override
     public boolean equals(Object obj) {
+        if(obj == null || !this.getClass().equals(obj.getClass())){
+            return false;
+        }
         Join other = (Join) obj;
         return (other.getRemoteTable().equals(getRemoteTable()));
     }

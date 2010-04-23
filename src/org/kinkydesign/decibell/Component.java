@@ -57,6 +57,8 @@ import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 import org.kinkydesign.decibell.db.query.InsertQuery;
 import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.SQLQuery;
@@ -74,7 +76,7 @@ public abstract class Component<T extends Component> {
     public void delete(DeciBell db) throws NoUniqueFieldException {
         Class c = this.getClass();
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
-        Table table = registry.get(c);
+        Table table = (Table)registry.get(c);
         StatementPool pool = StatementPool.getPool(db.getDbConnector());
         Entry<PreparedStatement, SQLQuery> entry = pool.getDelete(table);
         PreparedStatement ps = entry.getKey();
@@ -128,7 +130,7 @@ public abstract class Component<T extends Component> {
     public void register(DeciBell db) throws DuplicateKeyException {
         Class c = this.getClass();
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
-        Table table = registry.get(c);
+        Table table = (Table)registry.get(c);
         StatementPool pool = StatementPool.getPool(db.getDbConnector());
         Entry<PreparedStatement, SQLQuery> entry = pool.getRegister(table);
         PreparedStatement ps = entry.getKey();
@@ -153,8 +155,8 @@ public abstract class Component<T extends Component> {
             }
             ps.execute();
             pool.recycleRegister(entry, table);
-            for( Table relTable : table.getRelations()){
-                entry = pool.getRegister(relTable);
+            for( JRelationalTable relTable : table.getRelations()){
+                entry = pool.getRegister((JTable)relTable);
                 ps = entry.getKey();
                 for(TableColumn col : relTable.getTableColumns()){
 

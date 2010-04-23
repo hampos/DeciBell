@@ -47,6 +47,7 @@ import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.query.Join.JOIN_TYPE;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 
 /**
  *
@@ -55,7 +56,7 @@ import org.kinkydesign.decibell.db.TableColumn;
  */
 public abstract class SelectQuery implements SQLQuery {
 
-    private Table table;
+    private JTable table;
     protected ArrayList<Proposition> propositions = new ArrayList<Proposition>();
     protected ArrayList<Join> joins = new ArrayList<Join>();
 
@@ -63,15 +64,15 @@ public abstract class SelectQuery implements SQLQuery {
 
     }
 
-    public SelectQuery(Table table) {
+    public SelectQuery(JTable table) {
         setTable(table);
     }
 
-    public Table getTable() {
+    public JTable getTable() {
         return table;
     }
 
-    public void setTable(Table table){
+    public void setTable(JTable table){
         this.table = table;
         initPropositions(table.getTableColumns());
     }
@@ -154,7 +155,7 @@ public abstract class SelectQuery implements SQLQuery {
         }
     }
 
-//    private void updatePropositions(Table table) {
+//    private void updatePropositions(JTable table) {
 //        Proposition p;
 //        for (TableColumn tc : table.getTableColumns()) {
 //            boolean shouldBeAdded = true;
@@ -196,7 +197,7 @@ public abstract class SelectQuery implements SQLQuery {
 //        }
 //        Iterator<Table> remoteTables = table.getReferencedTables().iterator();
 //        while (remoteTables.hasNext()) {
-//            Table tt = remoteTables.next();
+//            JTable tt = remoteTables.next();
 //            updatePropositions(tt);
 //        }
 //    }

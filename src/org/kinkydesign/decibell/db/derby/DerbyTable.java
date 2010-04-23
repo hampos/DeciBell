@@ -55,7 +55,7 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public final class DerbyTable extends Table {
+public class DerbyTable extends Table {
 
     /**
      * Construct a new Table object.

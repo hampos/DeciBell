@@ -47,6 +47,7 @@ import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.UpdateQuery;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JTable;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
@@ -56,7 +57,7 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
  */
 public class DerbyUpdateQuery extends UpdateQuery {
 
-    public DerbyUpdateQuery(Table table) {
+    public DerbyUpdateQuery(JTable table) {
         super(table);
     }
 
@@ -86,7 +87,7 @@ public class DerbyUpdateQuery extends UpdateQuery {
     }
 
     public static void main(String... args){
-          Table t3 = new DerbyTable();
+          JTable t3 = new DerbyTable();
         t3.setTableName("C");
         TableColumn c1 = new TableColumn("f");
         c1.setColumnType(SQLType.INTEGER);
@@ -98,7 +99,7 @@ public class DerbyUpdateQuery extends UpdateQuery {
         t3.addColumn(c2);
 
 
-        Table t2 = new DerbyTable();
+        JTable t2 = new DerbyTable();
         t2.setTableName("B");
         TableColumn b1 = new TableColumn("i");
         b1.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.NO_ACTION);
@@ -109,7 +110,7 @@ public class DerbyUpdateQuery extends UpdateQuery {
         b2.setColumnType(SQLType.VARCHAR);
         t2.addColumn(b2);
 
-        Table t = new DerbyTable();
+        JTable t = new DerbyTable();
         t.setTableName("A");
 
         TableColumn tc1 = new TableColumn("x");
