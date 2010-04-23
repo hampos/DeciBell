@@ -67,6 +67,12 @@ public class Infinity {
         }
     }
 
+    /**
+     * Given a proposition p returns the object corresponding to the infinity value
+     * of the value of the proposition.
+     * @param p
+     * @return
+     */
     public Object getInfinity(Proposition p){
         switch (p.getTableColumn().getColumnType()) {
             case INTEGER:

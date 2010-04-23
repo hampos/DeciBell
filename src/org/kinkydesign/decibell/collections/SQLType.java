@@ -35,7 +35,6 @@
  */
 package org.kinkydesign.decibell.collections;
 
-import com.sun.tools.internal.ws.processor.model.java.JavaArrayType;
 import java.sql.Types;
 
 /**
