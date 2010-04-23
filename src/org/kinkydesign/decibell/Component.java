@@ -49,6 +49,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,6 +62,7 @@ import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTable;
 import org.kinkydesign.decibell.db.query.InsertQuery;
@@ -160,7 +162,7 @@ public abstract class Component<T extends Component> {
             ps.execute();
             pool.recycleRegister(entry, table);
             for (JRelationalTable relTable : table.getRelations()) {
-                entry = pool.getRegister((JTable) relTable);
+                entry = pool.getRegister(relTable);
                 ps = entry.getKey();
                 Field field = relTable.getOnField();
                 field.setAccessible(true);
@@ -275,6 +277,7 @@ public abstract class Component<T extends Component> {
     }
 
     public ArrayList<T> search(DeciBell db) {
+        ArrayList<T> resultList = new ArrayList<T>();
         Class c = this.getClass();
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
         Table table = (Table) registry.get(c);
@@ -318,16 +321,121 @@ public abstract class Component<T extends Component> {
             }
             ResultSet rs = ps.executeQuery();
             pool.recycleDelete(entry, table);
-            ArrayList<T> resultList = new ArrayList<T>();
+            Constructor constructor = c.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            while (rs.next() != false) {
+                Object newObj = constructor.newInstance();
+                for (TableColumn col : table.getTableColumns()) {
+                    Field f = col.getField();
+                    f.setAccessible(true);
+                    if (col.isForeignKey()) {
+                        continue;
+                    } else if (col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                        XStream xstream = new XStream();
+                        f.set(newObj, xstream.fromXML((String) rs.getObject(col.getColumnName())));
+                    } else {
+                        f.set(newObj, rs.getObject(col.getColumnName()));
+                    }
+                }
+                for (Set<TableColumn> group : table.getForeignColumnsByGroup()) {
+                    Class refClass = group.iterator().next().getReferencesClass();
+                    Constructor refConstructor = refClass.getDeclaredConstructor();
+                    refConstructor.setAccessible(true);
+                    Object refObj = refConstructor.newInstance();
+                    for (TableColumn col : group) {
+                        Field f = col.getReferenceColumn().getField();
+                        f.setAccessible(true);
+                        f.set(refObj, rs.getObject(col.getColumnName()));
+                    }
+                    Component component = (Component) refObj;
+                    ArrayList tempList = component.search(db);
+                    if (tempList.isEmpty()) {
+                        throw new RuntimeException("Empty list on search for foreign objects");
+                    } else if (tempList.size() > 1) {
+                        throw new RuntimeException("Single foreign object list has size > 1");
+                    }
+                    Field f = group.iterator().next().getField();
+                    f.setAccessible(true);
+                    f.set(newObj, tempList.get(0));
+                }
+                for (JRelationalTable relTable : table.getRelations()) {
+                    ArrayList relList = new ArrayList();
+                    entry = pool.getSearch(relTable);
+                    ps = entry.getKey();
+                    query = entry.getValue();
+                    Field field = relTable.getOnField();
+                    field.setAccessible(true);
+                    i = 1;
+                    for (Proposition p : query.getPropositions()) {
+                        TableColumn col = p.getTableColumn();
+                        Field f = col.getField();
+                        f.setAccessible(true);
+                        try {
 
+                            if (!col.getReferenceTable().equals(relTable.getMasterTable())) {
+                                Infinity inf = new Infinity(db.getDbConnector());
+                                ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                            } else {
+                                Object obj = f.get(newObj);
+                                if (obj == null) {
+                                    Infinity inf = new Infinity(db.getDbConnector());
+                                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                                }
+                                ps.setObject(i, obj, col.getColumnType().getType());
+                            }
+                        } catch (NullPointerException ex) {
+                            Infinity inf = new Infinity(db.getDbConnector());
+                            ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                        }
+                        i++;
+                    }
+                    ResultSet relRs = ps.executeQuery();
+                    pool.recycleDelete(entry, relTable);
+                    while (relRs.next() != false) {
+                        Class fclass = relTable.getSlaveColumns().iterator().next().getField().getDeclaringClass();
+                        Constructor fconstuctor = fclass.getConstructor();
+                        fconstuctor.setAccessible(true);
+                        Object fobj = fconstuctor.newInstance();
+                        for (TableColumn col : relTable.getSlaveColumns()) {
+                            Field ffield = col.getField();
+                            ffield.setAccessible(true);
+                            ffield.set(fobj, relRs.getObject(col.getColumnName()));
+                        }
+                        Component component = (Component) fobj;
+                        ArrayList tempList = component.search(db);
+                        if (tempList.isEmpty()) {
+                            throw new RuntimeException("Empty list on search for foreign objects");
+                        } else if (tempList.size() > 1) {
+                            throw new RuntimeException("Single foreign object list has size > 1");
+                        }
+                        relList.addAll(tempList);
+                    }
+                    Field onField = relTable.getOnField();
+                    if (TypeMap.isSubClass(onField.getType(), Set.class)) {
+                        Set relSet = new HashSet(relList);
+                        onField.set(newObj, relSet);
+                    } else {
+                        onField.set(newObj, relList);
+                    }
+                }
+                resultList.add((T) newObj);
+            }
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
             throw new RuntimeException(ex);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
+        } catch (SecurityException ex) {
+            throw new RuntimeException(ex);
+        } catch (InstantiationException ex) {
+            throw new RuntimeException(ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex);
         }
-        return null;
+        return resultList;
     }
 
     public ArrayList<T> search(String... fields) {
@@ -336,5 +444,25 @@ public abstract class Component<T extends Component> {
 
     public void update() throws NoUniqueFieldException {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String toString() {
+        String str = "";
+        Class c = this.getClass();
+        str += "\n-----------------------------\n";
+        str += "Class = " + c.getName() + "\n";
+        for (Field f : c.getDeclaredFields()) {
+            try {
+                f.setAccessible(true);
+                str += "Field " + f.getName() + " = " + f.get(this) + "\n";
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        str += "-----------------------------\n";
+        return str;
     }
 }

@@ -38,9 +38,13 @@
 
 package org.kinkydesign.decibell.db.derby;
 
+import java.util.Set;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import java.lang.reflect.Field;
+import java.util.LinkedHashSet;
+import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 /**
  *
@@ -85,6 +89,26 @@ public class DerbyRelationalTable extends DerbyTable implements JRelationalTable
 
     public void setMasterTable(JTable masterTable) {
         this.masterTable = masterTable;
+    }
+
+    public Set<TableColumn> getMasterColumns() {
+        Set<TableColumn> masterColumns = new LinkedHashSet<TableColumn>();
+        for(TableColumn col : getTableColumns()){
+            if(col.getReferenceTable().equals(this.masterTable)){
+                masterColumns.add(col);
+            }
+        }
+        return masterColumns;
+    }
+
+    public Set<TableColumn> getSlaveColumns() {
+        Set<TableColumn> foreignColumns = new LinkedHashSet<TableColumn>();
+        for(TableColumn col : getTableColumns()){
+            if(!col.getReferenceTable().equals(this.masterTable)){
+                foreignColumns.add(col);
+            }
+        }
+        return foreignColumns;
     }
 
 
