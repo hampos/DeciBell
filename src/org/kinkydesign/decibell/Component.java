@@ -153,6 +153,13 @@ public abstract class Component<T extends Component> {
             }
             ps.execute();
             pool.recycleRegister(entry, table);
+            for( Table relTable : table.getRelations()){
+                entry = pool.getRegister(relTable);
+                ps = entry.getKey();
+                for(TableColumn col : relTable.getTableColumns()){
+
+                }
+            }
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
@@ -161,6 +168,7 @@ public abstract class Component<T extends Component> {
             if (ex.getErrorCode() == 23505) {
                 throw new DuplicateKeyException();
             } else {
+                System.out.println("SQL Error Code = "+ex.getErrorCode());
                 throw new RuntimeException(ex);
             }
         } catch (NullPointerException ex) {

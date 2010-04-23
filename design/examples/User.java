@@ -57,6 +57,9 @@ public class User extends Component<User> {
     @ForeignKey
     private UserGroup group;
 
+    @ForeignKey
+    private ArrayList<UserGroup> groups;
+
     @Entry
     private Resource resource = new Resource(5,"smthng");
 //
@@ -141,15 +144,13 @@ public class User extends Component<User> {
         this.userName = userName;
     }
 
+    public ArrayList<UserGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(ArrayList<UserGroup> groups) {
+        this.groups = groups;
+    }
+
     
-//    /*
-//    You can add methods you like without affecting the
-//    generation of the table.
-//     */
-//    public void myMethod() {
-//    }
-//
-//    void setUseName(String string) {
-//        throw new UnsupportedOperationException("Not yet implemented");
-//    }
 }/* end of class */

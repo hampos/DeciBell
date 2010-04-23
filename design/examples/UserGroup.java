@@ -17,8 +17,7 @@ public class UserGroup extends Component{
     @PrimaryKey
     private int id;
 
- //   @PrimaryKey
-    @Entry
+    @PrimaryKey
     private String name;
 
     public UserGroup(int id, String name) {

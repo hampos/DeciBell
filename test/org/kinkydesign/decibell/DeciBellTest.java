@@ -64,13 +64,13 @@ public class DeciBellTest {
 
      //   group.register(db);
         System.out.println("Group passed");
-     //   user.register(db);
+      //  user.register(db);
 
      //   user.delete(db);
         User u = new User();
-        u.setId(5);
+    //    u.setId(5);
     //    u.setAge(25);
-        u.delete(db);
+     //   u.delete(db);
 
         
 

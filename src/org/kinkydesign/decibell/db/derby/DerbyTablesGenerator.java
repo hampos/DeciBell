@@ -229,7 +229,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
                     column.setForeignKey(master, col,
                             OnModification.CASCADE, OnModification.NO_ACTION);
                     column.setColumnName(master.getTableName().split(DOT_REG,0)[1] + DASH + col.getColumnName());
-                    column.setField(f);
+              //      column.setField(f);
                     table.addColumn(column);
                 }
                 for (TableColumn col : slaveKeys) {
@@ -237,7 +237,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
                     column.setForeignKey(slave, col,
                             OnModification.CASCADE, OnModification.NO_ACTION);
                     column.setColumnName(slave.getTableName().split(DOT_REG,0)[1] + DASH + col.getColumnName());
-                    column.setField(f);
+               //     column.setField(f);
                     if(isList(f.getType())){
                         column.setPrimaryKey(false, false);
                     }
