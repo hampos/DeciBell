@@ -93,33 +93,16 @@ public class DerbyTable extends Table {
             if (column.isConstrained()) {
                 SQL += getConstraint(column) + SPACE;
             }
+            if(it.hasNext()){
             SQL += COMMA + NEWLINE;
+            }
         }
-//        if (!getForeignKeyColumns().isEmpty()) {
-//            Set<TableColumn> foreignColumns = new LinkedHashSet<TableColumn>(getForeignKeyColumns());
-//            while (!foreignColumns.isEmpty()) {
-//                it = foreignColumns.iterator();
-//                TableColumn fk = it.next();
-//                it.remove();
-//                String foreignKey = Fk + SPACE + LEFT_PAR + fk.getColumnName();
-//                String references = REFERENCES + SPACE + fk.getReferenceTableName() + LEFT_PAR + fk.getReferenceColumnName() + SPACE;
-//                String options = ON + SPACE + DELETE + SPACE + fk.getOnDelete() + SPACE + ON + SPACE + UPDATE + SPACE + fk.getOnUpdate();
-//                while (it.hasNext()) {
-//                    TableColumn c = it.next();
-//                    if (/*fk.getReferenceTable().equals(c.getReferenceTable()) &&*/fk.getField().equals(c.getField())) {
-//                        foreignKey += COMMA + c.getColumnName();
-//                        references += COMMA + c.getReferenceColumnName();
-//                        it.remove();
-//                    }
-//                }
-//                foreignKey += RIGHT_PAR + SPACE;
-//                references += RIGHT_PAR + SPACE;
-//                SQL += foreignKey + references + options + COMMA + NEWLINE;
-//            }
-//        }
         Set<Set<TableColumn>> foreignGroups = getForeignColumnsByGroup();
         if (!foreignGroups.isEmpty()) {
-            for (Set<TableColumn> group : foreignGroups) {
+            SQL += COMMA + NEWLINE;
+            Iterator<Set<TableColumn>> setIt = foreignGroups.iterator();
+            while(setIt.hasNext()) {
+                Set<TableColumn> group = setIt.next();
                 String foreignKey = "";
                 String references = "";
                 String options = "";
@@ -144,13 +127,17 @@ public class DerbyTable extends Table {
                 }
                 foreignKey += RIGHT_PAR + SPACE;
                 references += RIGHT_PAR + SPACE;
-                SQL += foreignKey + references + options + COMMA + NEWLINE;
+                SQL += foreignKey + references + options;
                 foreignKey = "";
                 references = "";
                 options = "";
+                if(setIt.hasNext()){
+                    SQL += COMMA + NEWLINE;
+                }
             }
         }
-        SQL += Pk + SPACE + LEFT_PAR;
+        if(!getPrimaryKeyColumns().isEmpty()){
+        SQL += COMMA + NEWLINE + Pk + SPACE + LEFT_PAR;
         it = getPrimaryKeyColumns().iterator();
         while (it.hasNext()) {
             SQL += it.next().getColumnName();
@@ -159,6 +146,7 @@ public class DerbyTable extends Table {
             }
         }
         SQL += RIGHT_PAR;
+        }
         SQL = SQL + NEWLINE + RIGHT_PAR;
         System.out.println(SQL);
         return SQL;

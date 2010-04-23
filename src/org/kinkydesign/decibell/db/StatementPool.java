@@ -74,10 +74,10 @@ public class StatementPool {
     public StatementPool(DbConnector con, int poolSize) {
         this.con = con;
         for (JTable t : ComponentRegistry.getRegistry(con).values()) {
-            initTable((Table)t);
+            initTable(t);
         }
         for (JRelationalTable rel : ComponentRegistry.getRegistry(con).getRelationTables()) {
-            initTable((Table)rel);
+            initRelTable(rel);
         }
         pools.put(con, this);
     }
@@ -182,6 +182,19 @@ public class StatementPool {
             delete.get(table).add(StatementFactory.createDelete(table, con));
             search.get(table).add(StatementFactory.createSearch(table, con));
             searchpk.get(table).add(StatementFactory.createSearchPK(table, con));
+            update.get(table).add(StatementFactory.createUpdate(table, con));
+        }
+    }
+
+    private void initRelTable(JRelationalTable table){
+        search.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        register.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        delete.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        update.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        for (int i = 0; i < poolSize; i++) {
+            register.get(table).add(StatementFactory.createRegister(table, con));
+            delete.get(table).add(StatementFactory.createDelete(table, con));
+            search.get(table).add(StatementFactory.createSearch(table, con));
             update.get(table).add(StatementFactory.createUpdate(table, con));
         }
     }

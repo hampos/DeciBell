@@ -198,6 +198,16 @@ public abstract class Table implements JTable {
         return relations;
     }
 
+    public Set<TableColumn> getUniqueColumns() {
+       Set<TableColumn> uniqueColumns = new LinkedHashSet<TableColumn>();
+       for (TableColumn c : getTableColumns()){
+           if (c.isUnique()){
+               uniqueColumns.add(c);
+           }
+       }
+       return uniqueColumns;
+   }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null || !obj.getClass().equals(this.getClass())) {

@@ -117,4 +117,6 @@ public interface JTable {
 
     Map<TableColumn, TableColumn> referenceRelation();
 
+    Set<TableColumn> getUniqueColumns();
+
 }

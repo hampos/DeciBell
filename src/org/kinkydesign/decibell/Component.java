@@ -45,10 +45,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Blob;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.kinkydesign.decibell.collections.SQLType;
@@ -76,7 +80,7 @@ public abstract class Component<T extends Component> {
     public void delete(DeciBell db) throws NoUniqueFieldException {
         Class c = this.getClass();
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
-        Table table = (Table)registry.get(c);
+        Table table = (Table) registry.get(c);
         StatementPool pool = StatementPool.getPool(db.getDbConnector());
         Entry<PreparedStatement, SQLQuery> entry = pool.getDelete(table);
         PreparedStatement ps = entry.getKey();
@@ -130,7 +134,7 @@ public abstract class Component<T extends Component> {
     public void register(DeciBell db) throws DuplicateKeyException {
         Class c = this.getClass();
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
-        Table table = (Table)registry.get(c);
+        Table table = (Table) registry.get(c);
         StatementPool pool = StatementPool.getPool(db.getDbConnector());
         Entry<PreparedStatement, SQLQuery> entry = pool.getRegister(table);
         PreparedStatement ps = entry.getKey();
@@ -155,23 +159,112 @@ public abstract class Component<T extends Component> {
             }
             ps.execute();
             pool.recycleRegister(entry, table);
-            for( JRelationalTable relTable : table.getRelations()){
-                entry = pool.getRegister((JTable)relTable);
+            for (JRelationalTable relTable : table.getRelations()) {
+                entry = pool.getRegister((JTable) relTable);
                 ps = entry.getKey();
-                for(TableColumn col : relTable.getTableColumns()){
-
+                Field field = relTable.getOnField();
+                field.setAccessible(true);
+                Object obj = null;
+                try {
+                    obj = field.get(this);
+                } catch (NullPointerException ex) {
+                    continue;
                 }
+                if (obj == null) {
+                    continue;
+                }
+                Collection collection = (Collection) obj;
+                for (Object o : collection) {
+                    i = 1;
+                    for (TableColumn col : relTable.getTableColumns()) {
+                        Field f = col.getField();
+                        f.setAccessible(true);
+                        if (col.getReferenceTable().equals(relTable.getMasterTable())) {
+                            System.out.println("MASTER " + col.getColumnName());
+                            ps.setObject(i, (Object) f.get(this), col.getColumnType().getType());
+                        } else {
+                            System.out.println("FOREIGN " + col.getColumnName());
+                            ps.setObject(i, (Object) f.get(o), col.getColumnType().getType());
+                        }
+                        i++;
+                    }
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+                pool.recycleRegister(entry, relTable);
             }
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
             throw new RuntimeException(ex);
         } catch (SQLException ex) {
-            if (ex.getErrorCode() == 23505) {
-                throw new DuplicateKeyException();
-            } else {
-                System.out.println("SQL Error Code = "+ex.getErrorCode());
-                throw new RuntimeException(ex);
+            if (ex.getSQLState().equals("23505")) {
+                String message = "Exception due to duplicate key. "
+                        + "Object of type "
+                        + this.getClass().getCanonicalName()
+                        + " with primary key";
+                Iterator<TableColumn> it =
+                        ComponentRegistry.getRegistry(db.getDbConnector()).get(this.getClass()).getPrimaryKeyColumns().iterator();
+                String PKs = "";
+                int count = 0;
+                while (it.hasNext()) {
+                    count++;
+                    Field PKfield = it.next().getField();
+                    PKfield.setAccessible(true);
+                    PKs += PKfield.getName();
+                    try {
+                        Field f =
+                                this.getClass().getDeclaredField(PKfield.getName());
+                        f.setAccessible(true);
+                        Object valueForField = f.get(this);
+                        PKs += " = " + valueForField.toString();
+                    } catch (final Exception ex1) {
+
+                        Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null,
+                                ex1);
+                    }
+                    if (it.hasNext()) {
+                        PKs += ", ";
+                    }
+                }
+                if (count > 1) {
+                    message += "s ";
+                }
+                message += " " + PKs;
+
+                Set<TableColumn> uniqueCols =
+                        ComponentRegistry.getRegistry(db.getDbConnector()).get(this.getClass()).getUniqueColumns();
+                count = 0;
+                String uniques = "";
+                if (!uniqueCols.isEmpty()) {
+                    message += " and unique field value";
+                    it = uniqueCols.iterator();
+                    while (it.hasNext()) {
+                        count++;
+                        Field uniqueField = it.next().getField();
+                        uniqueField.setAccessible(true);
+                        uniques += uniqueField.getName();
+                        try {
+                            Field f =
+                                    this.getClass().getDeclaredField(uniqueField.getName());
+                            f.setAccessible(true);
+                            Object valueForField = f.get(this);
+                            uniques += " = " + valueForField.toString();
+                        } catch (final Exception ex1) {
+
+                            Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null,
+                                    ex1);
+                        }
+                        if (it.hasNext()) {
+                            uniques += ", ";
+                        }
+                    }
+                    if (count > 1) {
+                        message += "s ";
+                    }
+                    message += " " + uniques;
+                }
+                throw new DuplicateKeyException(message);
             }
         } catch (NullPointerException ex) {
             throw new RuntimeException(ex);
@@ -181,28 +274,58 @@ public abstract class Component<T extends Component> {
 
     }
 
-    public ArrayList<T> search() {
+    public ArrayList<T> search(DeciBell db) {
+        Class c = this.getClass();
+        ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
+        Table table = (Table) registry.get(c);
+        StatementPool pool = StatementPool.getPool(db.getDbConnector());
+        Entry<PreparedStatement, SQLQuery> entry = pool.getSearch(table);
+        PreparedStatement ps = entry.getKey();
+        SQLQuery query = entry.getValue();
         try {
-            Class c = this.getClass();
-            Field[] fields = c.getDeclaredFields();
-            Constructor con = c.getConstructor();
-            Object obj = con.newInstance();
-            fields[1].set(obj, 3);
-            ArrayList<T> list = new ArrayList<T>();
-            list.add((T) obj);
-            return list;
-        } catch (InstantiationException ex) {
-            Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
+            int i = 1;
+            for (Proposition p : query.getPropositions()) {
+                TableColumn col = p.getTableColumn();
+                Field field = col.getField();
+                field.setAccessible(true);
+                Object obj = null;
+                try {
+                    obj = field.get(this);
+                    if (col.isForeignKey()) {
+                        Field f = col.getReferenceColumn().getField();
+                        f.setAccessible(true);
+                        System.out.println("***" + (Object) f.get(obj));
+                        ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
+                    } else if (obj == null || (col.isTypeNumeric() && obj.equals(0))) {
+                        Infinity inf = new Infinity(db.getDbConnector());
+                        System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
+                        ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                    } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                        System.out.println(obj);
+                        ps.setObject(i, obj, col.getColumnType().getType());
+                    } else {
+                        XStream xstream = new XStream();
+                        String xml = xstream.toXML(obj);
+                        System.out.println(xml);
+                        ps.setString(i, xml);
+                    }
+                } catch (NullPointerException ex) {
+                    Infinity inf = new Infinity(db.getDbConnector());
+                    System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
+                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                }
+                i++;
+            }
+            ResultSet rs = ps.executeQuery();
+            pool.recycleDelete(entry, table);
+            ArrayList<T> resultList = new ArrayList<T>();
+
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvocationTargetException ex) {
-            Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
-            Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
-            Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
         return null;
     }

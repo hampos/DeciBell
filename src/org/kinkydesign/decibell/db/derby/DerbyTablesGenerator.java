@@ -233,6 +233,9 @@ public class DerbyTablesGenerator extends TablesGenerator {
                     column.setColumnName(master.getTableName().split(DOT_REG,0)[1] + DASH + col.getColumnName());
               //      column.setField(f);
                     table.addColumn(column);
+                    if(isList(f.getType())){
+                        column.setPrimaryKey(false, false);
+                    }
                 }
                 for (TableColumn col : slaveKeys) {
                     TableColumn column = col.clone();
@@ -246,9 +249,10 @@ public class DerbyTablesGenerator extends TablesGenerator {
                     table.addColumn(column);
                 }
                 master.addRelation(table);
-                slave.addRelation(table);
+              //  slave.addRelation(table);
             }
             table.setOnField(f);
+            System.err.println(registry.get(f.getDeclaringClass()).getTableName());
             table.setMasterTable(registry.get(f.getDeclaringClass()));
             registry.setRelationTable(table);
         }
