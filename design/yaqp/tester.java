@@ -93,7 +93,7 @@ public class tester {
         ArrayList<Task> list = t.search(db);
         System.out.println(list.size());
         for (Task temp : list){
-            System.out.println(temp.uid);
+            System.out.println(temp);
         }
 
         

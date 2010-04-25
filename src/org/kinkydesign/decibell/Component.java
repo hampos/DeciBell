@@ -127,10 +127,10 @@ public abstract class Component<T extends Component> {
                 Object obj = null;
                 try {
                     obj = field.get(this);
+                    Infinity inf = new Infinity(db.getDbConnector());
                     if (col.isForeignKey()) {
                         Field f = col.getReferenceColumn().getField();
                         f.setAccessible(true);
-                        // System.out.println("***" + (Object) f.get(obj));
                         ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
                     } else if (obj == null || (col.isTypeNumeric() && obj.equals(0))) {
                         // Here '0' stands for the numeric counterpart for 'null'
@@ -138,16 +138,17 @@ public abstract class Component<T extends Component> {
                         // A reasonable way would be to allow the user to define the
                         // null value himself (e.g. could be -1) in some cases...
                         // in general sth that is impotent to be used!
-                        Infinity inf = new Infinity(db.getDbConnector());
+                        
                         // System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
                         ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
                     } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
                         // System.out.println(obj);
+                        ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                    } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
                         ps.setObject(i, obj, col.getColumnType().getType());
                     } else {
                         XStream xstream = new XStream();
                         String xml = xstream.toXML(obj);
-                        // System.out.println(xml);
                         ps.setString(i, xml);
                     }
                 } catch (NullPointerException ex) {
@@ -206,7 +207,6 @@ public abstract class Component<T extends Component> {
                 } else {
                     XStream xstream = new XStream();
                     String xml = xstream.toXML(field.get(this));
-                    // System.out.println(xml);
                     ps.setString(i, xml);
                 }
                 i++;
@@ -234,10 +234,8 @@ public abstract class Component<T extends Component> {
                         Field f = col.getField();
                         f.setAccessible(true);
                         if (col.getReferenceTable().equals(relTable.getMasterTable())) {
-                            System.out.println("MASTER " + col.getColumnName());
                             ps.setObject(i, (Object) f.get(this), col.getColumnType().getType());
                         } else {
-                            System.out.println("FOREIGN " + col.getColumnName());
                             ps.setObject(i, (Object) f.get(o), col.getColumnType().getType());
                         }
                         i++;
@@ -371,7 +369,6 @@ public abstract class Component<T extends Component> {
                     if (col.isForeignKey()) {
                         Field f = col.getReferenceColumn().getField();
                         f.setAccessible(true);
-                        //System.out.println("***" + (Object) f.get(obj));
                         ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
                     } else if (obj == null || (col.isTypeNumeric() && (obj.equals(-1) || obj.equals(-1L) || obj.equals((short) -1)))) {
                         Infinity inf = new Infinity(db.getDbConnector());
@@ -380,10 +377,11 @@ public abstract class Component<T extends Component> {
                     } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
                         //System.out.println(obj);
                         ps.setObject(i, obj, col.getColumnType().getType());
+                    } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                        ps.setObject(i, obj, col.getColumnType().getType());
                     } else {
                         XStream xstream = new XStream();
                         String xml = xstream.toXML(obj);
-                        //System.out.println(xml);
                         ps.setString(i, xml);
                     }
                 } catch (NullPointerException ex) {
@@ -476,9 +474,9 @@ public abstract class Component<T extends Component> {
                  */
                 for (JRelationalTable relTable : table.getRelations()) {
                     ArrayList relList = new ArrayList();
-                    entry = pool.getSearch(relTable);
-                    ps = entry.getKey();
-                    query = entry.getValue();
+                    Entry<PreparedStatement, SQLQuery> fentry = pool.getSearch(relTable);
+                    ps = fentry.getKey();
+                    query = fentry.getValue();
                     Field field = relTable.getOnField();
                     field.setAccessible(true);
                     i = 1;
@@ -487,7 +485,6 @@ public abstract class Component<T extends Component> {
                         Field f = col.getField();
                         f.setAccessible(true);
                         try {
-
                             if (!col.getReferenceTable().equals(relTable.getMasterTable())) {
                                 Infinity inf = new Infinity(db.getDbConnector());
                                 ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
@@ -507,6 +504,7 @@ public abstract class Component<T extends Component> {
                     }
                     ResultSet relRs = ps.executeQuery();
                     pool.recycleSearch(entry, relTable);
+                    pool.recycleSearch(fentry, relTable);
                     while (relRs.next() != false) {
                         Class fclass = relTable.getSlaveColumns().iterator().next().getField().getDeclaringClass();
                         Constructor fconstuctor = fclass.getConstructor();
@@ -526,6 +524,7 @@ public abstract class Component<T extends Component> {
                         }
                         relList.addAll(tempList);
                     }
+
                     Field onField = relTable.getOnField();
                     if (TypeMap.isSubClass(onField.getType(), Set.class)) {
                         Set relSet = new HashSet(relList);
@@ -551,6 +550,7 @@ public abstract class Component<T extends Component> {
         } catch (InvocationTargetException ex) {
             throw new RuntimeException(ex);
         }
+
         return resultList;
     }
 
