@@ -37,9 +37,8 @@ package org.kinkydesign.decibell.db.query;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 /**
  *
@@ -48,15 +47,22 @@ import org.kinkydesign.decibell.db.interfaces.JTable;
  */
 public interface SQLQuery {
 
+    /**
+     * Returns the SQL-code for the underlying query. This is specific to the choise
+     * of the SQL server implementation since the SQL command varies among the various
+     * SQL server implementations.
+     * @return
+     *      SQL command as a String.
+     */
     public String getSQL();
 
     public JTable getTable();
 
     public void setTable(JTable table);
 
-    public void setColumns(Collection<? extends TableColumn> tableColumns);
+    public void setColumns(Collection<? extends JTableColumn> tableColumns);
 
-    public Collection<? extends TableColumn> getColumns();
+    public Collection<? extends JTableColumn> getColumns();
 
     public void setPropositions(ArrayList<Proposition> propositions);
 
@@ -70,23 +76,23 @@ public interface SQLQuery {
 
     public Proposition removeProposition(int position);
 
-    public void setLong(TableColumn column, long value);
+    public void setLong(JTableColumn column, long value);
 
-    public void setShort(TableColumn column, short value);
+    public void setShort(JTableColumn column, short value);
 
-    public void setInt(TableColumn column, int value);
+    public void setInt(JTableColumn column, int value);
 
-    public void setDouble(TableColumn column, double value);
+    public void setDouble(JTableColumn column, double value);
 
-    public void setFloat(TableColumn column, float value);
+    public void setFloat(JTableColumn column, float value);
 
-    public void setString(TableColumn column, String value);
+    public void setString(JTableColumn column, String value);
 
-    public void setNull(TableColumn column);
+    public void setNull(JTableColumn column);
 
-    public void setUnknown(TableColumn column);
+    public void setUnknown(JTableColumn column);
 
-    public void setInfinity(TableColumn column);
+    public void setInfinity(JTableColumn column);
 
 
 }

@@ -91,9 +91,9 @@ public class DerbyRelationalTable extends DerbyTable implements JRelationalTable
         this.masterTable = masterTable;
     }
 
-    public Set<TableColumn> getMasterColumns() {
-        Set<TableColumn> masterColumns = new LinkedHashSet<TableColumn>();
-        for(TableColumn col : getTableColumns()){
+    public Set<JTableColumn> getMasterColumns() {
+        Set<JTableColumn> masterColumns = new LinkedHashSet<JTableColumn>();
+        for(JTableColumn col : getTableColumns()){
             if(col.getReferenceTable().equals(this.masterTable)){
                 masterColumns.add(col);
             }
@@ -101,9 +101,9 @@ public class DerbyRelationalTable extends DerbyTable implements JRelationalTable
         return masterColumns;
     }
 
-    public Set<TableColumn> getSlaveColumns() {
-        Set<TableColumn> foreignColumns = new LinkedHashSet<TableColumn>();
-        for(TableColumn col : getTableColumns()){
+    public Set<JTableColumn> getSlaveColumns() {
+        Set<JTableColumn> foreignColumns = new LinkedHashSet<JTableColumn>();
+        for(JTableColumn col : getTableColumns()){
             if(!col.getReferenceTable().equals(this.masterTable)){
                 foreignColumns.add(col);
             }

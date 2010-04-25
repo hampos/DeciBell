@@ -1,6 +1,6 @@
 /**
  *  Class : DerbyDeleteQuery
- *  Date  : 15 Απρ 2010
+ *  Date  : 15 Apr 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -39,24 +39,63 @@ package org.kinkydesign.decibell.db.derby.query;
 
 import java.util.Iterator;
 import org.kinkydesign.decibell.collections.LogicalOperator;
-import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.derby.DerbyTable;
 import org.kinkydesign.decibell.db.query.DeleteQuery;
 import org.kinkydesign.decibell.db.query.Proposition;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
-import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.derby.util.DerbyInfinity;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 /**
+ * <p  align="justify" style="width:60%">
+ * The general structure of a </code>DELETE</code> statement in Derby is : <code>
+ * DELETE FROM table-Name [[AS] correlation-Name] [WHERE clause]</code>. This class
+ * creates such statements (with out making any use of the <code>'AS'</code> (optional)
+ * part of the statement.
+ * </p>
+ * <p  align="justify" style="width:60%">
+ * A <code>DELETE</code> query is an SQL query used to remove one or many rows
+ * from a table according to some criteria defined here by a set of {@link Proposition propositions}.
+ * Note that, in case a table column is endowed with the <code>ON DELETE CASCADE</code> property,
+ * a deletion of a row in a table, might result in the automatic deletion of entries
+ * in other tables.  Finally, note that a delete query deletes data entries in a
+ * table but will not delete the table itself not will it affect the structure of the tables
+ * by any means.
+ * </p>
+ * <p  align="justify" style="width:60%">
+ * A DerbyDeleteQuery is an implementation of the abstract class {@link
+ * DeleteQuery } appropriate for the Derby JDBC server. According to the Derby specifications
+ * the type of delete statements used in DeciBell are called <code>searched deletion</code>
+ * in constradiction with the <code>positioned deletion</code> which is not used here. The
+ * following excerpt from the Derby reference manual is copied below for easy reference:
+ * </p>
+ * <p  align="justify" style="width:60%">
+ * A searched delete statement depends on the table being updated, all of its
+ * conglomerates (units of storage such as heaps or indexes), and any other table named
+ * in the WHERE clause. A CREATE or DROP INDEX statement for the target table of a
+ * prepared searched delete statement invalidates the prepared searched delete statement.
+ * </p>
  *
  * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
+ * @see DeleteQuery
  */
 public class DerbyDeleteQuery extends DeleteQuery {
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * Constructs a new deletion query given the table for which the query is constructed.
+     * The general structure of a deletion query is <code>DELETE FROM {TABLE_NAME} WHERE
+     * {PROPOSITION 1} {LOGICAL OPERATOR} {PROPOSITION 2} ... </code>. The list of
+     * propositions and the logical operators are defined in the sequel by means of
+     * setter methods.
+     * </p>
+     * @param table
+     *      Table for which the deletion query is constructed
+     * @see DerbyDeleteQuery#setPropositions(java.util.ArrayList) set propositions
+     *
+     */
     public DerbyDeleteQuery(JTable table) {
         super(table);
     }
@@ -87,7 +126,7 @@ public class DerbyDeleteQuery extends DeleteQuery {
         return sql;
     }
 
-    public void setInfinity(TableColumn column) {
+    public void setInfinity(JTableColumn column) {
         SQLType columnType = column.getColumnType();
         switch (columnType) {
             case INTEGER:
@@ -114,57 +153,5 @@ public class DerbyDeleteQuery extends DeleteQuery {
                 setString(column, "%%");
 
         }
-    }
-
-    public static void main(String... args) {
-        JTable t3 = new DerbyTable();
-        t3.setTableName("C");
-        TableColumn c1 = new TableColumn("f");
-        c1.setColumnType(SQLType.INTEGER);
-        c1.setPrimaryKey(true, false);
-        t3.addColumn(c1);
-        TableColumn c2 = new TableColumn("k");
-        c2.setColumnType(SQLType.VARCHAR);
-        c2.setPrimaryKey(true, true);
-        t3.addColumn(c2);
-
-
-        JTable t2 = new DerbyTable();
-        t2.setTableName("B");
-        TableColumn b1 = new TableColumn("i");
-        b1.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.NO_ACTION);
-        b1.setColumnType(SQLType.INTEGER);
-        b1.setPrimaryKey(true, false);
-        t2.addColumn(b1);
-        TableColumn b2 = new TableColumn("j");
-        b2.setColumnType(SQLType.VARCHAR);
-        t2.addColumn(b2);
-        JTable t = new DerbyTable();
-        t.setTableName("A");
-
-        TableColumn tc1 = new TableColumn("x");
-        tc1.setColumnType(SQLType.INTEGER);
-        tc1.setForeignKey(t2, b1, OnModification.CASCADE, OnModification.NO_ACTION);
-        t.addColumn(tc1);
-
-        TableColumn tc2 = new TableColumn("y");
-        tc2.setColumnType(SQLType.VARCHAR);
-        tc2.setForeignKey(t2, b1, OnModification.CASCADE, OnModification.NO_ACTION);
-        t.addColumn(tc2);
-
-        TableColumn tc3 = new TableColumn("z");
-        tc3.setColumnType(SQLType.INTEGER);
-        tc3.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.CASCADE);
-        tc3.setPrimaryKey(true, true);
-        t.addColumn(tc3);
-
-        TableColumn tc4 = new TableColumn("w");
-        tc4.setColumnType(SQLType.INTEGER);
-        tc4.setForeignKey(t3, c2, OnModification.CASCADE, OnModification.CASCADE);
-        tc4.setPrimaryKey(true, true);
-        t.addColumn(tc4);
-
-        DerbyDeleteQuery DD = new DerbyDeleteQuery(t);
-        System.out.println(DD.getSQL());
     }
 }

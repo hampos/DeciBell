@@ -45,9 +45,9 @@ import java.util.HashSet;
 import java.util.Set;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 /**
  *
@@ -67,8 +67,8 @@ public abstract class DeleteQuery implements SQLQuery {
         setTable(table);
     }
 
-    private void initPropositions(Collection<? extends TableColumn> columns){
-        for (TableColumn tc : columns){
+    private void initPropositions(Collection<? extends JTableColumn> columns){
+        for (JTableColumn tc : columns){
             Proposition p = new Proposition();
             p.setTableColumn(tc);
             if (tc.getColumnType().equals(SQLType.VARCHAR)
@@ -104,15 +104,15 @@ public abstract class DeleteQuery implements SQLQuery {
         return table;
     }
 
-    public Collection<? extends TableColumn> getColumns() {
-        Set<TableColumn> columns = new HashSet<TableColumn>();
+    public Collection<? extends JTableColumn> getColumns() {
+        Set<JTableColumn> columns = new HashSet<JTableColumn>();
         for(Proposition p : propositions){
             columns.add(p.getTableColumn());
         }
         return columns;
     }
 
-    public void setColumns(Collection<? extends TableColumn> tableColumns) {
+    public void setColumns(Collection<? extends JTableColumn> tableColumns) {
         initPropositions(tableColumns);
     }
 
@@ -142,7 +142,7 @@ public abstract class DeleteQuery implements SQLQuery {
         return p;
     }
 
-    public void setString(TableColumn column, String stringValue) {
+    public void setString(JTableColumn column, String stringValue) {
         if (!(column.getColumnType().equals(SQLType.VARCHAR)
                 || column.getColumnType().equals(SQLType.CHAR))) {
             throw new IllegalArgumentException("Tried to assign String value to non-String"
@@ -158,7 +158,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + "does not belong to any proposition.");
     }
 
-    public void setLong(TableColumn column, long longValue) {
+    public void setLong(JTableColumn column, long longValue) {
         if (!column.getColumnType().equals(SQLType.BIGINT)) {
             throw new IllegalArgumentException("Tried to assign Long value to non-Long Column. "
                     + "Column Type: " + column.getColumnType().toString());
@@ -170,7 +170,7 @@ public abstract class DeleteQuery implements SQLQuery {
         }
     }
 
-    public void setLeftLong(TableColumn column, long longValue) {
+    public void setLeftLong(JTableColumn column, long longValue) {
         if (!column.getColumnType().equals(SQLType.BIGINT)) {
             throw new IllegalArgumentException("Tried to assign Long value to non-Long Column. "
                     + "Column Type: " + column.getColumnType().toString());
@@ -185,7 +185,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + "does not belong to any proposition.");
     }
 
-    public void setRightLong(TableColumn column, long longValue) {
+    public void setRightLong(JTableColumn column, long longValue) {
         if (!column.getColumnType().equals(SQLType.BIGINT)) {
             throw new IllegalArgumentException("Tried to assign Long value to non-Long Column. "
                     + "Column Type: " + column.getColumnType().toString());
@@ -200,7 +200,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + "does not belong to any proposition.");
     }
 
-    public void setShort(TableColumn column, short shortValue) {
+    public void setShort(JTableColumn column, short shortValue) {
         if (!column.getColumnType().equals(SQLType.SMALLINT)) {
             throw new IllegalArgumentException("Tried to assign Short value to non-Short Column. "
                     + "Column Type: " + column.getColumnType().toString());
@@ -212,7 +212,7 @@ public abstract class DeleteQuery implements SQLQuery {
         }
     }
 
-    public void setLeftShort(TableColumn column, short shortValue) {
+    public void setLeftShort(JTableColumn column, short shortValue) {
         if (!column.getColumnType().equals(SQLType.SMALLINT)) {
             throw new IllegalArgumentException("Tried to assign Short value to non-Short Column. "
                     + "Column Type: " + column.getColumnType().toString());
@@ -227,7 +227,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + "does not belong to any proposition.");
     }
 
-    public void setRightShort(TableColumn column, short shortValue) {
+    public void setRightShort(JTableColumn column, short shortValue) {
         if (!column.getColumnType().equals(SQLType.SMALLINT)) {
             throw new IllegalArgumentException("Tried to assign Short value to non-Short Column. "
                     + "Column Type: " + column.getColumnType().toString());
@@ -242,7 +242,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + "does not belong to any proposition.");
     }
 
-    public void setInt(TableColumn column, int integerValue) {
+    public void setInt(JTableColumn column, int integerValue) {
         if (!(column.getColumnType().equals(SQLType.INTEGER)
                 || column.getColumnType().equals(SQLType.BIGINT))) {
             throw new IllegalArgumentException("Tried to assign Integer value to non-Integer/Long Column. "
@@ -255,7 +255,7 @@ public abstract class DeleteQuery implements SQLQuery {
         }
     }
 
-    public void setLeftInt(TableColumn column, int integerValue) {
+    public void setLeftInt(JTableColumn column, int integerValue) {
         if (!(column.getColumnType().equals(SQLType.INTEGER)
                 || column.getColumnType().equals(SQLType.BIGINT))) {
             throw new IllegalArgumentException("Tried to assign Integer value to non-Integer/Long Column. "
@@ -271,7 +271,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + "does not belong to any proposition.");
     }
 
-    public void setRightInt(TableColumn column, int integerValue) {
+    public void setRightInt(JTableColumn column, int integerValue) {
         if (!(column.getColumnType().equals(SQLType.INTEGER)
                 || column.getColumnType().equals(SQLType.BIGINT))) {
             throw new IllegalArgumentException("Tried to assign Integer value to non-Integer/Long Column. "
@@ -287,7 +287,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + "does not belong to any proposition.");
     }
 
-    public void setDouble(TableColumn column, double doubleValue) {
+    public void setDouble(JTableColumn column, double doubleValue) {
         if (!(column.getColumnType().equals(SQLType.DOUBLE)
                 || column.getColumnType().equals(SQLType.DECIMAL)
                 || column.getColumnType().equals(SQLType.REAL))) {
@@ -301,7 +301,7 @@ public abstract class DeleteQuery implements SQLQuery {
         }
     }
 
-    public void setLeftDouble(TableColumn column, double doubleValue) {
+    public void setLeftDouble(JTableColumn column, double doubleValue) {
         if (!(column.getColumnType().equals(SQLType.DOUBLE)
                 || column.getColumnType().equals(SQLType.DECIMAL)
                 || column.getColumnType().equals(SQLType.REAL))) {
@@ -318,7 +318,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + " does not belong to any proposition.");
     }
 
-    public void setRightDouble(TableColumn column, double doubleValue) {
+    public void setRightDouble(JTableColumn column, double doubleValue) {
         if (!(column.getColumnType().equals(SQLType.DOUBLE)
                 || column.getColumnType().equals(SQLType.DECIMAL)
                 || column.getColumnType().equals(SQLType.REAL))) {
@@ -335,7 +335,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + " does not belong to any proposition.");
     }
 
-    public void setFloat(TableColumn column, float floatValue) {
+    public void setFloat(JTableColumn column, float floatValue) {
         if (!(column.getColumnType().equals(SQLType.DOUBLE)
                 || column.getColumnType().equals(SQLType.DECIMAL)
                 || column.getColumnType().equals(SQLType.REAL))) {
@@ -349,7 +349,7 @@ public abstract class DeleteQuery implements SQLQuery {
         }
     }
 
-    public void setLeftFloat(TableColumn column, float floatValue) {
+    public void setLeftFloat(JTableColumn column, float floatValue) {
         if (!(column.getColumnType().equals(SQLType.DOUBLE)
                 || column.getColumnType().equals(SQLType.DECIMAL)
                 || column.getColumnType().equals(SQLType.REAL))) {
@@ -366,7 +366,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + " does not belong to any proposition.");
     }
 
-    public void setRightFloat(TableColumn column, float floatValue) {
+    public void setRightFloat(JTableColumn column, float floatValue) {
         if (!(column.getColumnType().equals(SQLType.DOUBLE)
                 || column.getColumnType().equals(SQLType.DECIMAL)
                 || column.getColumnType().equals(SQLType.REAL))) {
@@ -383,7 +383,7 @@ public abstract class DeleteQuery implements SQLQuery {
                 + " does not belong to any proposition.");
     }
 
-    public void setNull(TableColumn column) {
+    public void setNull(JTableColumn column) {
         for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column)) {
                 p.setNull();
@@ -392,7 +392,7 @@ public abstract class DeleteQuery implements SQLQuery {
         }
     }
 
-    public void setUnknown(TableColumn column) {
+    public void setUnknown(JTableColumn column) {
         for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column)) {
                 p.setUnknown();
@@ -401,7 +401,7 @@ public abstract class DeleteQuery implements SQLQuery {
         }
     }
 
-    public abstract void setInfinity(TableColumn column);
+    public abstract void setInfinity(JTableColumn column);
 
 
 

@@ -46,10 +46,12 @@ import org.kinkydesign.decibell.Component;
 
 /**
  *
+ * <p align="justify" style="width:60%">
  * A <code>foreign key</code> in an entity (component) is an attribute that points to
  * the primary key of another entity.
+ * </p>
  *
- * <p>
+ * <p align="justify" style="width:60%">
  * An attribute or a set of attributes in some entity
  * , references an attribute or a set of attributes in another entity by a <code>foreign
  * key constraint</code>. The purpose of the foreign key is to ensure referential integrity
@@ -58,7 +60,7 @@ import org.kinkydesign.decibell.Component;
  * an example of how you can use <code>@ForeignKey</code> in your source code. Suppose you have
  * two classes, namely <code>User</code> and <code>UserGroup</code> as follows:
  * </p>
- * <p>
+ * <p align="justify" style="width:60%">
  * <code>
  * class UserGroup {<br/><br/>
  * 
@@ -78,14 +80,14 @@ import org.kinkydesign.decibell.Component;
  * </code>
  * </p>
  * 
- * <p>
+ * <p align="justify" style="width:60%">
  * The you can use the annotation <code>@{@link ForeignKey }</code> to declare that 
  * the field <code>public UserGroup group;</code> points to the entity <code>UserGroup</code>.
  * We note again here that every entity must be endowed with a <code>@{@link PrimaryKey }</code>.
  * So modifying slightly the above code, yields:
  * </p>
  * 
- * <p>
+ * <p align="justify" style="width:60%">
  * <code>
  * class UserGroup extends {@link Component } {<br/><br/></code>
  * 
@@ -101,7 +103,6 @@ import org.kinkydesign.decibell.Component;
  *      <code>@{@link ForeignKey } public UserGroup group;<br/><br/></code>
  * 
  * }
- * </code>
  * </p>
  * 
  * @author Pantelis Sopasakis

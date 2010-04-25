@@ -1,4 +1,6 @@
 /**
+ *  Class : Task
+ *  Date  : Apr 25, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -34,31 +36,63 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.exceptions;
+
+package yaqp;
+
+import java.net.URI;
+import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.ForeignKey;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
- * A Duplicate Key Exception is a kind of exception thrown if one attempts to violate
- * a primary key or unique field constraint violation.
+ *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class DuplicateKeyException extends Exception {
+public class Task extends Component<Task> {
 
-    /**
-     * Creates a new instance of <code>DuplicateKeyException</code> without detail message.
-     * The detail message is <code>null</code>.
-     */
-    public DuplicateKeyException() {
+    public Task() {
     }
 
 
-    /**
-     * Constructs an instance of <code>DuplicateKeyException</code> with the
-     * specified detail message.
-     * @param msg
-     *      The detail message.
-     */
-    public DuplicateKeyException(String msg) {
-        super(msg);
+
+    @PrimaryKey
+    public int uid = -1;
+
+    @Entry
+    public int taskStatus = -1;
+
+    @Entry
+    public URI resultURI;
+
+    @ForeignKey
+    public ErrorReport er;
+
+    @Entry
+    public long timeStart = -1L;
+
+    @Entry
+    public long timeFinish = -1L;
+
+    @Entry
+    public long durationMS = -1L;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass()!=getClass()) return false;
+        return uid==((Task)obj).uid;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + this.uid;
+        return hash;
+    }
+
+
+
+    
+
 }

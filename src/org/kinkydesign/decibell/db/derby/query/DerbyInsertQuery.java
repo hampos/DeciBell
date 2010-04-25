@@ -43,23 +43,47 @@ import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.derby.DerbyTable;
 import org.kinkydesign.decibell.db.query.InsertQuery;
 import org.kinkydesign.decibell.db.query.UpdateQuery;
-import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
- *
+ * <p  align="justify" style="width:60%">
+ * An implementation of the absrtact class {@link InsertQuery } appropriate for the
+ * Derby JDBC server. Produces SQL queries which can be applied to insert data in
+ * some existing table of a database. An <code>INSERT</code> statement in Derby
+ * creates a row or set of such and stores them in the named table. The
+ * number of values assigned in an <code>INSERT</code> statement must be the same as the number of
+ * specified or implied columns.
+ * Whenever you insert into a table which has generated columns, Derby calculates the
+ * values of those columns. According to the Derby Reference Manual, the syntax of a
+ * general <code>INSERT</code> statement is
+ * <pre>INSERT INTO table-Name
+ *    [ (Simple-column-Name [ , Simple-column-Name]* )
+ *       Query [ ORDER BY clause ]
+ *             [ result offset clause ]
+ *             [ fetch first clause ]
+
+ * </pre>
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
 public class DerbyInsertQuery extends InsertQuery {
 
+    /**
+     *
+     * Consrtucts a new Derby Insert Query for a given Table.
+     * @param table
+     *      Table for which the Insert Query is constructed.
+     */
     public DerbyInsertQuery(JTable table) {
         super(table);
     }
 
     public DerbyInsertQuery() {
+        super();
     }
 
 
@@ -69,9 +93,9 @@ public class DerbyInsertQuery extends InsertQuery {
         String sql = INSERT_INTO + SPACE + getTable().getTableName() + SPACE;
         String tableCols = LEFT_PAR;
         String vals = LEFT_PAR;
-        Iterator<Entry<TableColumn, String>> iterator = ColumnValuesMap.entrySet().iterator();
+        Iterator<Entry<JTableColumn, String>> iterator = ColumnValuesMap.entrySet().iterator();
         while (iterator.hasNext()){
-            Entry<TableColumn, String> e = iterator.next();
+            Entry<JTableColumn, String> e = iterator.next();
             tableCols += e.getKey().getColumnName();
             if (e.getValue() == null){
                 vals += QUESTION_MARK;
@@ -89,25 +113,6 @@ public class DerbyInsertQuery extends InsertQuery {
         return sql;
     }
 
-    public static void main(String... args){
-        JTable t = new DerbyTable();
-        t.setTableName("MY_TABLE");
-
-        TableColumn tc1 = new TableColumn("A");
-        tc1.setColumnType(SQLType.INTEGER);
-        t.addColumn(tc1);
-
-        TableColumn tc2 = new TableColumn("B");
-        tc2.setColumnType(SQLType.INTEGER);
-        t.addColumn(tc2);
-
-        InsertQuery a = new DerbyInsertQuery(t);
-//        a.setDouble(tc2, 3);
-//        a.setString(tc1, "this is a string");
-        System.out.println(a.getSQL());
-
-        UpdateQuery b = new DerbyUpdateQuery(t);
-        System.out.println(b.getSQL());
-    }
+    
     
 }

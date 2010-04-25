@@ -1,4 +1,4 @@
-/**
+/*
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -34,31 +34,9 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.exceptions;
-
-/**
- * A Duplicate Key Exception is a kind of exception thrown if one attempts to violate
- * a primary key or unique field constraint violation.
- * @author Pantelis Sopasakis
- * @author Charalampos Chomenides
+/*
+ * Main package of the DeciBell&copy; project. Most users will only need to interact
+ * with the classes of this package exclusively.
  */
-public class DuplicateKeyException extends Exception {
+package org.kinkydesign.decibell;
 
-    /**
-     * Creates a new instance of <code>DuplicateKeyException</code> without detail message.
-     * The detail message is <code>null</code>.
-     */
-    public DuplicateKeyException() {
-    }
-
-
-    /**
-     * Constructs an instance of <code>DuplicateKeyException</code> with the
-     * specified detail message.
-     * @param msg
-     *      The detail message.
-     */
-    public DuplicateKeyException(String msg) {
-        super(msg);
-    }
-}

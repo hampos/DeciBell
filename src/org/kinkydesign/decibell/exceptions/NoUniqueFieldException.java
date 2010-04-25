@@ -44,15 +44,21 @@ package org.kinkydesign.decibell.exceptions;
 public class NoUniqueFieldException extends RuntimeException {
 
     /**
-     * Creates a new instance of <code>NoUniqueFieldException</code> without detail message.
+     *
+     * Creates a new instance of <code>NoUniqueFieldException</code>
+     * without detail message.
      */
     public NoUniqueFieldException() {
     }
 
 
     /**
-     * Constructs an instance of <code>NoUniqueFieldException</code> with the specified detail message.
-     * @param msg the detail message.
+     *
+     * Constructs an instance of <code>NoUniqueFieldException</code> 
+     * with the specified detail message.
+     *
+     * @param msg
+     *      The detail message.
      */
     public NoUniqueFieldException(String msg) {
         super(msg);

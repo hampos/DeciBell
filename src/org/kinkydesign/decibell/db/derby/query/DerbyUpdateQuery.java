@@ -35,25 +35,32 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
 package org.kinkydesign.decibell.db.derby.query;
 
 import java.util.Iterator;
 import org.kinkydesign.decibell.collections.LogicalOperator;
-import org.kinkydesign.decibell.collections.OnModification;
-import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.derby.DerbyTable;
 import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.UpdateQuery;
-import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JTable;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
- *
+ * <p  align="justify" style="width:60%">
+ * <code>UPDATE</code> statements for the Derby JDBC server. DerbyUpdate Query is
+ * an implementation of the abstract class {@link UpdateQuery } intended to be used
+ * for the Derby database server. This class produced what is refered in the <em>Derby
+ * Reference Manual</em> as the <code>searched update</code> whose general syntax is:
+ * <pre>
+ * UPDATE table-Name [[AS] correlation-Name]
+ *   SET column-Name = Value
+ *   [ , column-Name = Value} ]*
+ *   [WHERE clause] |
+ * </pre>
+ * </p>
  * @author Charalampos Chomenides
  * @author Pantelius Sopasakius
+ * @see UpdateQuery Abstract Class UpdateQuery
+ * @see DerbyInsertQuery 
  */
 public class DerbyUpdateQuery extends UpdateQuery {
 
@@ -61,83 +68,28 @@ public class DerbyUpdateQuery extends UpdateQuery {
         super(table);
     }
 
-    public String getSQL(){
+    public String getSQL() {
         return getSQL(false);
     }
 
     public String getSQL(boolean usePKonly) {
         String sql = UPDATE + SPACE + getTable().getTableName() + SPACE + SET + SPACE;
         Iterator<Proposition> it = setPropositions.iterator();
-        while (it.hasNext()){
+        while (it.hasNext()) {
             sql += it.next();
-            if (it.hasNext()){
+            if (it.hasNext()) {
                 sql += SPACE + COMMA + SPACE;
             }
         }
 
         sql += SPACE + WHERE + SPACE;
         it = wherePropositions.iterator();
-        while (it.hasNext()){
+        while (it.hasNext()) {
             sql += it.next();
-            if (it.hasNext()){
+            if (it.hasNext()) {
                 sql += SPACE + LogicalOperator.AND + SPACE;
             }
         }
         return sql;
     }
-
-    public static void main(String... args){
-          JTable t3 = new DerbyTable();
-        t3.setTableName("C");
-        TableColumn c1 = new TableColumn("f");
-        c1.setColumnType(SQLType.INTEGER);
-        c1.setPrimaryKey(true, false);
-        t3.addColumn(c1);
-        TableColumn c2 = new TableColumn("k");
-        c2.setColumnType(SQLType.VARCHAR);
-        c2.setPrimaryKey(true, true);
-        t3.addColumn(c2);
-
-
-        JTable t2 = new DerbyTable();
-        t2.setTableName("B");
-        TableColumn b1 = new TableColumn("i");
-        b1.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.NO_ACTION);
-        b1.setColumnType(SQLType.INTEGER);
-        b1.setPrimaryKey(true, false);
-        t2.addColumn(b1);
-        TableColumn b2 = new TableColumn("j");
-        b2.setColumnType(SQLType.VARCHAR);
-        t2.addColumn(b2);
-
-        JTable t = new DerbyTable();
-        t.setTableName("A");
-
-        TableColumn tc1 = new TableColumn("x");
-        tc1.setColumnType(SQLType.INTEGER);
-        tc1.setForeignKey(t2, b1, OnModification.CASCADE, OnModification.NO_ACTION);
-        t.addColumn(tc1);
-
-        TableColumn tc2 = new TableColumn("y");
-        tc2.setColumnType(SQLType.VARCHAR);
-        tc2.setForeignKey(t2, b1, OnModification.CASCADE, OnModification.NO_ACTION);
-        t.addColumn(tc2);
-
-        TableColumn tc3 = new TableColumn("z");
-        tc3.setColumnType(SQLType.INTEGER);
-        tc3.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.CASCADE);
-        tc3.setPrimaryKey(true, true);
-        t.addColumn(tc3);
-
-        TableColumn tc4 = new TableColumn("w");
-        tc4.setColumnType(SQLType.INTEGER);
-        tc4.setForeignKey(t3, c2, OnModification.CASCADE, OnModification.CASCADE);
-        tc4.setPrimaryKey(true, true);
-        t.addColumn(tc4);
-        
-        DerbyUpdateQuery DU = new DerbyUpdateQuery(t);
-        System.out.println(DU.getSQL());
-    }
-
-
 }

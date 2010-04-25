@@ -61,8 +61,8 @@ public interface JRelationalTable extends JTable{
 
     void setOnField(Field onField);
 
-    Set<TableColumn> getMasterColumns();
+    Set<JTableColumn> getMasterColumns();
 
-    Set<TableColumn> getSlaveColumns();
+    Set<JTableColumn> getSlaveColumns();
 
 }

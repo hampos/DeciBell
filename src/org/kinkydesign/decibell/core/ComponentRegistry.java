@@ -46,9 +46,9 @@ import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 
 /**
@@ -136,7 +136,7 @@ public class ComponentRegistry {
 
     public Set<Class<? extends Component>> getParents(DbConnector con, Class<? extends Component> child) {
         Set<Class<? extends Component>> parents = new HashSet<Class<? extends Component>>();
-        for (TableColumn col : get(child).getForeignKeyColumns()) {
+        for (JTableColumn col : get(child).getForeignKeyColumns()) {
             parents.add(col.getReferencesClass());
         }
         return parents;
@@ -145,7 +145,7 @@ public class ComponentRegistry {
     public Set<Class<? extends Component>> getChildren(DbConnector con, Class<? extends Component> parent) {
         Set<Class<? extends Component>> children = new HashSet<Class<? extends Component>>();
         for (Class c : components.keySet()) {
-            for (TableColumn col : components.get(c).getForeignKeyColumns()) {
+            for (JTableColumn col : components.get(c).getForeignKeyColumns()) {
                 if (col.getReferencesClass().equals(parent)) {
                     children.add(col.getReferencesClass());
                 }

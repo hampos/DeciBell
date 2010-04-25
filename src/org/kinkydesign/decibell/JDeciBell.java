@@ -38,97 +38,119 @@ package org.kinkydesign.decibell;
 
 
 /**
- *
+ * This interface might be removed in some later version.
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
 public interface JDeciBell {
 
     /**
+     * <p  align="justify" style="width:60%">
      * Attach a new java class to the relational database structure. One or more
-     * tables are goind to be created due to this attachment so that the submitted
+     * tables are going to be created due to this attachment so that the submitted
      * class will have a counterpart in the database.
+     * </p>
      * @param c
      *      The class to be attached to the collection of relational entities.
      */
     public void attach(Class<? extends Component> c);
 
     /**
+     * <p  align="justify" style="width:60%">
      * Start the connection to the database and, if the database does not exist,
      * create it using the entity-relation structure perscribed by the attached classes
      * and the annotations therein. Upon startup, some SQL statements are prepared.
+     * </p>
      */
     public void start();
 
     /**
+     * <p  align="justify" style="width:60%">
      * Restarts the database connection. Disconnects from the database, shuts down the
      * Derby server and starts the connection again. Should be performed if there is
      * suspision that Decibell or Derby do not respond.
+     * </p>
      */
     public void restart();
 
     /**
+     * <p  align="justify" style="width:60%">
      * Clears the whole database structure (removes all tables from the database)
      * and removes the user as well. Be careful when invoking this method because
      * <b>all data in this database will be permanently lost!</b>.
+     * </p>
      */
     public void reset();
 
     /**
+     * <p  align="justify" style="width:60%">
      * Stops the connection and kills the Derby server.
+     * </p>
      */
     public void stop();
 
     /**
+     * <p  align="justify" style="width:60%">
      * Define an alternative path for the installation folder of the Derby
      * server. In the Derby manual this parameter is refered to as <code>$DERBY_HOME</code>.
+     * </p>
      * @param driverHome
      *      Derby Home.
      */
     public void setDriverHome(String driverHome);
 
     /**
+     * <p  align="justify" style="width:60%">
      * Choose an alternative driver for the connection to the Derby database server.
      * The default driver is <code>org.apache.derby.jdbc.EmbeddedDriver</code>. Use
      * the full name of the driver and be sure that you have included the corresponding
      * class in your classpath.
+     * </p>
      * @param driver
      *      Full name of derby driver.
      */
     public void setDriver(String driver);
 
     /**
+     * <p  align="justify" style="width:60%">
      * Java options used when the derby server is started.
+     * </p>
      * @param javaOptions
      *      Java options for the invokation of the derby server startup command.
      */
     public void setJavaOptions(String javaOptions);
 
     /**
+     * <p  align="justify" style="width:60%">
      * Java command or path to it. By default is set to <code>java</code> but in some
      * cases (e.g. on Debian machines) but need to modify it to <code>/usr/bin/java</code>
      * or some other path or command.
+     * </p>
      * @param javacmd
      *      java command
      */
     public void setJavacmd(String javacmd);
 
     /**
+     * <p  align="justify" style="width:60%">
      * Define the user which connects to the database. Note that in <code>derby</code>
      * (The database server used by DeciBell) every user corresponds to a database
      * SCHEMA.
+     * </p>
      * @param user
      *      Database user
      */
     public void setUser(String user);
 
     /**
+     * <p  align="justify" style="width:60%">
      * Choose a name for the database you want to create or a name for an existing
      * database. Then the URL of the database connection will be
      * <code>jdbc:derby://{hostname}:{port}/{database_name}</code>. Set the database
      * connection port and hostname usign the corresponding methods. Database names have
      * a URI-like structure; for example <code>database/decibell/db1</code> is an
      * acceptable name for your database.
+     * </p>
      * @param dbName
      *      The name of the database.
      */

@@ -42,9 +42,8 @@ package org.kinkydesign.decibell.db.query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 /**
  *
@@ -59,7 +58,7 @@ public abstract class InsertQuery implements SQLQuery {
      * A map from the table column to its corresponding value in the INSERT query,
      * e.g. (A, 2)
      */
-    protected LinkedHashMap<TableColumn, String> ColumnValuesMap = new LinkedHashMap<TableColumn, String>();
+    protected LinkedHashMap<JTableColumn, String> ColumnValuesMap = new LinkedHashMap<JTableColumn, String>();
 
     public InsertQuery(){
         
@@ -74,8 +73,8 @@ public abstract class InsertQuery implements SQLQuery {
 
     public void setTable(JTable table) {
         this.table = table;
-        ColumnValuesMap = new LinkedHashMap<TableColumn, String>();
-        for (TableColumn tc : table.getTableColumns()){
+        ColumnValuesMap = new LinkedHashMap<JTableColumn, String>();
+        for (JTableColumn tc : table.getTableColumns()){
             ColumnValuesMap.put(tc, null);
         }
     }
@@ -84,12 +83,12 @@ public abstract class InsertQuery implements SQLQuery {
         return table;
     }
 
-    public Collection<? extends TableColumn> getColumns() {
+    public Collection<? extends JTableColumn> getColumns() {
         return ColumnValuesMap.keySet();
     }
 
-    public void setColumns(Collection<? extends TableColumn> tableColumns) {
-        for (TableColumn tc : tableColumns){
+    public void setColumns(Collection<? extends JTableColumn> tableColumns) {
+        for (JTableColumn tc : tableColumns){
             ColumnValuesMap.put(tc, null);
         }
     }
@@ -118,63 +117,63 @@ public abstract class InsertQuery implements SQLQuery {
         throw new UnsupportedOperationException("Insert Queries do not support Propositions");
     }
 
-    public void setNull(TableColumn tableColumn) {
+    public void setNull(JTableColumn tableColumn) {
         if (!ColumnValuesMap.containsKey(tableColumn)){
             throw new IllegalArgumentException("TableColumn not in specified table!");
         }
         ColumnValuesMap.put(tableColumn, null);
     }
 
-    public void setUnknown(TableColumn tableColumn) {
+    public void setUnknown(JTableColumn tableColumn) {
         if (!ColumnValuesMap.containsKey(tableColumn)){
             throw new IllegalArgumentException("TableColumn not in specified table!");
         }
         ColumnValuesMap.put(tableColumn, "?");
     }
     
-    public void setLong(TableColumn tableColumn, long longValue){
+    public void setLong(JTableColumn tableColumn, long longValue){
         if (!ColumnValuesMap.containsKey(tableColumn)){
             throw new IllegalArgumentException("TableColumn not in specified table!");
         }
         ColumnValuesMap.put(tableColumn, Long.toString(longValue));
     }
 
-    public void setDouble(TableColumn tableColumn, double doubleValue){
+    public void setDouble(JTableColumn tableColumn, double doubleValue){
         if (!ColumnValuesMap.containsKey(tableColumn)){
             throw new IllegalArgumentException("TableColumn not in specified table!");
         }
         ColumnValuesMap.put(tableColumn, Double.toString(doubleValue));
     }
     
-    public void setFloat(TableColumn tableColumn, float floatValue){
+    public void setFloat(JTableColumn tableColumn, float floatValue){
         if (!ColumnValuesMap.containsKey(tableColumn)){
             throw new IllegalArgumentException("TableColumn not in specified table!");
         }
         ColumnValuesMap.put(tableColumn, Float.toString(floatValue));
     }
 
-    public void setShort(TableColumn tableColumn, short shortValue) {
+    public void setShort(JTableColumn tableColumn, short shortValue) {
         if (!ColumnValuesMap.containsKey(tableColumn)){
             throw new IllegalArgumentException("TableColumn not in specified table!");
         }
         ColumnValuesMap.put(tableColumn, Short.toString(shortValue));
     }
 
-    public void setInt(TableColumn tableColumn, int integerValue){
+    public void setInt(JTableColumn tableColumn, int integerValue){
         if (!ColumnValuesMap.containsKey(tableColumn)){
             throw new IllegalArgumentException("TableColumn not in specified table!");
         }
         ColumnValuesMap.put(tableColumn, Integer.toString(integerValue));
     }
 
-    public void setString(TableColumn tableColumn, String stringValue){
+    public void setString(JTableColumn tableColumn, String stringValue){
         if (!ColumnValuesMap.containsKey(tableColumn)){
             throw new IllegalArgumentException("TableColumn not in specified table!");
         }
         ColumnValuesMap.put(tableColumn, "'"+stringValue+"'");
     }
 
-    public void setInfinity(TableColumn column){
+    public void setInfinity(JTableColumn column){
         throw new UnsupportedOperationException("Insert Queries do not support infinite Values.");
     }
 

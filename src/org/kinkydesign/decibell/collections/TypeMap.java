@@ -43,6 +43,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ *
+ * <p align="justify" style="width:60%">
  * Establishment of a correspondance between java datatypes (java classes and primitive
  * datatypes) and datatypes used in Derby&copy; (as defined and described in the Derby
  * manual). The mapping between the two groups of datatypes is not absolute meaning that there
@@ -51,6 +53,7 @@ import java.util.Set;
  * by java developers and the one that fits best the developer's needs in most cases. Note that
  * for every java type, there is only a single corresponding SQL type while an SQL type is
  * mapped by more java types.
+ * </p>
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
@@ -82,11 +85,14 @@ public class TypeMap {
     }
 
     /**
+     *
+     * <p align="justify" style="width:60%">
      * Get the SQL type corresponding to a given java datatype (this is uniquely
      * determined). If the java type is not mapped to some other standard SQL
      * type, {@link SQLType#VARBINARY varBinary} is returned. For example <code>getSQLType(Person.class)</code>
      * will return {@link SQLType#VARBINARY varBinary} while <code>int.class</code> will
      * return {@link SQLType#INTEGER INTEGER}.
+     * </p>
      * @param c
      *      Java class
      * @return
@@ -98,8 +104,10 @@ public class TypeMap {
     }
 
     /**
+     * <p align="justify" style="width:60%">
      * Get the set of java types corresponding to a given sql type with respect to
      * this mapping.
+     * </p>
      * @param type
      *      SQL type.
      * @return
@@ -119,7 +127,10 @@ public class TypeMap {
     }
 
     /**
+     *
+     * <p align="justify" style="width:60%">
      * Check if a java class subclasses some other java class.
+     * </p>
      * @param clash
      *      A java class one needs to check if it extends some other class.
      * @param superClass

@@ -44,9 +44,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTable;
-import org.kinkydesign.decibell.db.query.InsertQuery;
 import org.kinkydesign.decibell.db.query.SQLQuery;
-import org.kinkydesign.decibell.db.query.SelectQuery;
 import org.kinkydesign.decibell.db.util.StatementFactory;
 
 /**
@@ -56,8 +54,8 @@ import org.kinkydesign.decibell.db.util.StatementFactory;
  */
 public class StatementPool {
 
-    private int poolSize = 10;
-    private int queueSize = 50;
+    public static final int poolSize = 30;
+    public static final int queueSize = 50;
     private DbConnector con = null;
     private static Map<DbConnector, StatementPool> pools = new HashMap<DbConnector, StatementPool>();
     private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> search =

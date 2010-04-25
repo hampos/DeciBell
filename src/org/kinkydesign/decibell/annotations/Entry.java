@@ -45,17 +45,19 @@ import org.kinkydesign.decibell.Component;
 
 /**
  *
+ * <p align="justify" style="width:60%">
  * An <em>attribute</em> in ER-terms, that is a characteristic of an entity we need to
  * write to/read from the relational database.
+ * </p>
  *
- * <p>
+ * <p align="justify" style="width:60%">
  * Note: Database creation takes into account all fields annotated with the <code>@Entry</code>
  * annotation to create a proper structure that allows this information to be registered
  * in and/or be read from the database. No knowledge of the database structure is needed,
  * once you understand the relations between the classes you have defined, that is the
  * normal java hierarchical structure.
  * </p>
- * <p>
+ * <p align="justify" style="width:60%">
  * Here we provide a brief example of use of this annotation, its meaning and
  * consequences. So suppose one wants to maintain a database that stores information
  * about customers. Every customer has a name, id, phone number and a debt. The customer is also characterized
@@ -64,7 +66,7 @@ import org.kinkydesign.decibell.Component;
  * to the introduction of the following java class in ones code:
  * </p>
  *
- * <p>
+ * <p align="justify" style="width:60%">
  * <code>class Customer {<br/><br/>
  *
  *   public String name;<br/>
@@ -77,7 +79,7 @@ import org.kinkydesign.decibell.Component;
  * </code>
  * </p>
  *
- * <p>
+ * <p align="justify" style="width:60%">
  * If we need to store information contained in Customer type objects and retreive
  * such information from the database, we have to modify the class <code>Customer</code>
  * a little bit. First of all, the class Customer shall become subclass of {@link Component }
@@ -86,7 +88,7 @@ import org.kinkydesign.decibell.Component;
  * be characterized as {@link PrimaryKey primary key}. Assume that here <code>id</code>
  * will act as the primary key. Here is the modified code for the class <code>Customer</code> :
  * </p>
- * <p>
+ * <p align="justify" style="width:60%">
  * <code>class Customer extends {@link Component } {</code><br/><br/>
  *
  *   <code>@{@link Entry }({@link Entry#unique() unique } = true, {@link Entry#notNull() notNull} = true) public String name;</code><br/>
@@ -113,11 +115,13 @@ import org.kinkydesign.decibell.Component;
 public @interface Entry {
 
     /**
-     * 
+     *
+     * <p align="justify" style="width:60%">
      * The key is unique among all entities. Every field annotated with the <code>@Entry</code>
      * annotation with the extra characterization <code>unique=true</code> should have
      * unique values over all instances of that class, at least when database registration
      * operations are performed.
+     * </p>
      *
      * @return 
      *      <code>true</code> if is unique

@@ -4,6 +4,10 @@ import examples.SubSubUser;
 import examples.SubUser;
 import examples.User;
 import examples.UserGroup;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -40,45 +44,37 @@ public class DeciBellTest {
      * Test of start method, of class DeciBell.
      */
     @Test
-    public void testStart() throws DuplicateKeyException {
+    public void testStart() throws DuplicateKeyException, FileNotFoundException {
         System.out.println("start");
         DeciBell db = new DeciBell();
 
-        db.setDriverHome("/Applications/NetBeans/sges-v3/javadb");
-        db.setDbName("chamo4");
+        db.setDriverHome("/home/chung/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
+        db.setDbName("database/akds");
 
         db.attach(SubSubUser.class);
         db.attach(UserGroup.class);
         db.attach(SubUser.class);
         db.attach(User.class);
 
-        
         db.start();
 
-        UserGroup group = new UserGroup(1,"admin");
         User user = new User();
-        user.setId(5);
-        user.setUserName("hampos");
-        user.setAge(25);
+        user.setId(4042);
+        user.setAge(18);
+        user.setUserName("Dakis");
+        UserGroup group = new UserGroup(1,"secta");
         user.setGroup(group);
 
-     //   group.register(db);
-        System.out.println("Group passed");
-      //  user.register(db);
+        //user.register(db);
+        //user.delete(db);
+                
 
-     //   user.delete(db);
-        User u = new User();
-    //    u.setId(5);
-    //    u.setAge(25);
-     //   u.delete(db);
-
-        
-
-     //   db.reset();
-
-     //   db.stop();
-
+        PrintStream ps = new PrintStream(new File("/home/chung/Desktop/component.txt"));
+        ArrayList<User> list = new User().search(db);
+        System.out.println("List size : " + list.size());
+        for (User u : list) {
+            u.print(ps);
+        }
 
     }
-
 }

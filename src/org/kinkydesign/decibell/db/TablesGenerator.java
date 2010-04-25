@@ -35,24 +35,14 @@
  */
 package org.kinkydesign.decibell.db;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import org.kinkydesign.decibell.annotations.Constraint;
-import org.kinkydesign.decibell.annotations.Entry;
-import org.kinkydesign.decibell.annotations.ForeignKey;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.core.ComponentRegistry;
-import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.TypeMap;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;
 
 /**
  *

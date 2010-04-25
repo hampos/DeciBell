@@ -42,6 +42,8 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.derby.jdbc.ClientDataSource;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.DbConnector;
@@ -75,10 +77,12 @@ public class DerbyConnector extends DbConnector {
                 startDerbyServer();
                 loadDriver();
                 establishConnection();
+
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         }
+        
     }
 
     public void killServer() {

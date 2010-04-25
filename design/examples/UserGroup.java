@@ -4,10 +4,8 @@
  */
 package examples;
 
-import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
 
 /**
  *
@@ -15,15 +13,28 @@ import org.kinkydesign.decibell.annotations.Entry;
  */
 public class UserGroup extends Component{
     @PrimaryKey
-    private int id;
+    private int id=-1;
 
     @PrimaryKey
     private String name;
 
+    public UserGroup() {
+    }
+   
     public UserGroup(int id, String name) {
         this.id = id;
         this.name = name;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    
 
     
 }

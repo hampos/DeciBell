@@ -37,8 +37,6 @@ package org.kinkydesign.decibell.db.interfaces;
 
 import java.util.Map;
 import java.util.Set;
-import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
 
 /**
  *
@@ -53,7 +51,7 @@ public interface JTable {
      * (NullPointerException is thrown).
      * @param column table column to be added in the table.
      */
-    void addColumn(TableColumn column);
+    void addColumn(JTableColumn column);
 
     void addRelation(JRelationalTable t);
 
@@ -69,9 +67,9 @@ public interface JTable {
      */
     String getDeletionSQL();
 
-    Set<TableColumn> getForeignKeyColumns();
+    Set<JTableColumn> getForeignKeyColumns();
 
-    Set<TableColumn> getPrimaryKeyColumns();
+    Set<JTableColumn> getPrimaryKeyColumns();
 
     Set<JRelationalTable> getRelations();
 
@@ -79,7 +77,7 @@ public interface JTable {
      * Retrieve the list of columns of the table.
      * @return list of table columns.
      */
-    Set<TableColumn> getTableColumns();
+    Set<JTableColumn> getTableColumns();
 
     /**
      * Get the name of the table.
@@ -91,13 +89,13 @@ public interface JTable {
      * Remove a column from the table.
      * @param column column to be removed.
      */
-    void removeColumn(TableColumn column);
+    void removeColumn(JTableColumn column);
 
     /**
      * Declare the list of table columns of the table.
      * @param tableColumns table columns.
      */
-    void setTableColumns(Set<TableColumn> tableColumns);
+    void setTableColumns(Set<JTableColumn> tableColumns);
 
     /**
      * Set/update the name of the table.
@@ -107,7 +105,7 @@ public interface JTable {
 
 
 
-    Set<Set<TableColumn>> getForeignColumnsByGroup();
+    Set<Set<JTableColumn>> getForeignColumnsByGroup();
 
 
 
@@ -115,8 +113,8 @@ public interface JTable {
 
 
 
-    Map<TableColumn, TableColumn> referenceRelation();
+    Map<JTableColumn, JTableColumn> referenceRelation();
 
-    Set<TableColumn> getUniqueColumns();
+    Set<JTableColumn> getUniqueColumns();
 
 }

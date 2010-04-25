@@ -35,23 +35,22 @@
  */
 package org.kinkydesign.decibell;
 
-import examples.SubUser;
-import examples.User;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.StatementPool;
-import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.db.derby.DerbyConnector;
 import org.kinkydesign.decibell.db.derby.DerbyTablesGenerator;
 import org.reflections.Reflections;
 
 /**
- *
+ * <p  align="justify" style="width:60%">
+ * Class used to manipulate a database connection, define object to DB entities mappings
+ * and handle the database server (start/stop/restart).
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */

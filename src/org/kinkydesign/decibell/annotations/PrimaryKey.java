@@ -44,8 +44,10 @@ import java.lang.annotation.Target;
 
 /**
  *
+ * <p align="justify" style="width:60%">
  * A Primary Key, in ER-terms, is a characteristic <em>attribute</em> (entry) of an
  * entity which is unique and not nullable.
+ * </p>
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
@@ -57,8 +59,11 @@ import java.lang.annotation.Target;
 public @interface PrimaryKey {
 
     /**
+     *
+     * <p align="justify" style="width:60%">
      * Whether the primary key is automatically generated as identity. Applies only
      * on integer type attributes.
+     * </p>
      * @return
      *      <code>true</code> if the primary key is automatically generated as identity.
      */

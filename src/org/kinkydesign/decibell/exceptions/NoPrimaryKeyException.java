@@ -36,22 +36,34 @@
 
 package org.kinkydesign.decibell.exceptions;
 
+import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
+
 /**
+ * 
+ * Any subclass of {@link Component } attached to a {@link DeciBell DeciBell Manager}
+ * must be endowed by a primary key field using the annotation {@link PrimaryKey }. This
+ * not beign the case, a No-Primary-Key Excpetion is thrown.
  *
- * @author hampos
+ * @author Charalampos Chomenides
+ * @author Pantelis Sopasakis
  */
 public class NoPrimaryKeyException extends RuntimeException {
 
     /**
-     * Creates a new instance of <code>NoPrimaryKeyException</code> without detail message.
+     * Creates a new instance of <code>NoPrimaryKeyException</code> without
+     * detail message.
      */
     public NoPrimaryKeyException() {
     }
 
 
     /**
-     * Constructs an instance of <code>NoPrimaryKeyException</code> with the specified detail message.
-     * @param msg the detail message.
+     * Constructs an instance of <code>NoPrimaryKeyException</code> with the
+     * specified detail message.
+     * @param msg 
+     *      The detail message.
      */
     public NoPrimaryKeyException(String msg) {
         super(msg);

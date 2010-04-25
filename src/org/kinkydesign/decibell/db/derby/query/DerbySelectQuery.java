@@ -38,24 +38,16 @@
 package org.kinkydesign.decibell.db.derby.query;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import org.kinkydesign.decibell.collections.LogicalOperator;
-import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.derby.DerbyTable;
 import org.kinkydesign.decibell.db.derby.util.DerbyInfinity;
 import org.kinkydesign.decibell.db.query.Join;
-import org.kinkydesign.decibell.db.query.Join.JOIN_TYPE;
 import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.SelectQuery;
-import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
@@ -73,32 +65,6 @@ public class DerbySelectQuery extends SelectQuery {
         return getSQL(false);
     }
 
-//    private void initializeJoins() {
-//        Table table = getTable();
-//        Map<TableColumn, TableColumn> relations = table.referenceRelation();
-//        Set<Table> remoteTables = new HashSet<Table>();
-//        for (TableColumn remote : relations.values()) {
-//            remoteTables.add(remote.getMasterTable());
-//        }
-//        for (Table remoteTable : remoteTables) {
-//            relations.putAll(remoteTable.referenceRelation());
-//        }
-//
-//        Iterator<Entry<TableColumn, TableColumn>> it = relations.entrySet().iterator();
-//        if (!relations.isEmpty()) {
-//            while (it.hasNext()) {
-//                Entry<TableColumn, TableColumn> e = it.next();
-//                Join join = new DerbyJoin();
-//                join.setJoinType(JOIN_TYPE.INNER);
-//                join.addColumns(e.getKey(), e.getValue());
-//                if (!joins.contains(join)) {
-//                    joins.add(join);
-//                } else {
-//                    joins.get(joins.indexOf(join)).addColumns(e.getKey(), e.getValue());
-//                }
-//            }
-//        }
-//    }
 
     public String getSQL(boolean searchPKonly) {
         JTable table = getTable();
@@ -113,7 +79,7 @@ public class DerbySelectQuery extends SelectQuery {
 
         if (searchPKonly) {
             ArrayList<Proposition> props = new ArrayList<Proposition>();
-            for (TableColumn c : table.getPrimaryKeyColumns()) {
+            for (JTableColumn c : table.getPrimaryKeyColumns()) {
                 Proposition p = new Proposition();
                 p.setTableColumn(c);
                 p.setQualifier(Qualifier.EQUAL);
@@ -134,7 +100,7 @@ public class DerbySelectQuery extends SelectQuery {
         return sql;
     }
 
-    public void setInfinity(TableColumn column) {
+    public void setInfinity(JTableColumn column) {
         SQLType columnType = column.getColumnType();
         switch (columnType) {
             case INTEGER:
@@ -158,79 +124,10 @@ public class DerbySelectQuery extends SelectQuery {
                 setRightShort(column, DerbyInfinity.getRightShort());
                 break;
             default:
-                setString(column, "%%");
+                setString(column, DOUBLE_PERCENT);
 
         }
     }
 
-    public static void main(String... args) {
 
-        Table t4 = new DerbyTable();
-        t4.setTableName("D");
-        TableColumn d1 = new TableColumn("d1");
-        d1.setColumnType(SQLType.INTEGER);
-        d1.setPrimaryKey(true, false);
-        t4.addColumn(d1);
-        TableColumn d2 = new TableColumn("d2");
-        d2.setColumnType(SQLType.VARCHAR);
-        d2.setPrimaryKey(true, true);
-        t4.addColumn(d2);
-
-        Table t3 = new DerbyTable();
-        t3.setTableName("C");
-        TableColumn c1 = new TableColumn("f");
-        c1.setColumnType(SQLType.INTEGER);
-        c1.setPrimaryKey(true, false);
-        c1.setForeignKey(t4, d1, OnModification.CASCADE, OnModification.CASCADE);
-        t3.addColumn(c1);
-        TableColumn c2 = new TableColumn("k");
-        c2.setColumnType(SQLType.VARCHAR);
-        c2.setPrimaryKey(true, true);
-        t3.addColumn(c2);
-
-
-        Table t2 = new DerbyTable();
-        t2.setTableName("B");
-        TableColumn b1 = new TableColumn("i");
-        b1.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.NO_ACTION);
-        b1.setColumnType(SQLType.INTEGER);
-        b1.setPrimaryKey(true, false);
-        t2.addColumn(b1);
-        TableColumn b2 = new TableColumn("j");
-        b2.setColumnType(SQLType.VARCHAR);
-        t2.addColumn(b2);
-
-        Table t = new DerbyTable();
-        t.setTableName("A");
-
-        TableColumn tc1 = new TableColumn("x");
-        tc1.setColumnType(SQLType.INTEGER);
-        tc1.setForeignKey(t2, b1, OnModification.CASCADE, OnModification.NO_ACTION);
-        tc1.setPrimaryKey(true, true);
-        t.addColumn(tc1);
-
-        TableColumn tc2 = new TableColumn("y");
-        tc2.setColumnType(SQLType.VARCHAR);
-        tc2.setForeignKey(t2, b1, OnModification.CASCADE, OnModification.NO_ACTION);
-        t.addColumn(tc2);
-
-        TableColumn tc3 = new TableColumn("z");
-        tc3.setColumnType(SQLType.INTEGER);
-        tc3.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.CASCADE);
-        t.addColumn(tc3);
-
-        TableColumn tc4 = new TableColumn("w");
-        tc4.setColumnType(SQLType.INTEGER);
-        tc4.setForeignKey(t3, c2, OnModification.CASCADE, OnModification.CASCADE);
-        t.addColumn(tc4);
-
-
-        DerbySelectQuery a = new DerbySelectQuery(t);
-        a.setLeftInt(tc1, 6);
-        a.setRightInt(tc1, 5);
-        a.setString(tc2, "ad");
-        // a.setRightInt(tc2, 4);
-
-        System.out.println(a.getSQL(false));
-    }
 }

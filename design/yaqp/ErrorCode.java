@@ -1,4 +1,6 @@
 /**
+ *  Class : ErrorCode
+ *  Date  : Apr 24, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -34,31 +36,55 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.exceptions;
+
+package yaqp;
+
+import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
- * A Duplicate Key Exception is a kind of exception thrown if one attempts to violate
- * a primary key or unique field constraint violation.
+ *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class DuplicateKeyException extends Exception {
+public class ErrorCode extends Component<ErrorCode>{
 
-    /**
-     * Creates a new instance of <code>DuplicateKeyException</code> without detail message.
-     * The detail message is <code>null</code>.
-     */
-    public DuplicateKeyException() {
+    public ErrorCode() {
+    }
+
+    
+
+    public ErrorCode(int code) {
+        this.code = code;
     }
 
 
-    /**
-     * Constructs an instance of <code>DuplicateKeyException</code> with the
-     * specified detail message.
-     * @param msg
-     *      The detail message.
-     */
-    public DuplicateKeyException(String msg) {
-        super(msg);
+    
+
+    @PrimaryKey
+    public int code=-1;
+
+    @Entry
+    public int httpStatus=-1;
+
+    @Entry
+    public String message;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj.getClass()!=getClass()) return false;
+        return ((ErrorCode)obj).code==code;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 89 * hash + this.code;
+        return hash;
+    }
+
+    
+
 }

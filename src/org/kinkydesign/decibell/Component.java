@@ -36,14 +36,10 @@
 package org.kinkydesign.decibell;
 
 import com.thoughtworks.xstream.XStream;
-import examples.Pool;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
@@ -61,11 +56,8 @@ import org.kinkydesign.decibell.collections.TypeMap;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
-import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
-import org.kinkydesign.decibell.db.interfaces.JTable;
-import org.kinkydesign.decibell.db.query.InsertQuery;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.SQLQuery;
 import org.kinkydesign.decibell.db.util.Infinity;
@@ -79,6 +71,45 @@ import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
  */
 public abstract class Component<T extends Component> {
 
+    /**
+     *
+     * <p  align="justify" style="width:60%">
+     * Search penetration parameter for search operations that include self-referencign tables.
+     * </p>
+     * <p  align="justify" style="width:60%">
+     * It is quite normal in SQL databases that an entity points to itself. This procedure
+     * has a start and an end and it is implied that there is some entry which points to itself.
+     * It is not hard to understand that: Suppose we created a table <code>TABLE_A</code> with a column
+     * <code>colSelfPointing</code> that points to the primary key of the table, namely,
+     * <code>PK</code>. The table is created without any data, so the first entry has to point
+     * to some existing entry of the table and since there is no other, it has to point to itself.
+     * Have we added the first entry, this contraint is now weakened; for example, the second
+     * entry, is possible to reference the first one.
+     * </p>
+     * <p  align="justify" style="width:60%">
+     * However the facts in Java<font size="-2"><sup>TM</sup></font> are a little
+     * different since, if an object holds a field of the same type with itself which
+     * is not <code>null</code> then that field as an object may hold some other not
+     * <code>null</code> field. There is no programmatic way to have an object which
+     * has a field equal to that because this compiles into a {@link StackOverflowError Stack Overflow}!
+     * It is not possible to store infinite many objects in the memory(heap) with a
+     * class-field relationship. Although, we can have a finite series of such relations. The
+     * length of this series is specified by this integer number.
+     * </p>
+     *
+     */
+    protected static final int PENETRATION = 2; // Attention! This number should not exceed (StatementPool.poolSize-1)
+
+    /**
+     *
+     * <p  align="justify" style="width:60%">
+     * Deletes the current component from the database. At least one valid unique field must
+     * be specified in order for the delete operation to take place.
+     * This operation is based on prepared statements.
+     * </p>
+     * @param db 
+     *      The decibell object which identifies a database connection
+     */
     public void delete(DeciBell db) throws NoUniqueFieldException {
         Class c = this.getClass();
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
@@ -90,7 +121,7 @@ public abstract class Component<T extends Component> {
         try {
             int i = 1;
             for (Proposition p : query.getPropositions()) {
-                TableColumn col = p.getTableColumn();
+                JTableColumn col = p.getTableColumn();
                 Field field = col.getField();
                 field.setAccessible(true);
                 Object obj = null;
@@ -99,24 +130,29 @@ public abstract class Component<T extends Component> {
                     if (col.isForeignKey()) {
                         Field f = col.getReferenceColumn().getField();
                         f.setAccessible(true);
-                        System.out.println("***" + (Object) f.get(obj));
+                        // System.out.println("***" + (Object) f.get(obj));
                         ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
                     } else if (obj == null || (col.isTypeNumeric() && obj.equals(0))) {
+                        // Here '0' stands for the numeric counterpart for 'null'
+                        // But we have to figure out some more subtle way to do that
+                        // A reasonable way would be to allow the user to define the
+                        // null value himself (e.g. could be -1) in some cases...
+                        // in general sth that is impotent to be used!
                         Infinity inf = new Infinity(db.getDbConnector());
-                        System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
+                        // System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
                         ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
                     } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                        System.out.println(obj);
+                        // System.out.println(obj);
                         ps.setObject(i, obj, col.getColumnType().getType());
                     } else {
                         XStream xstream = new XStream();
                         String xml = xstream.toXML(obj);
-                        System.out.println(xml);
+                        // System.out.println(xml);
                         ps.setString(i, xml);
                     }
                 } catch (NullPointerException ex) {
                     Infinity inf = new Infinity(db.getDbConnector());
-                    System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
+                    // System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
                     ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
                 }
 
@@ -133,6 +169,13 @@ public abstract class Component<T extends Component> {
         }
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * Registers the component in the specified database.
+     * </p>
+     * @param db
+     *      The decibell object which identifies a database connection.
+     */
     public void register(DeciBell db) throws DuplicateKeyException {
         Class c = this.getClass();
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
@@ -142,19 +185,28 @@ public abstract class Component<T extends Component> {
         PreparedStatement ps = entry.getKey();
         try {
             int i = 1;
-            for (TableColumn col : table.getTableColumns()) {
+            for (JTableColumn col : table.getTableColumns()) {
                 Field field = col.getField();
                 field.setAccessible(true);
                 if (col.isForeignKey()) {
                     Field f = col.getReferenceColumn().getField();
                     f.setAccessible(true);
-                    ps.setObject(i, (Object) f.get(field.get(this)), col.getColumnType().getType());
+                    if (f.get(field.get(this)) == null) {
+                        System.out.println(col.getDefaultValue() + " : def");
+                        ps.setObject(i, (Object) col.getDefaultValue(), col.getColumnType().getType());
+                    } else {
+                        ps.setObject(i, (Object) f.get(field.get(this)), col.getColumnType().getType());
+                    }
                 } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                    ps.setObject(i, (Object) field.get(this), col.getColumnType().getType());
+                    if (field.get(this) == null) {
+                        ps.setObject(i, (Object) col.getDefaultValue(), col.getColumnType().getType());
+                    } else {
+                        ps.setObject(i, (Object) field.get(this), col.getColumnType().getType());
+                    }
                 } else {
                     XStream xstream = new XStream();
                     String xml = xstream.toXML(field.get(this));
-                    System.out.println(xml);
+                    // System.out.println(xml);
                     ps.setString(i, xml);
                 }
                 i++;
@@ -178,7 +230,7 @@ public abstract class Component<T extends Component> {
                 Collection collection = (Collection) obj;
                 for (Object o : collection) {
                     i = 1;
-                    for (TableColumn col : relTable.getTableColumns()) {
+                    for (JTableColumn col : relTable.getTableColumns()) {
                         Field f = col.getField();
                         f.setAccessible(true);
                         if (col.getReferenceTable().equals(relTable.getMasterTable())) {
@@ -201,11 +253,12 @@ public abstract class Component<T extends Component> {
             throw new RuntimeException(ex);
         } catch (SQLException ex) {
             if (ex.getSQLState().equals("23505")) {
+                // <editor-fold defaultstate="collapsed" desc="Provide clean explanation for the cause of exception">
                 String message = "Exception due to duplicate key. "
                         + "Object of type "
                         + this.getClass().getCanonicalName()
                         + " with primary key";
-                Iterator<TableColumn> it =
+                Iterator<JTableColumn> it =
                         ComponentRegistry.getRegistry(db.getDbConnector()).get(this.getClass()).getPrimaryKeyColumns().iterator();
                 String PKs = "";
                 int count = 0;
@@ -234,7 +287,7 @@ public abstract class Component<T extends Component> {
                 }
                 message += " " + PKs;
 
-                Set<TableColumn> uniqueCols =
+                Set<JTableColumn> uniqueCols =
                         ComponentRegistry.getRegistry(db.getDbConnector()).get(this.getClass()).getUniqueColumns();
                 count = 0;
                 String uniques = "";
@@ -265,10 +318,13 @@ public abstract class Component<T extends Component> {
                         message += "s ";
                     }
                     message += " " + uniques;
-                }
+                }// </editor-fold>
                 throw new DuplicateKeyException(message);
+            } else {
+                throw new RuntimeException(ex);
             }
         } catch (NullPointerException ex) {
+            ex.printStackTrace();
             throw new RuntimeException(ex);
         }
 
@@ -276,7 +332,25 @@ public abstract class Component<T extends Component> {
 
     }
 
+    /**
+     *
+     * <p  align="justify" style="width:60%">
+     * Get all the components from the database which resemble the given component.
+     * The current component is used as a prototype for the performed search. Any
+     * fields set to <code>null</code> are ommited throughout the search. This search is
+     * based on prepared statements for increased performance and security. These statements
+     * are prepared upon the startup of decibell.
+     * </p>
+     * @param db
+     *      The decibell object which identifies a database connection
+     * @return
+     *      List of searched objects
+     */
     public ArrayList<T> search(DeciBell db) {
+        return search(db, new Component[PENETRATION]);
+    }
+
+    private ArrayList<T> search(DeciBell db, Component[] tempComponent) {
         ArrayList<T> resultList = new ArrayList<T>();
         Class c = this.getClass();
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
@@ -288,7 +362,7 @@ public abstract class Component<T extends Component> {
         try {
             int i = 1;
             for (Proposition p : query.getPropositions()) {
-                TableColumn col = p.getTableColumn();
+                JTableColumn col = p.getTableColumn();
                 Field field = col.getField();
                 field.setAccessible(true);
                 Object obj = null;
@@ -297,35 +371,35 @@ public abstract class Component<T extends Component> {
                     if (col.isForeignKey()) {
                         Field f = col.getReferenceColumn().getField();
                         f.setAccessible(true);
-                        System.out.println("***" + (Object) f.get(obj));
+                        //System.out.println("***" + (Object) f.get(obj));
                         ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
-                    } else if (obj == null || (col.isTypeNumeric() && obj.equals(0))) {
+                    } else if (obj == null || (col.isTypeNumeric() && (obj.equals(-1) || obj.equals(-1L) || obj.equals((short) -1)))) {
                         Infinity inf = new Infinity(db.getDbConnector());
-                        System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
+                        //System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
                         ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
                     } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                        System.out.println(obj);
+                        //System.out.println(obj);
                         ps.setObject(i, obj, col.getColumnType().getType());
                     } else {
                         XStream xstream = new XStream();
                         String xml = xstream.toXML(obj);
-                        System.out.println(xml);
+                        //System.out.println(xml);
                         ps.setString(i, xml);
                     }
                 } catch (NullPointerException ex) {
                     Infinity inf = new Infinity(db.getDbConnector());
-                    System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
+                    //System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
                     ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
                 }
                 i++;
             }
             ResultSet rs = ps.executeQuery();
-            pool.recycleDelete(entry, table);
+            pool.recycleSearch(entry, table);
             Constructor constructor = c.getDeclaredConstructor();
             constructor.setAccessible(true);
             while (rs.next() != false) {
                 Object newObj = constructor.newInstance();
-                for (TableColumn col : table.getTableColumns()) {
+                for (JTableColumn col : table.getTableColumns()) {
                     Field f = col.getField();
                     f.setAccessible(true);
                     if (col.isForeignKey()) {
@@ -337,27 +411,69 @@ public abstract class Component<T extends Component> {
                         f.set(newObj, rs.getObject(col.getColumnName()));
                     }
                 }
-                for (Set<TableColumn> group : table.getForeignColumnsByGroup()) {
+
+                for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
+
+                    /*
+                     * Retrieve the object of the SAME type which is referenced by a
+                     * self-referencing foreign column.
+                     */
                     Class refClass = group.iterator().next().getReferencesClass();
                     Constructor refConstructor = refClass.getDeclaredConstructor();
                     refConstructor.setAccessible(true);
                     Object refObj = refConstructor.newInstance();
-                    for (TableColumn col : group) {
+                    for (JTableColumn col : group) {
                         Field f = col.getReferenceColumn().getField();
                         f.setAccessible(true);
                         f.set(refObj, rs.getObject(col.getColumnName()));
                     }
                     Component component = (Component) refObj;
-                    ArrayList tempList = component.search(db);
-                    if (tempList.isEmpty()) {
-                        throw new RuntimeException("Empty list on search for foreign objects");
-                    } else if (tempList.size() > 1) {
-                        throw new RuntimeException("Single foreign object list has size > 1");
+
+
+                    /*
+                     * A boolean flag which specifies whether the search is complete or
+                     * if we need to search into other objects as well.
+                     */
+                    boolean bin = false;
+
+                    /*
+                     * Examine whether the search should continue the tree spanning
+                     * or quit here. This is parametrized by means of the integer PENETRATION.
+                     */
+                    if (hasNullElement(tempComponent)) {
+                        bin = true;
+                    } else {
+                        for (Component compo : tempComponent) {
+                            bin = bin || ( !component.equals(compo));
+                        }
                     }
-                    Field f = group.iterator().next().getField();
-                    f.setAccessible(true);
-                    f.set(newObj, tempList.get(0));
+
+                    if (bin) {
+                        for (int k = 0; k < PENETRATION - 1; k++) {
+                            tempComponent[k] = tempComponent[k + 1];
+                        }
+                        tempComponent[PENETRATION - 1] = component;
+
+                        ArrayList tempList = component.search(db, tempComponent); // the list size is always =1
+
+                        /*
+                         * Check the correct size of the list...
+                         */
+                        if (tempList.isEmpty()) {
+                            throw new RuntimeException("Empty list on search for foreign objects");
+                        } else if (tempList.size() > 1) {
+                            throw new RuntimeException("Single foreign object list has size > 1");
+                        }
+                        Field f = group.iterator().next().getField();
+                        f.setAccessible(true);
+                        f.set(newObj, tempList.get(0));
+                    }
+
                 }
+
+                /**
+                 * Perform search into the relational tables.
+                 */
                 for (JRelationalTable relTable : table.getRelations()) {
                     ArrayList relList = new ArrayList();
                     entry = pool.getSearch(relTable);
@@ -367,7 +483,7 @@ public abstract class Component<T extends Component> {
                     field.setAccessible(true);
                     i = 1;
                     for (Proposition p : query.getPropositions()) {
-                        TableColumn col = p.getTableColumn();
+                        JTableColumn col = p.getTableColumn();
                         Field f = col.getField();
                         f.setAccessible(true);
                         try {
@@ -390,13 +506,13 @@ public abstract class Component<T extends Component> {
                         i++;
                     }
                     ResultSet relRs = ps.executeQuery();
-                    pool.recycleDelete(entry, relTable);
+                    pool.recycleSearch(entry, relTable);
                     while (relRs.next() != false) {
                         Class fclass = relTable.getSlaveColumns().iterator().next().getField().getDeclaringClass();
                         Constructor fconstuctor = fclass.getConstructor();
                         fconstuctor.setAccessible(true);
                         Object fobj = fconstuctor.newInstance();
-                        for (TableColumn col : relTable.getSlaveColumns()) {
+                        for (JTableColumn col : relTable.getSlaveColumns()) {
                             Field ffield = col.getField();
                             ffield.setAccessible(true);
                             ffield.set(fobj, relRs.getObject(col.getColumnName()));
@@ -442,27 +558,138 @@ public abstract class Component<T extends Component> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * Will be implemented soon...
+     * </p>
+     * @throws NoUniqueFieldException
+     *      <p  align="justify" style="width:60%">
+     *      In case the update operation does not uniquely identify a ccomponent
+     *      to be updated. No primary key or unique field was specified for the
+     *      component on which the method is applied
+     *      </p>
+     */
     public void update() throws NoUniqueFieldException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public String toString() {
-        String str = "";
+    /**
+     * <p  align="justify" style="width:60%">
+     * Prints the component to some PrintStream. You can use this method to print
+     * the component to some generic OutputStream:
+     * <blockquote><pre>
+     * OutputStream os = ...;
+     * Component component = ...;
+     * PrintStream ps = new PrintStream(os);
+     * component.print(ps);</pre>
+     * </blockquote>
+     * Or print the component to the standard system output (System.out):
+     * <blockquote><pre>
+     * Component component = ...;
+     * component.print(System.out);</pre>
+     * </blockquote>
+     * Or even print to a file:
+     * <blockquote><pre>
+     * File destination = new File("/path/to/file.txt");
+     * Component component = ...;
+     * PrintStream ps = new PrintStream(destination);
+     * component.print(ps);</pre>
+     * </blockquote>
+     * </p>
+     * @param stream
+     */
+    public void print(PrintStream stream) {
+        stream.print("[\n");
+        print(stream, "");
+        stream.print("]\n");
+    }
+
+    private void print(PrintStream stream, String x) {
         Class c = this.getClass();
-        str += "\n-----------------------------\n";
-        str += "Class = " + c.getName() + "\n";
+        stream.print(x + "Class = " + c.getName() + "\n");
         for (Field f : c.getDeclaredFields()) {
             try {
                 f.setAccessible(true);
-                str += "Field " + f.getName() + " = " + f.get(this) + "\n";
-            } catch (IllegalArgumentException ex) {
-                throw new RuntimeException(ex);
+                if (f.get(this) instanceof Component) { // append another component
+                    stream.print(x + spaces(3) + "L " + f.getName() + ":\n"
+                            + ((Component) f.get(this)).toString(x + spaces(4)));
+                } else { // append some non-Component object
+                    stream.print(x + spaces(3) + "L "
+                            + f.getName() + " = " + f.get(this) + "\n");
+                }
             } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
+                throw new RuntimeException("Unexpected condition - Field '"+f.getName()+"' was supposed " +
+                        "to be accessible. Method could not access the field!", ex);
             }
         }
-        str += "-----------------------------\n";
+    }
+
+    /**
+     *
+     * <p  align="justify" style="width:60%">
+     * A string representation of a Component-type object provides a summary of
+     * its contents in terms of its field names and their corresponding values. The
+     * summary includes its public, protected as well as private fields.
+     * </p>
+     * @return
+     *      Component content summary.
+     */
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        return "[\n" + toString("") + "]";
+    }
+
+    private String toString(String x) {
+        String str = "";
+        Class c = this.getClass();
+        str += x + "Class = " + c.getName() + "\n";
+        for (Field f : c.getDeclaredFields()) {
+            try {
+                f.setAccessible(true);
+                if (f.get(this) instanceof Component) {
+                    str += x + spaces(3) + "L " + f.getName() + ":\n" + ((Component) f.get(this)).toString(x + spaces(4));
+                } else {
+                    str += x + spaces(3) + "L " + f.getName() + " = " + f.get(this) + "\n";
+                }
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException("Unexpected condition - Field '"+f.getName()+"' was supposed " +
+                        "to be accessible. Method could not access the field!", ex);
+            }
+        }
         return str;
+    }
+
+    private String spaces(int count) {
+        String spaces = "";
+        for (int i = 0; i < count; i++) {
+            spaces += " ";
+        }
+        return spaces;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!obj.getClass().equals(this.getClass())) {
+            return false;
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    private boolean hasNullElement(Object[] array) {
+        for (Object o : array) {
+            if (o == null) {
+                return true;
+            }
+        }
+        return false;
     }
 }

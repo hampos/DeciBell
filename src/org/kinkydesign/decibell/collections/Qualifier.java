@@ -35,8 +35,6 @@
  */
 package org.kinkydesign.decibell.collections;
 
-import org.kinkydesign.decibell.db.query.Proposition;
-
 /**
  * An enumeration of all available binary relations like &lt;= or &gt;=. These are
  * used within query generation and are part of those. These qualifiers play an essential
@@ -49,14 +47,77 @@ import org.kinkydesign.decibell.db.query.Proposition;
  */
 public enum Qualifier {
 
+    /**
+     *
+     * Equality Relation. This operator must not be applied on <code>null</code> entities -
+     * use the operator {@link Qualifier#IS is} instead.
+     */
     EQUAL("="),
+    /**
+     *
+     * Used to denote that two values are not equal. This operator must not
+     * be applied on <code>null</code> entities -
+     * use the operator {@link Qualifier#IS_NOT is not} instead.
+     */
     NOT_EQUAL("<>"),
+    /**
+     *
+     * Binary relation used to denote that some value is greated than and
+     * <b>not equal</b> to some other according to some underlying ordering
+     * operator.
+     * @see Qualifier#GREATER_EQUAL greater equal
+     * @see Qualifier#LESS_EQUAL less equal
+     * @see Qualifier#LESS_THAN less than
+     */
     GREATER_THAN(">"),
+    /**
+     *
+     * Binary relation used to denote that some value is less than and
+     * <b>not equal</b> to some other according to some underlying ordering
+     * operator.
+     * @see Qualifier#GREATER_EQUAL greater equal
+     * @see Qualifier#GREATER_THAN greater than
+     * @see Qualifier#LESS_EQUAL less equal
+     */
     LESS_THAN("<"),
+    /**
+     *
+     * Binary relation used to denote that some value is greated than and
+     * or equal to some other according to some underlying ordering
+     * operator.
+     * @see Qualifier#LESS_EQUAL less equal
+     * @see Qualifier#LESS_THAN less than
+     * @see Qualifier#GREATER_THAN greater than
+     */
     GREATER_EQUAL(">="),
+    /**
+     *
+     * Binary relation used to denote that some value is less than
+     * or equal to some other according to some underlying ordering
+     * operator.
+     * @see Qualifier#LESS_THAN less than
+     * @see Qualifier#GREATER_THAN greater than
+     * @see Qualifier#GREATER_EQUAL greater equal
+     */
     LESS_EQUAL("<="),
+    /**
+     *
+     * Operator used to compare any entity with a <code>null</code> one. So <code>is</code>
+     * in fact stands for <code>is null</code>
+     * @see Qualifier#IS_NOT is not
+     */
     IS("IS"),
+    /**
+     *
+     * Qualifier used to compare entities with the <code>null</code> entity.
+     */
     IS_NOT("IS NOT"),
+    /**
+     *
+     * A pair of string-like values belong to the <code>like</code> operator if they
+     * <em>resemble</em>. The way the <code>LIKE</code> operator works relies on the
+     * SQL server implementation.
+     */
     LIKE("LIKE");
 
     private String qualifier = "";

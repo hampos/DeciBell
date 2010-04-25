@@ -37,13 +37,12 @@ package org.kinkydesign.decibell.db.derby;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.Table;
-import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
@@ -71,9 +70,9 @@ public class DerbyTable extends Table {
      */
     public String getCreationSQL() {
         String SQL = CREATE_TABLE + SPACE + getTableName() + NEWLINE + LEFT_PAR + SPACE;
-        Iterator<TableColumn> it = super.getTableColumns().iterator();
+        Iterator<JTableColumn> it = super.getTableColumns().iterator();
         while (it.hasNext()) {
-            TableColumn column = it.next();
+            JTableColumn column = it.next();
             SQL = SQL + column.getColumnName() + SPACE + column.getColumnType().toString() + SPACE;
 
             if (column.isUnique()) {
@@ -87,7 +86,13 @@ public class DerbyTable extends Table {
             }
 
             if (column.hasDefault()) {
-                SQL += DEFAULT + SPACE + column.getDefaultValue() + SPACE;
+                String DEFAULT_VALUE = "";
+                if (column.isTypeNumeric()){
+                    DEFAULT_VALUE = column.getDefaultValue();
+                }else{
+                    DEFAULT_VALUE = SINGLE_QUOTE + column.getDefaultValue() + SINGLE_QUOTE;
+                }
+                SQL += DEFAULT + SPACE + DEFAULT_VALUE + SPACE;
             }
 
             if (column.isConstrained()) {
@@ -97,18 +102,18 @@ public class DerbyTable extends Table {
             SQL += COMMA + NEWLINE;
             }
         }
-        Set<Set<TableColumn>> foreignGroups = getForeignColumnsByGroup();
+        Set<Set<JTableColumn>> foreignGroups = getForeignColumnsByGroup();
         if (!foreignGroups.isEmpty()) {
             SQL += COMMA + NEWLINE;
-            Iterator<Set<TableColumn>> setIt = foreignGroups.iterator();
+            Iterator<Set<JTableColumn>> setIt = foreignGroups.iterator();
             while(setIt.hasNext()) {
-                Set<TableColumn> group = setIt.next();
+                Set<JTableColumn> group = setIt.next();
                 String foreignKey = "";
                 String references = "";
                 String options = "";
                 it = group.iterator();
                 while (it.hasNext()) {
-                    TableColumn col = it.next();
+                    JTableColumn col = it.next();
                     if (foreignKey.isEmpty()) {
                         foreignKey = Fk + SPACE + LEFT_PAR;
                     }
@@ -167,7 +172,7 @@ public class DerbyTable extends Table {
      * @param col the specified TableColumn
      * @return SQL String describing Constraints
      */
-    private String getConstraint(TableColumn col) {
+    private String getConstraint(JTableColumn col) {
         String constraint = "";
         String lowStr = "";
         String highStr = "";

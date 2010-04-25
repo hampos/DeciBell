@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.TableColumn;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
@@ -54,7 +55,7 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 public class Proposition
         implements Cloneable {
 
-    private TableColumn tableColumn;
+    private JTableColumn tableColumn;
     private Qualifier qualifier;
     private String stringValue = null;
     /**
@@ -86,11 +87,11 @@ public class Proposition
         this.qualifier = qualifier;
     }
 
-    public TableColumn getTableColumn() {
+    public JTableColumn getTableColumn() {
         return tableColumn;
     }
 
-    public void setTableColumn(TableColumn tableColumn) {
+    public void setTableColumn(JTableColumn tableColumn) {
         this.tableColumn = tableColumn;
     }
 

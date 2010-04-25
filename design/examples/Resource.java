@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author hampos
  */
 public class Resource {
-        private int id;
+        private int id=-1;
         private String whatever;
 
         private Pool pool = new Pool();

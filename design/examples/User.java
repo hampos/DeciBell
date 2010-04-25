@@ -17,6 +17,8 @@ or if there is an abmiguity, the whole name can be used, like org_kinky_example_
  */
 public class User extends Component<User> {
 
+   
+
     /*
     Now create some fields for that class...
      */
@@ -28,7 +30,7 @@ public class User extends Component<User> {
     there is no need to use @Key too. So the above declaration is equivalent to:
      */
     @PrimaryKey
-    private int id;
+    private int id=-1;
 
     /*
     Decibell will parse the datatype of the java object (in this case: java.lang.String) and
@@ -47,7 +49,7 @@ public class User extends Component<User> {
     A very simple database entry is generated for the users' ages.
      */
     @Entry(defaultValue="5")
-    private int age;
+    private int age = -1;
 
     /*
     A foreign key correspondence is established between the user and the primary key
@@ -109,7 +111,7 @@ public class User extends Component<User> {
 //// Introduction of @Constraint(numLow=1, numHigh=100) or
 ////             @Constraint()
 
-    public void User(){      
+    public User(){        
     }
 
     public int getAge() {

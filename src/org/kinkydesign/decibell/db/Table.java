@@ -43,6 +43,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 /**
  *
@@ -54,7 +55,7 @@ import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
  */
 public abstract class Table implements JTable {
 
-    private Set<TableColumn> listOfColumns = new LinkedHashSet<TableColumn>();
+    private Set<JTableColumn> listOfColumns = new LinkedHashSet<JTableColumn>();
     private String tableName = null;
     private Set<JRelationalTable> relations = new HashSet<JRelationalTable>();
 
@@ -77,15 +78,15 @@ public abstract class Table implements JTable {
         this.tableName = tableName;
     }
 
-    public Set<TableColumn> getTableColumns() {
+    public Set<JTableColumn> getTableColumns() {
         return listOfColumns;
     }
 
-    public void setTableColumns(Set<TableColumn> tableColumns) {
+    public void setTableColumns(Set<JTableColumn> tableColumns) {
         this.listOfColumns = tableColumns;
     }
 
-    public void addColumn(TableColumn column) {
+    public void addColumn(JTableColumn column) {
         if (column == null) {
             throw new NullPointerException("You cannot add a null column");
         }
@@ -99,7 +100,7 @@ public abstract class Table implements JTable {
         this.listOfColumns.add(column);
     }
 
-    public void removeColumn(TableColumn column) {
+    public void removeColumn(JTableColumn column) {
         this.listOfColumns.remove(column);
         column.setMasterTable(null);
     }
@@ -115,9 +116,9 @@ public abstract class Table implements JTable {
         return this.tableName;
     }
 
-    public Set<TableColumn> getPrimaryKeyColumns() {
-        Set<TableColumn> primaryKeyColumns = new LinkedHashSet<TableColumn>();
-        for (TableColumn column : listOfColumns) {
+    public Set<JTableColumn> getPrimaryKeyColumns() {
+        Set<JTableColumn> primaryKeyColumns = new LinkedHashSet<JTableColumn>();
+        for (JTableColumn column : listOfColumns) {
             if (column.isPrimaryKey()) {
                 primaryKeyColumns.add(column);
             }
@@ -125,17 +126,17 @@ public abstract class Table implements JTable {
         return primaryKeyColumns;
     }
 
-    public Map<TableColumn, TableColumn> referenceRelation() {
-        Map<TableColumn, TableColumn> map = new HashMap<TableColumn, TableColumn>();
-        for (TableColumn masterColumn : getForeignKeyColumns()) {
+    public Map<JTableColumn, JTableColumn> referenceRelation() {
+        Map<JTableColumn, JTableColumn> map = new HashMap<JTableColumn, JTableColumn>();
+        for (JTableColumn masterColumn : getForeignKeyColumns()) {
             map.put(masterColumn, masterColumn.getReferenceColumn());
         }
         return map;
     }
 
-    public Set<TableColumn> getForeignKeyColumns() {
-        Set<TableColumn> foreignKeyColumns = new LinkedHashSet<TableColumn>();
-        for (TableColumn column : listOfColumns) {
+    public Set<JTableColumn> getForeignKeyColumns() {
+        Set<JTableColumn> foreignKeyColumns = new LinkedHashSet<JTableColumn>();
+        for (JTableColumn column : listOfColumns) {
             if (column.isForeignKey()) {
                 foreignKeyColumns.add(column);
             }
@@ -143,16 +144,16 @@ public abstract class Table implements JTable {
         return foreignKeyColumns;
     }
 
-    public Set<Set<TableColumn>> getForeignColumnsByGroup() {
-        Set<Set<TableColumn>> groupedColumns = new HashSet<Set<TableColumn>>();
-        Set<TableColumn> foreignColumns = getForeignKeyColumns();
+    public Set<Set<JTableColumn>> getForeignColumnsByGroup() {
+        Set<Set<JTableColumn>> groupedColumns = new HashSet<Set<JTableColumn>>();
+        Set<JTableColumn> foreignColumns = getForeignKeyColumns();
 
         while (!foreignColumns.isEmpty()) {
-            Iterator<TableColumn> it = foreignColumns.iterator();
-            TableColumn col = it.next();
+            Iterator<JTableColumn> it = foreignColumns.iterator();
+            JTableColumn col = it.next();
             boolean foundGroup = false;
-            for (Set<TableColumn> group : groupedColumns) {
-                for (TableColumn c : group) {
+            for (Set<JTableColumn> group : groupedColumns) {
+                for (JTableColumn c : group) {
                     if (c.getReferenceTable().equals(col.getReferenceTable())) {
                         if (c.getField().equals(col.getField())) {
                             foundGroup = true;
@@ -172,7 +173,7 @@ public abstract class Table implements JTable {
                 }
             }
             if (!foundGroup) {
-                Set<TableColumn> group = new LinkedHashSet<TableColumn>();
+                Set<JTableColumn> group = new LinkedHashSet<JTableColumn>();
                 group.add(col);
                 groupedColumns.add(group);
                 it.remove();
@@ -184,7 +185,7 @@ public abstract class Table implements JTable {
     public Set<JTable> getReferencedTables() {
         Set<JTable> remoteTables = new HashSet<JTable>();
 
-        for (TableColumn remoteTableColumn : getForeignKeyColumns()) {
+        for (JTableColumn remoteTableColumn : getForeignKeyColumns()) {
             remoteTables.add(remoteTableColumn.getReferenceTable());
         }
         return remoteTables;
@@ -198,9 +199,9 @@ public abstract class Table implements JTable {
         return relations;
     }
 
-    public Set<TableColumn> getUniqueColumns() {
-       Set<TableColumn> uniqueColumns = new LinkedHashSet<TableColumn>();
-       for (TableColumn c : getTableColumns()){
+    public Set<JTableColumn> getUniqueColumns() {
+       Set<JTableColumn> uniqueColumns = new LinkedHashSet<JTableColumn>();
+       for (JTableColumn c : getTableColumns()){
            if (c.isUnique()){
                uniqueColumns.add(c);
            }

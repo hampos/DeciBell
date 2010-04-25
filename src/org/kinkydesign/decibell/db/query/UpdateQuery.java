@@ -46,6 +46,7 @@ import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 /**
  *
@@ -76,17 +77,17 @@ public abstract class UpdateQuery implements SQLQuery {
         initPropositions(table.getTableColumns(), table.getTableColumns());
     }
 
-    public void setColumns(Collection<? extends TableColumn> tableColumns) {
+    public void setColumns(Collection<? extends JTableColumn> tableColumns) {
         initPropositions(tableColumns, tableColumns);
     }
 
-    public void setColumns(Collection<? extends TableColumn> setColumns,
-            Collection<? extends TableColumn> whereColumns) {
+    public void setColumns(Collection<? extends JTableColumn> setColumns,
+            Collection<? extends JTableColumn> whereColumns) {
         initPropositions(setColumns, whereColumns);
     }
 
-    public Collection<? extends TableColumn> getColumns() {
-        Set<TableColumn> columns = new HashSet<TableColumn>();
+    public Collection<? extends JTableColumn> getColumns() {
+        Set<JTableColumn> columns = new HashSet<JTableColumn>();
         for (Proposition p : setPropositions) {
             columns.add(p.getTableColumn());
         }
@@ -113,16 +114,16 @@ public abstract class UpdateQuery implements SQLQuery {
         return propositions;
     }
 
-    private void initPropositions(Collection<? extends TableColumn> setColumns,
-            Collection<? extends TableColumn> whereColumns) {
-        for (TableColumn col : setColumns) {
+    private void initPropositions(Collection<? extends JTableColumn> setColumns,
+            Collection<? extends JTableColumn> whereColumns) {
+        for (JTableColumn col : setColumns) {
             Proposition p = new Proposition();
             p.setTableColumn(col);
             p.setQualifier(Qualifier.EQUAL);
             p.setUnknown();
             setPropositions.add(p);
         }
-        for (TableColumn tc : whereColumns) {
+        for (JTableColumn tc : whereColumns) {
             Proposition p = new Proposition();
             p.setTableColumn(tc);
             if (tc.getColumnType().equals(SQLType.VARCHAR)
@@ -163,39 +164,39 @@ public abstract class UpdateQuery implements SQLQuery {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setDouble(TableColumn column, double value) {
+    public void setDouble(JTableColumn column, double value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setInfinity(TableColumn column) {
+    public void setInfinity(JTableColumn column) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setInt(TableColumn column, int value) {
+    public void setInt(JTableColumn column, int value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setFloat(TableColumn column, float value) {
+    public void setFloat(JTableColumn column, float value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setShort(TableColumn column, short value) {
+    public void setShort(JTableColumn column, short value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setLong(TableColumn column, long value) {
+    public void setLong(JTableColumn column, long value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setNull(TableColumn column) {
+    public void setNull(JTableColumn column) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setString(TableColumn column, String value) {
+    public void setString(JTableColumn column, String value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setUnknown(TableColumn column) {
+    public void setUnknown(JTableColumn column) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

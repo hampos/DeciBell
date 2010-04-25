@@ -40,13 +40,15 @@ import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.db.interfaces.JTable;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
+
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-final public class TableColumn implements Cloneable {
+final public class TableColumn implements Cloneable, JTableColumn {
 
     private String columnName = "";
     private SQLType columnType = null;
@@ -65,7 +67,7 @@ final public class TableColumn implements Cloneable {
     private boolean hasDefault = false;
     private boolean isForeignKey = false;
     private JTable referencesTable = null;
-    private TableColumn referencesColumn = null;
+    private JTableColumn referencesColumn = null;
     private Class<? extends Component> referencesClass = null;
     private OnModification onUpdate = null;
     private OnModification onDelete = null;
@@ -84,7 +86,7 @@ final public class TableColumn implements Cloneable {
         return masterTable;
     }
 
-    public void setMasterTable(Table masterTable) {
+    public void setMasterTable(JTable masterTable) {
         this.masterTable = masterTable;
     }
 
@@ -120,7 +122,7 @@ final public class TableColumn implements Cloneable {
         return isPrimaryKey;
     }
 
-    public void setForeignKey(JTable table, TableColumn ForeignColumn, OnModification onDelete, OnModification onUpdate) {
+    public void setForeignKey(JTable table, JTableColumn ForeignColumn, OnModification onDelete, OnModification onUpdate) {
         this.isForeignKey = true;
         this.referencesTable = table;
         this.referencesColumn = ForeignColumn;
@@ -130,6 +132,7 @@ final public class TableColumn implements Cloneable {
     }
 
     public String getReferenceTableName() {
+        if (referencesTable==null) return null;
         return referencesTable.getTableName();
     }
 
@@ -141,7 +144,7 @@ final public class TableColumn implements Cloneable {
         return referencesColumn.getColumnName();
     }
 
-    public TableColumn getReferenceColumn() {
+    public JTableColumn getReferenceColumn() {
         return referencesColumn;
     }
 
