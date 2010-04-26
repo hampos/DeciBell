@@ -285,8 +285,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
                             selfRefCol.getSelfRefCol().setReferencesClass(c);
 
                             selfReferencingCols.add(selfRefCol);
-                        } // <editor-fold defaultstate="collapsed" desc="comment">
-                        else {
+                        } else {
                             if (!registry.containsKey((Class<? extends Component>) field.getType())) {
                                 tableCreation((Class<? extends Component>) field.getType());
                             }
@@ -318,7 +317,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
                                 table.addColumn(foreignColumn);
                                 flag = false;
                             }
-                        }// </editor-fold>
+                        }
 
                     } else {
                         throw new ClassCastException("Bad ForeignKey specified - Class:" + field.getDeclaringClass().getName()

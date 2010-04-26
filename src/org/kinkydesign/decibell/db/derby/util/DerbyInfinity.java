@@ -40,6 +40,7 @@ package org.kinkydesign.decibell.db.derby.util;
 
 /**
  *
+ * A collection of extreme value for numeric datatypes supported in Derby.
  * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
  */

@@ -35,6 +35,7 @@
  */
 package org.kinkydesign.decibell.db.interfaces;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -116,5 +117,22 @@ public interface JTable {
     Map<JTableColumn, JTableColumn> referenceRelation();
 
     Set<JTableColumn> getUniqueColumns();
+
+    /**
+     * Whether the table has columns which are foreign keys to itself.
+     * @return
+     *      <code>true</code> is the table has self-references.
+     */
+    boolean hasSelfReferences();
+
+    /**
+     * Get a list of the foreign columns of the table which reference itself (self-
+     * referencing columns) if any. If the table does not have any self references,
+     * returns an empty list. The implementation of the returned List is the LinkedList
+     * that preserves the order of the columns in the table.
+     * @return
+     *      List of self-referencing columns of the table.
+     */
+    List<JTableColumn> getSelfReferences();
 
 }

@@ -35,8 +35,11 @@
  */
 package org.kinkydesign.decibell.db.derby;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.Qualifier;
@@ -68,7 +71,8 @@ public class DerbyTable extends Table {
      * to the TableColumns it includes.
      * @return SQL Table Creation String for Derby
      */
-    public String getCreationSQL() {
+    public String getCreationSQL() 
+    {
         String SQL = CREATE_TABLE + SPACE + getTableName() + NEWLINE + LEFT_PAR + SPACE;
         Iterator<JTableColumn> it = super.getTableColumns().iterator();
         while (it.hasNext()) {
@@ -87,9 +91,9 @@ public class DerbyTable extends Table {
 
             if (column.hasDefault()) {
                 String DEFAULT_VALUE = "";
-                if (column.isTypeNumeric()){
+                if (column.isTypeNumeric()) {
                     DEFAULT_VALUE = column.getDefaultValue();
-                }else{
+                } else {
                     DEFAULT_VALUE = SINGLE_QUOTE + column.getDefaultValue() + SINGLE_QUOTE;
                 }
                 SQL += DEFAULT + SPACE + DEFAULT_VALUE + SPACE;
@@ -98,15 +102,15 @@ public class DerbyTable extends Table {
             if (column.isConstrained()) {
                 SQL += getConstraint(column) + SPACE;
             }
-            if(it.hasNext()){
-            SQL += COMMA + NEWLINE;
+            if (it.hasNext()) {
+                SQL += COMMA + NEWLINE;
             }
         }
         Set<Set<JTableColumn>> foreignGroups = getForeignColumnsByGroup();
         if (!foreignGroups.isEmpty()) {
             SQL += COMMA + NEWLINE;
             Iterator<Set<JTableColumn>> setIt = foreignGroups.iterator();
-            while(setIt.hasNext()) {
+            while (setIt.hasNext()) {
                 Set<JTableColumn> group = setIt.next();
                 String foreignKey = "";
                 String references = "";
@@ -136,21 +140,21 @@ public class DerbyTable extends Table {
                 foreignKey = "";
                 references = "";
                 options = "";
-                if(setIt.hasNext()){
+                if (setIt.hasNext()) {
                     SQL += COMMA + NEWLINE;
                 }
             }
         }
-        if(!getPrimaryKeyColumns().isEmpty()){
-        SQL += COMMA + NEWLINE + Pk + SPACE + LEFT_PAR;
-        it = getPrimaryKeyColumns().iterator();
-        while (it.hasNext()) {
-            SQL += it.next().getColumnName();
-            if (it.hasNext()) {
-                SQL += COMMA;
+        if (!getPrimaryKeyColumns().isEmpty()) {
+            SQL += COMMA + NEWLINE + Pk + SPACE + LEFT_PAR;
+            it = getPrimaryKeyColumns().iterator();
+            while (it.hasNext()) {
+                SQL += it.next().getColumnName();
+                if (it.hasNext()) {
+                    SQL += COMMA;
+                }
             }
-        }
-        SQL += RIGHT_PAR;
+            SQL += RIGHT_PAR;
         }
         SQL = SQL + NEWLINE + RIGHT_PAR;
         System.out.println(SQL);
@@ -161,7 +165,8 @@ public class DerbyTable extends Table {
      * Constructs the Deletion SQL command required to delete this table.
      * @return SQL Table Deletion String for Derby
      */
-    public String getDeletionSQL() {
+    public String getDeletionSQL()
+    {
         String SQL = DROP_TABLE + SPACE + getTableName();
         return SQL;
     }
@@ -221,5 +226,21 @@ public class DerbyTable extends Table {
             }
         }
         return constraint;
+    }
+
+    public boolean hasSelfReferences()
+    {
+        return getSelfReferences().size() == 0 ? false : true;
+    }
+
+    public List<JTableColumn> getSelfReferences()
+    {
+        List<JTableColumn> selfReferences = new LinkedList<JTableColumn>();
+        for (JTableColumn tc : getForeignKeyColumns()) {
+            if (tc.getReferenceTable().equals(this)) {
+                selfReferences.add(tc);
+            }
+        }
+        return selfReferences;
     }
 }

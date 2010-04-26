@@ -56,30 +56,16 @@ public class ErrorReport extends Component<ErrorReport> {
     public int uid=-1;
 
     @ForeignKey
-    public ErrorCode errorCode;
+    public ErrorCode errorCode=null;
 
     @Entry(defaultValue="default_value")
     public String details = null;
 
     @Entry
-    public String actor;
+    public String actor=null;
 
     @ForeignKey
-    public ErrorReport trace;
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj==null) return false;
-        if (this.getClass()!=obj.getClass()) return false;  
-        return ((ErrorReport) obj).uid==uid;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        return hash;
-    }
-
+    public ErrorReport trace=null;
 
 
 }

@@ -43,6 +43,7 @@ import java.net.URI;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.ForeignKey;
+import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
@@ -56,11 +57,12 @@ public class Task extends Component<Task> {
     }
 
 
-
     @PrimaryKey
+    @NumericNull(numericNullValue="-1")
     public int uid = -1;
 
     @Entry
+    @NumericNull(numericNullValue="-1")
     public int taskStatus = -1;
 
     @Entry
@@ -70,28 +72,16 @@ public class Task extends Component<Task> {
     public ErrorReport er;
 
     @Entry
+    @NumericNull(numericNullValue="-1")
     public long timeStart = -1L;
 
     @Entry
+    @NumericNull(numericNullValue="-1")
     public long timeFinish = -1L;
 
     @Entry
+    @NumericNull(numericNullValue="-1")
     public long durationMS = -1L;
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || obj.getClass()!=getClass()) return false;
-        return uid==((Task)obj).uid;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 53 * hash + this.uid;
-        return hash;
-    }
-
-
 
     
 

@@ -58,22 +58,29 @@ public class DeciBellTest {
 
         db.start();
 
+        UserGroup ug = new UserGroup(989, "groupa");
+        //ug.register(db);
+
         User user = new User();
-        user.setId(4042);
+        user.setId(20222);
         user.setAge(18);
-        user.setUserName("Dakis");
-        UserGroup group = new UserGroup(1,"secta");
+        user.setUserName("Martha");
+        ArrayList<UserGroup> groupList = new ArrayList<UserGroup>();
+        UserGroup group = new UserGroup(1, "secta");
+        //groupList.add(group);
+        groupList.add(ug);
+        user.setGroups(groupList);
         user.setGroup(group);
 
-        //user.register(db);
-        //user.delete(db);
-                
+        // user.register(db);
+        user.delete(db);
+
 
         PrintStream ps = new PrintStream(new File("/home/chung/Desktop/component.txt"));
         ArrayList<User> list = new User().search(db);
         System.out.println("List size : " + list.size());
         for (User u : list) {
-            u.print(ps);
+            u.print(System.out);
         }
 
     }

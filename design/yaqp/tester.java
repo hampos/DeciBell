@@ -39,12 +39,11 @@
 
 package yaqp;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 
@@ -58,14 +57,14 @@ public class tester {
     public static void main(String... args) throws DuplicateKeyException, URISyntaxException, IOException{
         DeciBell db = new DeciBell();
         db.setDriverHome("/home/chung/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
-        db.setDbName("database/y");
+        db.setDbName("database/s");
 
         db.attach(ErrorReport.class);
         db.attach(ErrorCode.class);
         db.attach(Task.class);
 
-
         db.start();
+        
 
         ErrorCode ec = new ErrorCode();
         ec.code = 12342;
@@ -74,45 +73,50 @@ public class tester {
         //ec.register(db);
 
         ErrorReport er = new ErrorReport();
-        er.uid = 245;
+        er.uid = 24124;
         er.errorCode=ec;
-        er.trace = new ErrorReport();
+        er.trace = er;
+        er.actor = "none";
+        er.details="details";
         //er.register(db);
 
-        Task t = new Task();
-        //t.resultURI=new URI("http://whatever.com"); // <~ this is not taked into account yet
-        t.er = null ; // null stands for object-WTE
-        t.timeFinish = -1L; // minus one stands for the numeric WTE
-        //t.print(System.err);
-        
-        //t.register(db);
+        ErrorReport er2 = new ErrorReport();
+        er2.uid = 1101;
+        er2.errorCode=ec;
+        er2.trace = er2;
+        er2.actor = "nun";
+        er2.details="detrails";
+        //er2.register(db);
 
-        //x.x = x;
-        wte();
-        PrintStream ps = new PrintStream(new File("/home/chung/Desktop/component.txt"));
-        ArrayList<Task> list = t.search(db);
-        System.out.println(list.size());
-        for (Task temp : list){
-            System.out.println(temp);
-        }
-
+        ErrorReport er3 = new ErrorReport();
+        er3.uid = 565758;
+        er3.errorCode=ec;
+        er3.trace = er2;
+        er3.actor = "someone";
+        er3.details="message of details";
+        //er3.register(db);
         
                
+        ArrayList<? extends Component> list = new ErrorReport().search(db);
+        System.out.println(((ErrorReport)list.get(0)).trace.trace.trace.trace.trace);
+
+        Task t = new Task();
+        t.durationMS = 918;
+        t.er = er3;
+        t.resultURI = new URI("http://hampos.org");
+        t.taskStatus = 812;
+        t.timeFinish = 6612L;
+        t.timeStart = 900101;
+        t.uid=22210;
+        //t.register(db);
+
+        ArrayList<? extends Component> list2 = new Task().search(db);
+        list2.get(2).print(System.out);
+
+                       
     }
 
-    public static void wte(){
-
-            tester.XYZ z = new tester.XYZ();
-            z.x = z;
-    }
-
-        public static class XYZ{
-
-        public XYZ() {
-        }
-
-            public XYZ x;
-        }
+    
 
 
 }
