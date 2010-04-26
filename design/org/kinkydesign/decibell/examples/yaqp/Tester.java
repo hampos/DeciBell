@@ -37,7 +37,7 @@
  */
 
 
-package yaqp;
+package org.kinkydesign.decibell.examples.yaqp;
 
 import java.io.IOException;
 import java.net.URI;
@@ -52,7 +52,7 @@ import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class tester {
+public class Tester {
 
     public static void main(String... args) throws DuplicateKeyException, URISyntaxException, IOException{
         DeciBell db = new DeciBell();
@@ -98,7 +98,7 @@ public class tester {
         
                
         ArrayList<? extends Component> list = new ErrorReport().search(db);
-        System.out.println(((ErrorReport)list.get(0)).trace.trace.trace.trace.trace);
+        System.out.println("Error message"+((ErrorReport)list.get(0)).trace.trace.trace.trace.trace.trace.errorCode.message);
 
         Task t = new Task();
         t.durationMS = 918;

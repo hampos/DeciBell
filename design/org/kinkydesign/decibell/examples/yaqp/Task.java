@@ -1,6 +1,6 @@
 /**
- *  Class : ErrorCode
- *  Date  : Apr 24, 2010
+ *  Class : Task
+ *  Date  : Apr 25, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -37,10 +37,13 @@
  */
 
 
-package yaqp;
+package org.kinkydesign.decibell.examples.yaqp;
 
+import java.net.URI;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.ForeignKey;
+import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
@@ -48,28 +51,37 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class ErrorCode extends Component<ErrorCode>{
+public class Task extends Component<Task> {
 
-    public ErrorCode() {
+    public Task() {
     }
 
-    
-
-    public ErrorCode(int code) {
-        this.code = code;
-    }
-
-
-    
 
     @PrimaryKey
-    public int code=-1;
+    @NumericNull(numericNullValue="-1")
+    public int uid = -1;
 
     @Entry
-    public int httpStatus=-1;
+    @NumericNull(numericNullValue="-1")
+    public int taskStatus = -1;
 
     @Entry
-    public String message;
+    public URI resultURI;
+
+    @ForeignKey
+    public ErrorReport er;
+
+    @Entry
+    @NumericNull(numericNullValue="-1")
+    public long timeStart = -1L;
+
+    @Entry
+    @NumericNull(numericNullValue="-1")
+    public long timeFinish = -1L;
+
+    @Entry
+    @NumericNull(numericNullValue="-1")
+    public long durationMS = -1L;
 
     
 

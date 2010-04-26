@@ -69,9 +69,31 @@ import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
 /**
- *
+ * <p  align="justify" style="width:60%">
+ * Any class that needs to be persistent in the database using DeciBell&copy; has to
+ * subclass (directly or indirectly) the class Component. Component contains methods
+ * that allow directly to read from and write to the database, as well as, delete and update
+ * one or more database entries. The user does not need to interact directly or by any means
+ * with the database it self or know anything about the database structure, SQL queries and
+ * java-to-db-to-java data transactions whatsoever.
+ * </p>
+ * <p  align="justify" style="width:60%">
+ * For increased security and performance, <code>SELECT</code>, <code>INSERT</code>,
+ * <code>UPDATE</code> and <code>DELETE</code> queries are prepared on startup. The prepared
+ * statements are supplied with parameters using the Java reflection API.
+ * </p>
+ * <p  align="justify" style="width:60%">
+ * Although the read/write/delete/update procedure seems to be quite opaque (indeed
+ * , it is intended to work as a black box tool), it is possible to access the database
+ * directly or even connect to it using <em>ij</em> (Derby Interace for connecting to
+ * a JDBC database and performing SQL operations).
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @see Component#register(org.kinkydesign.decibell.DeciBell) insert
+ * @see Component#search(org.kinkydesign.decibell.DeciBell)  select
+ * @see Component#delete(org.kinkydesign.decibell.DeciBell) delete
+ * @see Component#update()  update
  */
 public abstract class Component<T extends Component> implements Cloneable {
 

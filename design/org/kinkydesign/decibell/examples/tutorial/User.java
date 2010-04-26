@@ -1,10 +1,9 @@
-package examples;
+package org.kinkydesign.decibell.examples.tutorial;
 
 /*
 Import org.kinkyDesign.decibell classes...
  */
 import java.util.ArrayList;
-import java.util.Set;
 import org.kinkydesign.decibell.annotations.*;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.Component;
@@ -57,59 +56,20 @@ public class User extends Component<User> {
     an exception is thrown; e.g. IllegalArgumentException or sth like that).
      */
     @ForeignKey
-    private UserGroup group;
+    private UserGroup group = null;
 
     @ForeignKey
     private ArrayList<UserGroup> groups;
 
     @Entry
-    private Resource resource = new Resource(5,"smthng");
-//
-//    /*
-//    Establish a K-to-N correspondence between a user and many resources, So this will
-//    generate an extra table called user_resources_relations with two columns: one for the
-//    primary key of User and one for the primary key of Resource.
-//     */
-//    @Entry
-//    public ArrayList<Resource> listOfResources;
-//
-//    /*
-//    Same as above
-//     */
-//    @Entry
-//    private Resource[] anotherList;
-//
-//    /*
-//    This is not valid, because the class Object is not tagged as @Component
-//     */
-//    @Entry
-//    public Object something;
-//
-//    /*
-//    Add a constraint to a key. This variable takes values from the set {HIGH, LOW}
-//     */
-//    @Entry
-//    @Constraint(domain = {"HIGH", "LOW"})
-//    public String kinky;
-//
-//    /*
-//    This creates a many-to-many relation between this entity (User) and the childName element.
-//    So this creates a table with two columns: The primary key of User (ID) and another column of
-//    type VarChar(255).
-//     */
+    private Resource resource = null;
+
     @Entry
     ArrayList<Resource> childName = new ArrayList<Resource>();
     {
         childName.add(new Resource(15, "child1"));
         childName.add(new Resource(16, "child3"));
     }
-
-//
-//// To be discussed:
-//// What is the effect of private/protected keywords on the fields
-//// Can a @Key-like field be private ?
-//// Introduction of @Constraint(numLow=1, numHigh=100) or
-////             @Constraint()
 
     public User(){        
     }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package examples;
+package org.kinkydesign.decibell.examples.tutorial;
 
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.Component;

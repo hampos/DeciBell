@@ -1,9 +1,6 @@
 package org.kinkydesign.decibell;
 
-import examples.SubSubUser;
-import examples.SubUser;
-import examples.User;
-import examples.UserGroup;
+import org.kinkydesign.decibell.examples.tutorial.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -72,7 +69,7 @@ public class DeciBellTest {
         user.setGroups(groupList);
         user.setGroup(group);
 
-        // user.register(db);
+         user.register(db);
         user.delete(db);
 
 

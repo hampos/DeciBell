@@ -1,4 +1,4 @@
-package examples;
+package org.kinkydesign.decibell.examples.tutorial;
 
 import org.kinkydesign.decibell.annotations.Entry;
 

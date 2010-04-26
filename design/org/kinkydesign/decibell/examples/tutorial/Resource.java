@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package examples;
+package org.kinkydesign.decibell.examples.tutorial;
 
 import java.io.Serializable;
 

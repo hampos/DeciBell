@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.examples.tutorial.User;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 

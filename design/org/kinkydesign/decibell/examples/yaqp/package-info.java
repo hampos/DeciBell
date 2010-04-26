@@ -1,6 +1,4 @@
-/**
- *  Class : Task
- *  Date  : Apr 25, 2010
+/*
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -36,53 +34,8 @@
  * tel. +30 210 7723236
  */
 
-
-package yaqp;
-
-import java.net.URI;
-import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
-import org.kinkydesign.decibell.annotations.ForeignKey;
-import org.kinkydesign.decibell.annotations.NumericNull;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
-
 /**
- *
- * @author Pantelis Sopasakis
- * @author Charalampos Chomenides
+ * A Use Case of a database used as an example.
  */
-public class Task extends Component<Task> {
+package org.kinkydesign.decibell.examples.yaqp;
 
-    public Task() {
-    }
-
-
-    @PrimaryKey
-    @NumericNull(numericNullValue="-1")
-    public int uid = -1;
-
-    @Entry
-    @NumericNull(numericNullValue="-1")
-    public int taskStatus = -1;
-
-    @Entry
-    public URI resultURI;
-
-    @ForeignKey
-    public ErrorReport er;
-
-    @Entry
-    @NumericNull(numericNullValue="-1")
-    public long timeStart = -1L;
-
-    @Entry
-    @NumericNull(numericNullValue="-1")
-    public long timeFinish = -1L;
-
-    @Entry
-    @NumericNull(numericNullValue="-1")
-    public long durationMS = -1L;
-
-    
-
-}
