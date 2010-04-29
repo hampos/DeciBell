@@ -161,7 +161,7 @@ public abstract class Component<T extends Component> implements Cloneable {
                         Field f = col.getReferenceColumn().getField();
                         f.setAccessible(true);
                         ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
-                    } else if (obj == null || (col.isTypeNumeric() && (obj.equals(-1) || obj.equals(-1L)))) {
+                    } else if (obj == null || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString()))==Double.parseDouble(col.getNumericNull())))) {
                         // Here '-1' stands for the numeric counterpart for 'null'
                         // But we have to figure out some more subtle way to do that
                         // A reasonable way would be to allow the user to define the
@@ -400,19 +400,20 @@ public abstract class Component<T extends Component> implements Cloneable {
                         Field f = col.getReferenceColumn().getField();
                         f.setAccessible(true);
                         ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
-                    } else if (obj == null
-                            || (col.isTypeNumeric() && (obj.equals(-1)
-                            || obj.equals(-1L)
-                            || obj.equals((short) -1)))) {
+                    } else if (obj == null || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString()))==Double.parseDouble(col.getNumericNull())))) {
+                        System.out.println("here *************************** "+Double.parseDouble(obj.toString()) + "  ***  "+ Double.parseDouble(col.getNumericNull()));
                         Infinity inf = new Infinity(db.getDbConnector());
                         //System.out.println("Column: " + col.getColumnName() + " " + inf.getInfinity(p));
                         ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
                     } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                        System.out.println(obj+"%%&^Y");
                         //System.out.println(col.getColumnName() + ".." + obj);
                         ps.setObject(i, obj, col.getColumnType().getType());
                     } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                        System.out.println(obj+"...");
                         ps.setObject(i, obj, col.getColumnType().getType());
                     } else {
+                        System.out.println(obj+"???");
                         XStream xstream = new XStream();
                         String xml = xstream.toXML(obj);
                         ps.setString(i, xml);

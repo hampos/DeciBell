@@ -46,7 +46,7 @@ public class DeciBellTest {
         DeciBell db = new DeciBell();
 
         db.setDriverHome("/home/chung/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
-        db.setDbName("database/new/6");
+        db.setDbName("database/new/9");
 
         db.attach(SubSubUser.class);
         db.attach(UserGroup.class);
@@ -56,13 +56,13 @@ public class DeciBellTest {
         db.start();
 
         UserGroup ug = new UserGroup(989, "groupa");
-        //ug.register(db);
+        ug.register(db);
 
         User user = new User();
         user.setId(202232);
         user.setUserName("Maria1");
         ArrayList<UserGroup> groupList = new ArrayList<UserGroup>();
-        UserGroup group = new UserGroup(1, "secta");
+        
         //groupList.add(group);
         groupList.add(ug);
         user.setGroups(groupList);
@@ -73,7 +73,9 @@ public class DeciBellTest {
 
 
         //PrintStream ps = new PrintStream(new File("/home/chung/Desktop/component.txt"));
-        ArrayList<User> list = new User().search(db);
+         User v = new User();
+         v.setId(-100);
+        ArrayList<User> list = v.search(db);
         System.out.println("List size : " + list.size());
         for (User u : list) {
             u.print(System.out);
