@@ -105,13 +105,15 @@ public class StatementPool {
     }
 
     /**
+     * <p  align="justify" style="width:60%">
      * Removes a register operation type PreparedStatement-SQLQuery pair from the pool
      * for a given JTable. This pair holds both the PreparedStatement and the
      * Query specifics to assist in feeding the prepared statement with values.
      * This method will block when the pool is empty of prepared statements for
      * the specific type.
-     * @param t
-     * @return
+     * </p>
+     * @param t the JTable for which a register type prepared statement is needed.
+     * @return a PreparedStatement-SQLQuer pair of type Register for the given JTable.
      */
     public Entry<PreparedStatement, SQLQuery> getRegister(JTable t) {
         try {
@@ -144,8 +146,8 @@ public class StatementPool {
      * Query specifics to assist in feeding the prepared statement with values.
      * This method will block when the pool is empty of prepared statements for
      * the specific type.
-     * @param t
-     * @return
+     * @param t the JTable for which a search type prepared statement is needed.
+     * @return a PreparedStatement-SQLQuer pair of type Search for the given JTable.
      */
     public Entry<PreparedStatement, SQLQuery> getSearch(JTable t) {
         try {
@@ -178,8 +180,8 @@ public class StatementPool {
      * Query specifics to assist in feeding the prepared statement with values.
      * This method will block when the pool is empty of prepared statements for
      * the specific type.
-     * @param t
-     * @return
+     * @param t the JTable for which a search-primary-keys-only type prepared statement is needed.
+     * @return a PreparedStatement-SQLQuer pair of type Search-primary-keys-only for the given JTable.
      */
     public Entry<PreparedStatement, SQLQuery> getSearchPK(JTable t) {
         try {
@@ -212,8 +214,8 @@ public class StatementPool {
      * Query specifics to assist in feeding the prepared statement with values.
      * This method will block when the pool is empty of prepared statements for
      * the specific type.
-     * @param t
-     * @return
+     * @param t the JTable for which an update type prepared statement is needed.
+     * @return a PreparedStatement-SQLQuer pair of type Update for the given JTable.
      */
     public Entry<PreparedStatement, SQLQuery> getUpdate(JTable t) {
         try {
@@ -246,8 +248,8 @@ public class StatementPool {
      * Query specifics to assist in feeding the prepared statement with values.
      * This method will block when the pool is empty of prepared statements for
      * the specific type.
-     * @param t
-     * @return
+     * @param t the JTable for which a delete type prepared statement is needed.
+     * @return a PreparedStatement-SQLQuer pair of type Delete for the given JTable.
      */
     public Entry<PreparedStatement, SQLQuery> getDelete(JTable t) {
         try {
@@ -277,7 +279,7 @@ public class StatementPool {
     /**
      * Inializes the pool for a given table by creating PreparedStatement objects
      * for all query types and inserting them to the pool.
-     * @param table
+     * @param table the JTable to be initiated.
      */
     private void initTable(JTable table) {
         search.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
@@ -297,7 +299,7 @@ public class StatementPool {
     /**
      * Inializes the pool for a given relational table by creating PreparedStatement objects
      * for all query types and inserting them to the pool.
-     * @param table
+     * @param table the JRelationalTable to be initiated.
      */
     private void initRelTable(JRelationalTable table){
         search.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));

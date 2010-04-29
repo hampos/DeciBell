@@ -94,7 +94,7 @@ final public class TableColumn implements Cloneable, JTableColumn {
 
     /**
      * Returns the JTable in which the TableColumn belongs.
-     * @return
+     * @return the JTable in which the TableColumn belongs.
      */
     public JTable getMasterTable() {
         return masterTable;
@@ -307,7 +307,7 @@ final public class TableColumn implements Cloneable, JTableColumn {
      * Sets the highest value the column can take. If a value is given that defies
      * this constraint an SQLException will be thrown.
      * This method must be used only when the column is of numeric type.
-     * @param low a String defining the highest numeric value the column can take.
+     * @param high a String defining the highest numeric value the column can take.
      */
     public void setHigh(String high) {
         this.isConstrained = true;
