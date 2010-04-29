@@ -52,11 +52,21 @@ import org.kinkydesign.decibell.db.query.UpdateQuery;
 
 /**
  * Factory used to prepare statements related to database queries.
+ * 
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
 public class StatementFactory {
 
+    /**
+     * Creates a prepared statement for searching in an SQL table.
+     * @param table
+     *      A database table.
+     * @param con
+     *      A {@link DbConnector } object, that is a pointer to a database connection.
+     * @return
+     *      PreparedStatement for searching.
+     */
     public static Entry<PreparedStatement,SQLQuery> createSearch(JTable table, DbConnector con) {
         SelectQuery query = new DerbySelectQuery(table);
         try {
@@ -69,6 +79,15 @@ public class StatementFactory {
         }       
     }
 
+    /**
+     * Creates a prepared statement for searching by primary key only in an SQL table.
+     * @param table
+     *      A database table.
+     * @param con
+     *      A {@link DbConnector } object, that is a pointer to a database connection.
+     * @return
+     *      PreparedStatement for searching by primary key only.
+     */
     public static Entry<PreparedStatement,SQLQuery> createSearchPK(JTable table, DbConnector con) {
         SelectQuery query = new DerbySelectQuery(table);
         try {
@@ -81,6 +100,15 @@ public class StatementFactory {
         }
     }
 
+    /**
+     * Creates a prepared statement for updating rows in an SQL table.
+     * @param table
+     *      A database table.
+     * @param con
+     *      A {@link DbConnector } object, that is a pointer to a database connection.
+     * @return
+     *      PreparedStatement for updating.
+     */
     public static Entry<PreparedStatement,SQLQuery> createUpdate(JTable table, DbConnector con) {
         UpdateQuery query= new DerbyUpdateQuery(table);
         try {
@@ -93,6 +121,15 @@ public class StatementFactory {
         }
     }
 
+    /**
+     * Creates a prepared statement for registering rows in an SQL table.
+     * @param table
+     *      A database table.
+     * @param con
+     *      A {@link DbConnector } object, that is a pointer to a database connection.
+     * @return
+     *      PreparedStatement for registering.
+     */
     public static Entry<PreparedStatement,SQLQuery> createRegister(JTable table, DbConnector con) {
         InsertQuery query= new DerbyInsertQuery(table);
         try {

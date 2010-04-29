@@ -45,12 +45,16 @@ import org.kinkydesign.decibell.db.derby.util.DerbyInfinity;
 import org.kinkydesign.decibell.db.query.Proposition;
 
 /**
- *
+ * This class is used for getting the infinite values on various sql types for
+ * each database server that DeciBell supports.
  * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
  */
 public class Infinity {
 
+    /**
+     * an Enumeration of Database Servers that DeciBell supports.
+     */
     private enum Connection{
         DERBY,
         MYSQL,
@@ -58,7 +62,12 @@ public class Infinity {
     }
 
     private Connection con;
-    
+
+    /**
+     * Constructs a new Infinity object given a DbConnector. The DbConnector
+     * is needed so that Infinity returns infinite values for the correct server.
+     * @param con a DbConnector that decides the database server values to be returned.
+     */
     public Infinity(DbConnector con){
         if(con.getClass().equals(DerbyConnector.class)){
             this.con = Connection.DERBY;
@@ -70,8 +79,8 @@ public class Infinity {
     /**
      * Given a proposition p returns the object corresponding to the infinity value
      * of the value of the proposition.
-     * @param p
-     * @return
+     * @param p a Proposition for which the infinity value is needed.
+     * @return an Object that contains the infinity value for the given proposition.
      */
     public Object getInfinity(Proposition p){
         switch (p.getTableColumn().getColumnType()) {
@@ -120,6 +129,10 @@ public class Infinity {
         }
     }
 
+    /**
+     * Returns the lowest int value the database can take.
+     * @return the lowest int value the database can take.
+     */
     public int getLeftInt(){
         switch (con){
             case DERBY:
@@ -129,6 +142,10 @@ public class Infinity {
         }
     }
 
+    /**
+     * Returns the highest int value the database can take.
+     * @return the highest int value the database can take.
+     */
     public int getRightInt(){
         switch(con){
             case DERBY:
@@ -138,6 +155,10 @@ public class Infinity {
         }
     }
 
+    /**
+     * Returns the lowest float value the database can take.
+     * @return the lowest float value the database can take.
+     */
     public double getLeftFloat(){
         switch (con){
             case DERBY:
@@ -147,6 +168,10 @@ public class Infinity {
         }
     }
 
+    /**
+     * Returns the highest float value the database can take.
+     * @return the highest float value the database can take.
+     */
     public double getRightFloat(){
         switch (con){
             case DERBY:
@@ -156,6 +181,10 @@ public class Infinity {
         }
     }
 
+    /**
+     * Returns the lowest double value the database can take.
+     * @return the lowest double value the database can take.
+     */
     public double getLeftDouble(){
         switch (con){
             case DERBY:
@@ -165,6 +194,10 @@ public class Infinity {
         }
     }
 
+    /**
+     * Returns the highest double value the database can take.
+     * @return the highest double value the database can take.
+     */
     public double getRightDouble(){
         switch (con){
             case DERBY:
@@ -174,6 +207,10 @@ public class Infinity {
         }
     }
 
+    /**
+     * Returns the lowest long value the database can take.
+     * @return the lowest long value the database can take.
+     */
     public long getLeftLong(){
         switch (con){
             case DERBY:
@@ -183,6 +220,10 @@ public class Infinity {
         }
     }
 
+    /**
+     * Returns the highest long value the database can take.
+     * @return the highest long value the database can take.
+     */
     public long getRightLong(){
         switch (con){
             case DERBY:

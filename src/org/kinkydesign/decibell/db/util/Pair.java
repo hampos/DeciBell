@@ -41,7 +41,7 @@ package org.kinkydesign.decibell.db.util;
 import java.util.Map.Entry;
 
 /**
- *
+ * A simple pair implementation of the Map.Entry interface.
  * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
  */
@@ -49,19 +49,37 @@ public class Pair<Key,Value> implements Entry<Key,Value> {
     private Key key;
     private Value value;
 
+    /**
+     * Constructs a new Key-Value pair.
+     * @param key a new Key
+     * @param value a Value associated with the Key.
+     */
     public Pair(Key key, Value value) {
         this.key = key;
         this.value = value;
     }
 
+    /**
+     * Returns the Key of the pair.
+     * @return the Key of the pair.
+     */
     public Key getKey() {
         return key;
     }
 
+    /**
+     * Returns the Value of the pair.
+     * @return the Value of the pair.
+     */
     public Value getValue() {
         return value;
     }
 
+    /**
+     * Associates a new Value with the pair's Key.
+     * @param value a new Value to be associated with the pair's Key.
+     * @return The old Value associated with the pair's Key.
+     */
     public Value setValue(Value value) {
         Value oldvalue = this.value;
         this.value = value;
