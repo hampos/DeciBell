@@ -42,8 +42,28 @@ package org.kinkydesign.decibell.annotations;
 import java.lang.annotation.*;
 
 /**
- *
- * @author Pantelis Sopasakis
+* <p align="justify" style="width:60%">
+ * This DeciBell annotation is used to provide a <em>NumericNull</em> value for database
+ * searching. The idea is simple. When a search command is executed on a DeciBell
+ * Component DeciBell checks that component's Fields and when a Field has a <code>null</code>
+ * value it gets replaced by an infinite value. (A value used to inform the database
+ * that this specific field is to be ignored in the search, in the sense to perform
+ * the search operation irrespective of the value of this field)
+ * In that way DeciBell keeps using the same PreparedStatements and
+ * greatly increasing performance even though some of the statements values have
+ * to be ignored.
+ * The problem comes in when Java automatically initializes all primitive numerics
+ * with a 0 value (There is no meaning of <code>null</code> for primitives).
+ * This makes us unable to see if the field was initialized by
+ * the user or by the compiler. A new annotation then became clear.
+ * NumericNull is used to define the value on which a numeric primitive is
+ * considered null. The default value is -1. One can set a numeric null value
+ * other than that on each DeciBell Entry. If one is to use this annotation, they must provide
+ * a numeric value that they will not (or at least not expect to) use ever in their
+ * database for that field; otherwise this will lead to a considerable comfusion and
+ * wrong results.
+ * </p>
+ * @author Pantelius Sopasakius!
  * @author Charalampos Chomenides
  */
 @Retention(RetentionPolicy.RUNTIME)

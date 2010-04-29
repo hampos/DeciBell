@@ -76,6 +76,7 @@ final public class TableColumn implements Cloneable, JTableColumn {
     private OnModification onDelete = null;
     private JTable masterTable = null;
     private Field field = null;
+    private String numericNull = null;
 
     /**
      * Constructs a new TableColumn object.
@@ -488,5 +489,13 @@ final public class TableColumn implements Cloneable, JTableColumn {
         hash = 19 * hash + (this.columnName != null ? this.columnName.hashCode() : 0);
         hash = 19 * hash + (this.masterTable != null ? this.masterTable.hashCode() : 0);
         return hash;
+    }
+
+    public void setNumericNull(String numericNull) {
+        this.numericNull = numericNull;
+    }
+
+    public String getNumericNull() {
+        return numericNull;
     }
 }

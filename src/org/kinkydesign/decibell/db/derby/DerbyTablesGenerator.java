@@ -52,6 +52,7 @@ import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.TypeMap;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.TablesGenerator;
@@ -353,6 +354,15 @@ public class DerbyTablesGenerator extends TablesGenerator {
                     }
                 }
             }// end of FK case
+
+            /*
+             * If the field has the NumericNull annotation the numeric null
+             * value is stored in the tablecolumn for later use in queries.
+             */
+            if((ann = field.getAnnotation(NumericNull.class)) != null){
+                NumericNull numNull = (NumericNull)ann;
+                column.setNumericNull(numNull.numericNullValue());
+            }
 
             if (flag) {
                 column.setField(field);

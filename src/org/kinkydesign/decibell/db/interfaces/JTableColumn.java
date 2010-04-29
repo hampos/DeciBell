@@ -537,4 +537,20 @@ public interface JTableColumn {
      * @see JTableColumn#setPrimaryKey(boolean, boolean) primary key
      */
     void setUnique(boolean isUnique);
+
+    /**
+     * <p align="justify" style="width:60%">
+     * Sets the NumericNull value for this column.
+     * </p>
+     * @param numericNull a NumericNull String value
+     */
+    void setNumericNull(String numericNull);
+
+    /**
+     * <p align="justify" style="width:60%">
+     * Returns this column's NumericNull value.
+     * </p>
+     * @return this column's NumericNull value.
+     */
+    String getNumericNull();
 }
