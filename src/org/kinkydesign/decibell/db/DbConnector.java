@@ -144,7 +144,7 @@ public abstract class DbConnector {
     /**
      * Returns the connector's url base, meaning the first part of the
      * database url, preceding the database name.
-     * @return
+     * @return the connector's url base String.
      */
     public String getUrlBase() {
         return urlBase;

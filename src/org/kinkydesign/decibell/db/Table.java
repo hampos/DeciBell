@@ -81,7 +81,7 @@ public abstract class Table implements JTable {
     /**
      * Returns a Set of all table columns that exist in the Table. The default Set is
      * declared as a LinkedHashSet because a specific column sequence is mantained.
-     * @return
+     * @return a Set containing all JTableColumn objects this JTable contains.
      */
     public Set<JTableColumn> getTableColumns() {
         return listOfColumns;
@@ -192,7 +192,7 @@ public abstract class Table implements JTable {
      * The inner Sets are groups of table columns that are essentially the same
      * foreign key, meaning they reference the same Table and together they consist
      * a multiple foreign key on a multiple primary key of the foreign table.
-     * @return
+     * @return a Set of Sets of foreign key columns.
      */
     public Set<Set<JTableColumn>> getForeignColumnsByGroup() {
         Set<Set<JTableColumn>> groupedColumns = new HashSet<Set<JTableColumn>>();
@@ -259,7 +259,7 @@ public abstract class Table implements JTable {
 
     /**
      * Returns the Set of relational tables that refer to this table.
-     * @return
+     * @return a Set of JRelationalTable objects.
      */
     public Set<JRelationalTable> getRelations() {
         return relations;
