@@ -272,7 +272,7 @@ public abstract class Table implements JTable {
     public Set<JTableColumn> getUniqueColumns() {
        Set<JTableColumn> uniqueColumns = new LinkedHashSet<JTableColumn>();
        for (JTableColumn c : getTableColumns()){
-           if (c.isUnique()){
+           if (c.isUnique() || c.isPrimaryKey()){
                uniqueColumns.add(c);
            }
        }

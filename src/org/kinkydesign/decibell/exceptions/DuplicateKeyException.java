@@ -33,8 +33,15 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
 package org.kinkydesign.decibell.exceptions;
+
+import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.Set;
+import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.core.ComponentRegistry;
+import org.kinkydesign.decibell.db.DbConnector;
+import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 
 /**
  * A Duplicate Key Exception is a kind of exception thrown if one attempts to violate
@@ -51,7 +58,6 @@ public class DuplicateKeyException extends Exception {
     public DuplicateKeyException() {
     }
 
-
     /**
      * Constructs an instance of <code>DuplicateKeyException</code> with the
      * specified detail message.
@@ -60,5 +66,69 @@ public class DuplicateKeyException extends Exception {
      */
     public DuplicateKeyException(String msg) {
         super(msg);
+    }
+
+    public DuplicateKeyException(Object obj, DbConnector con) {
+        String message = "Exception due to duplicate key. "
+                + "Object of type "
+                + obj.getClass().getCanonicalName()
+                + " with primary key";
+        Iterator<JTableColumn> it =
+                ComponentRegistry.getRegistry(con).get(obj.getClass()).getPrimaryKeyColumns().iterator();
+        String PKs = "";
+        int count = 0;
+        while (it.hasNext()) {
+            count++;
+            Field PKfield = it.next().getField();
+            PKfield.setAccessible(true);
+            PKs += PKfield.getName();
+            try {
+                Field f =
+                        obj.getClass().getDeclaredField(PKfield.getName());
+                f.setAccessible(true);
+                Object valueForField = f.get(obj);
+                PKs += " = " + valueForField.toString();
+            } catch (final Exception ex1) {
+                throw new RuntimeException(ex1);
+            }
+            if (it.hasNext()) {
+                PKs += ", ";
+            }
+        }
+        if (count > 1) {
+            message += "s ";
+        }
+        message += " " + PKs;
+
+        Set<JTableColumn> uniqueCols =
+                ComponentRegistry.getRegistry(con).get(obj.getClass()).getUniqueColumns();
+        count = 0;
+        String uniques = "";
+        if (!uniqueCols.isEmpty()) {
+            message += " and unique field value";
+            it = uniqueCols.iterator();
+            while (it.hasNext()) {
+                count++;
+                Field uniqueField = it.next().getField();
+                uniqueField.setAccessible(true);
+                uniques += uniqueField.getName();
+                try {
+                    Field f =
+                            obj.getClass().getDeclaredField(uniqueField.getName());
+                    f.setAccessible(true);
+                    Object valueForField = f.get(obj);
+                    uniques += " = " + valueForField.toString();
+                } catch (final Exception ex1) {
+                    throw new RuntimeException(ex1);
+                }
+                if (it.hasNext()) {
+                    uniques += ", ";
+                }
+            }
+            if (count > 1) {
+                message += "s ";
+            }
+            message += " " + uniques;
+        }
     }
 }

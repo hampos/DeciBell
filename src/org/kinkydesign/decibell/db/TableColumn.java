@@ -76,7 +76,7 @@ final public class TableColumn implements Cloneable, JTableColumn {
     private OnModification onDelete = null;
     private JTable masterTable = null;
     private Field field = null;
-    private String numericNull = null;
+    private String numericNull = "-1";
 
     /**
      * Constructs a new TableColumn object.

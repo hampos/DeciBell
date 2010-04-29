@@ -74,7 +74,7 @@ public abstract class UpdateQuery implements SQLQuery {
 
     public void setTable(JTable table) {
         this.table = table;
-        initPropositions(table.getTableColumns(), table.getTableColumns());
+        initPropositions(table.getTableColumns(), table.getUniqueColumns());
     }
 
     public void setColumns(Collection<? extends JTableColumn> tableColumns) {

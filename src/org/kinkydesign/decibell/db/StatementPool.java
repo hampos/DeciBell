@@ -305,12 +305,12 @@ public class StatementPool {
         search.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
         register.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
         delete.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
-        update.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+    //    update.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
         for (int i = 0; i < poolSize; i++) {
             register.get(table).add(StatementFactory.createRegister(table, con));
             delete.get(table).add(StatementFactory.createDelete(table, con));
             search.get(table).add(StatementFactory.createSearch(table, con));
-            update.get(table).add(StatementFactory.createUpdate(table, con));
+        //    update.get(table).add(StatementFactory.createUpdate(table, con));
         }
     }
 }
