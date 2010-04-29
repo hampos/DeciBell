@@ -49,7 +49,7 @@ import org.kinkydesign.decibell.collections.Qualifier;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class DerbyKeyWord {
+public final class DerbyKeyWord {
 
     /**
      * 

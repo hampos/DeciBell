@@ -44,12 +44,26 @@ import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.db.query.Join;
 import org.kinkydesign.decibell.db.TableColumn;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
+
 /**
+ * 
+ * <p  align="justify" style="width:60%">
+ * DerbyJoin is an auxiliary class which aims to facilitate the construction of
+ * the <code>JOIN</code> part of a <code>SELECT</code> statement. Different types of
+ * <code>JOIN</code> statements (inner, outer, right, left) can be combined together
+ * in a DerbyJoin.
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @see Join
+ * @see DerbySelectQuery
  */
 public class DerbyJoin extends Join {
 
+    /**
+     * Correspondence between {@link JOIN_TYPE join types} (Enumeration in {@link Join}) and
+     * Derby Keywords for this type of JOIN.
+     */
     private static Map<JOIN_TYPE, String> types;
     static{
         types = new HashMap<JOIN_TYPE, String>();
@@ -59,7 +73,13 @@ public class DerbyJoin extends Join {
         types.put(JOIN_TYPE.RIGHT, RIGHT_JOIN);        
     }
 
+    /**
+     *
+     * Constructs a new DerbyJoin object. This constructor does not require any
+     * user input/parameters.
+     */
     public DerbyJoin() {
+        super();
     }
 
     @Override

@@ -51,6 +51,7 @@ import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.collections.OnModification;
 import org.kinkydesign.decibell.collections.TypeMap;
 import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.TablesGenerator;
@@ -64,7 +65,17 @@ import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
- *
+ * <p  align="justify" style="width:60%">
+ * DerbyTablesGenerator initializes a new database by inspecting the structure of the
+ * attached {@link Component components} to a {@link DeciBell DeciBell} object, parses
+ * the DeciBell&copy; annotations therein and produces the corresponding SQL structure
+ * which also stores in memory (in a {@link ComponentRegistry Component Registry}).
+ * Constructs new {@link JTable tables} to which assigns proper {@link JTableColumn table
+ * columns} and exploits the method {@link JTable#getCreationSQL() JTable.getCreationSQL()}.
+ * The tables generator is initialized with a {@link DbConnector Database Connector} and a
+ * set of attached Components and then the method {@link DerbyTablesGenerator#construct() construct}
+ * is invoked and the tables are constructed in the database.
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
@@ -124,15 +135,32 @@ public class DerbyTablesGenerator extends TablesGenerator {
     }
 
     /**
+     * <p  align="justify" style="width:60%">
      * It is possible that a column in some table, is a foreign key to the
      * table itself. In that case, some problems appear during the table creation
      * because the table under creation expects the completion of itself. So, we
      * store these columns in that map (Column to the table holding the column)
      * to register them at the end of the table creation.
+     * </p>
      */
     private List<SelfReferencingCol> selfReferencingCols =
             new LinkedList<SelfReferencingCol>();
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * Initialize a new table generator for the Derby JDBC server.
+     * </p>
+     * @param connector
+     *      <p  align="justify" style="width:60%">
+     *      The connector the Tables Generator will use to create the tables. Identifies
+     *      the database in which the tables are created.
+     *      </p>
+     * @param components
+     *      <p  align="justify" style="width:60%">
+     *      Set of classes that extends {@link Component } with respect to which
+     *      the table creation takes place.
+     *      </p>
+     */
     public DerbyTablesGenerator(DbConnector connector, Set<Class<? extends Component>> components) {
         super(connector, components);
     }

@@ -39,12 +39,17 @@
 package org.kinkydesign.decibell.db.derby.util;
 
 /**
- *
- * A collection of extreme value for numeric datatypes supported in Derby.
+ * <p  align="justify" style="width:60%">
+ * A collection of extreme value for numeric datatypes supported in Derby. It is
+ * important to note that the bounds provided here for the Derby datatypes are
+ * significantly different from the bounds of their corresponging Java datatypes. For
+ * example the maximum integer value in java is 2<sup>31</sup>-1 while in SQL it is
+ * -2147483648 (which is higher).
+ * </p>
  * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
  */
-public class DerbyInfinity {
+public final class DerbyInfinity {
 
     private static final int
             LEFT_INT_INF = -2147483648,
@@ -62,42 +67,122 @@ public class DerbyInfinity {
             LEFT_SMALLINT_INF = -32768,
             RIGHT_SMALLINT_INF = 32767;
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The minimum (negative) integer value accepted by the <code>INTEGER</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Minimum Integer
+     */
     public static int getLeftInt(){
         return LEFT_INT_INF;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The maximum (positive) integer value accepted by the <code>INTEGER</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Maximum Integer
+     */
     public static int getRightInt(){
         return RIGHT_INT_INF;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The minimum (negative) float value accepted by the <code>REAL</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Minimum Float
+     */
     public static float getLeftFloat(){
         return (float) LEFT_REAL_INF;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The maximum (positive) float value accepted by the <code>REAL</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Maximum Float
+     */
     public static float getRightFloat(){
         return (float) RIGHT_REAL_INF;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The maximum (positive) double value accepted by the <code>DOUBLE PRECISION</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Maximum Double Precision Value
+     */
     public static double getRightDouble(){
         return RIGHT_DOUBLE_INF;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The minimum (negative) double value accepted by the <code>DOUBLE PRECISION</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Minimum Double Precision Value
+     */
     public static double getLeftDouble(){
         return LEFT_DOUBLE_INF;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The minimum (negative) short value accepted by the <code>SMALL INT</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Minimum Short Value
+     */
     public static short getLeftShort(){
         return LEFT_SMALLINT_INF;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The minimum (negative) short value accepted by the <code>SMALL INT</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Minimum Short Value
+     */
     public static short getRightShort(){
         return RIGHT_SMALLINT_INF;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The minimum (negative) long value accepted by the <code>BIGINT</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Minimum Long Value
+     */
     public static long getLeftLong(){
         return LEFT_LONG_INF;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * The maximum (positive) long value accepted by the <code>BIGINT</code>
+     * datatype of Derby.
+     * </p>
+     * @return
+     *      Maximum Long Value
+     */
     public static long getRightLong(){
         return RIGHT_LONG_INF;
     }

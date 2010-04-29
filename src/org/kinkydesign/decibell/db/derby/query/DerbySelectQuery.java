@@ -52,11 +52,42 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
  *
+ * <p  align="justify" style="width:60%">
+ * DerbySelectQuery produces a <code>SELECT</code> type query for the Derby JDBC
+ * server. Simple select query are produced optionally endowed with a <code>JOIN</code> part.
+ * The <code>SELECT</code> query is applied on a table which is specified by the method
+ * {@link SelectQuery#setTable(org.kinkydesign.decibell.db.interfaces.JTable) setTable}.
+ * You can provide a list of {@link Join Joins} using the methods
+ * {@link SelectQuery#setJoins(java.util.ArrayList) setJoins}
+ * and {@link SelectQuery#addJoin(org.kinkydesign.decibell.db.query.Join) addJoin} (see documentation
+ * there in for more information).
+ * </p>
+ *
+ * <p  align="justify" style="width:60%">
+ * The general structure of a <code>SELECT</code> query in Derby is:
+ * <blockquote>
+ * <pre>
+ * SELECT [LIST OF COLUMNS] FROM [TABLE] WHERE [LIST OF PROPOSITIONS] [JOIN STATEMENT]
+ * </pre></blockquote>
+ * </p>
+ *
+ * <p  align="justify" style="width:60%">
+ * <code>UNION</code>, <code>INTERSECT</code>, and <code>EXCEPT</code> and <code>FETCH</code> 
+ * expressions are not supported for the time but will be added in some later version.
+ * </p>
+ *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @see Join
+ * @see DerbyJoin
  */
 public class DerbySelectQuery extends SelectQuery {
 
+    /**
+     * Construct a new DerbySelectQuery Object for a given table.
+     * @param table
+     *      The table on which the Derby Select Query is built.
+     */
     public DerbySelectQuery(JTable table) {
         super(table);
     }

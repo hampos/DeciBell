@@ -35,7 +35,6 @@
  */
 package org.kinkydesign.decibell.db.derby;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,8 +50,10 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
  *
+ * <p  align="justify" style="width:60%">
  * A Table in the database is characterized by its columns. This class offers a
  * flexible tool for manipulating database tables (creating and deleting them).
+ * </p>
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
@@ -60,6 +61,7 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 public class DerbyTable extends Table {
 
     /**
+     * 
      * Construct a new Table object.
      */
     public DerbyTable() {
