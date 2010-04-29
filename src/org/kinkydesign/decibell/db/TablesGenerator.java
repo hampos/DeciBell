@@ -45,37 +45,87 @@ import org.kinkydesign.decibell.collections.TypeMap;
 import org.kinkydesign.decibell.Component;
 
 /**
+ * This abstract class provides an interface for the table creation process.
+ * Each database driver implementation has to implement this class and use
+ * it's own specific process to perform the database construction.
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
 public abstract class TablesGenerator {
 
+    /**
+     * The registry on which the created tables will be inserted.
+     */
     protected ComponentRegistry registry = null;
+
+    /**
+     * The DbConnector that defines the database on which the table creation
+     * will be executed.
+     */
     protected DbConnector connector = null;
+
+    /**
+     * The Component classes that must be included in the database creation.
+     */
     protected Set<Class<? extends Component>> components = null;
+
+    /**
+     * Relational fields, meaning fields that must be implemented by
+     * many-to-many relations such as ArrayLists of foreign objects.
+     */
     protected Set<Field> relations = new HashSet<Field>();
 
+    /**
+     * Constructs a new TablesGenerator for a specific database and a set
+     * of components.
+     * @param connector a DbConnector that identifies the database on which the
+     * creation process will take place.
+     * @param components a Set of Components that must be included in the database.
+     */
     public TablesGenerator(DbConnector connector, Set<Class<? extends Component>> components){
         this.connector = connector;
         this.components = components;
         registry = new ComponentRegistry(connector);
     }
 
+    /**
+     * Constructs all tables in the database and inserts them to the registry.
+     */
     public abstract void construct();
 
+    /**
+     * Returns true if a given class is a sub class of Component.class
+     * @param c a Class that needs to learn if it inherits Component.class
+     * @return True if the given class is a sub class of Component.class
+     */
     protected boolean isComponent(Class c) {
         return TypeMap.isSubClass(c, Component.class);
     }
 
+    /**
+     * Returns true if a given class is a sub class of Collection.class
+     * @param c a Class that needs to learn if it inherits Collection.class
+     * @return True if the given class is a sub class of Collection.class
+     */
     protected boolean isCollection(Class c) {
         return TypeMap.isSubClass(c, Collection.class);
     }
 
+    /**
+     * Returns true if a given class is a sub class of List.class
+     * @param c a Class that needs to learn if it inherits List.class
+     * @return True if the given class is a sub class of List.class
+     */
     protected boolean isList(Class c){
         return TypeMap.isSubClass(c, List.class);
     }
 
+    /**
+     * Returns true if a given class is a sub class of Set.class
+     * @param c a Class that needs to learn if it inherits Set.class
+     * @return True if the given class is a sub class of Set.class
+     */
     protected boolean isSet(Class c){
         return TypeMap.isSubClass(c, Set.class);
     }

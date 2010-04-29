@@ -35,6 +35,7 @@
  */
 package org.kinkydesign.decibell.db;
 
+import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -48,6 +49,12 @@ import org.kinkydesign.decibell.db.query.SQLQuery;
 import org.kinkydesign.decibell.db.util.StatementFactory;
 
 /**
+ * a Pool that contains prepared statements for all databases running by DeciBell
+ * in the System.
+ * Each database is identified by it's DbConnector object.
+ * The Pool holds all PreparedStatement objects created by the DbConnectors and
+ * associates them with the SQLQuery on which they were created and the JTable
+ * in which they belong.
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
@@ -69,6 +76,14 @@ public class StatementPool {
     private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> delete =
             new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
 
+    /**
+     * Constructs a new Pool for the given DbConnector and initializes it with the
+     * given poolSize.
+     * @param con a DbConnector object that represents a database managed by
+     * DeciBell.
+     * @param poolSize the size of the statement pool - meaning the number of
+     * PreparedStatement objects stored for each query.
+     */
     public StatementPool(DbConnector con, int poolSize) {
         this.con = con;
         for (JTable t : ComponentRegistry.getRegistry(con).values()) {
@@ -80,10 +95,24 @@ public class StatementPool {
         pools.put(con, this);
     }
 
+    /**
+     * Returns the pool associated with the specified DbConnector.
+     * @param con a DbConnector that represents a database managed by DeciBell.
+     * @return the StatementPool object associated with the specified DbConnector.
+     */
     public static StatementPool getPool(DbConnector con) {
         return pools.get(con);
     }
 
+    /**
+     * Removes a register operation type PreparedStatement-SQLQuery pair from the pool
+     * for a given JTable. This pair holds both the PreparedStatement and the
+     * Query specifics to assist in feeding the prepared statement with values.
+     * This method will block when the pool is empty of prepared statements for
+     * the specific type.
+     * @param t
+     * @return
+     */
     public Entry<PreparedStatement, SQLQuery> getRegister(JTable t) {
         try {
             return register.get(t).take();
@@ -92,6 +121,14 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Recycles a PreparedStatement-SQLQuery pair of register type in the pool,
+     * after it's parameters are cleared. Use of this method is MANDATORY after
+     * using getRegister method. If PreparedStatements are not recycled the system
+     * will hang when the pool runs empty.
+     * @param pair the Entry pair that needs recycling.
+     * @param t the JTable in which the Entry belongs.
+     */
     public void recycleRegister(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
@@ -101,6 +138,15 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Removes a search operation type PreparedStatement-SQLQuery pair from the pool
+     * for a given JTable. This pair holds both the PreparedStatement and the
+     * Query specifics to assist in feeding the prepared statement with values.
+     * This method will block when the pool is empty of prepared statements for
+     * the specific type.
+     * @param t
+     * @return
+     */
     public Entry<PreparedStatement, SQLQuery> getSearch(JTable t) {
         try {
             return search.get(t).take();
@@ -109,6 +155,14 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Recycles a PreparedStatement-SQLQuery pair of search type in the pool,
+     * after it's parameters are cleared. Use of this method is MANDATORY after
+     * using getSearch method. If PreparedStatements are not recycled the system
+     * will hang when the pool runs empty.
+     * @param pair the Entry pair that needs recycling.
+     * @param t the JTable in which the Entry belongs.
+     */
     public void recycleSearch(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
@@ -118,6 +172,15 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Removes a search-primary-keys-only operation type PreparedStatement-SQLQuery pair from the pool
+     * for a given JTable. This pair holds both the PreparedStatement and the
+     * Query specifics to assist in feeding the prepared statement with values.
+     * This method will block when the pool is empty of prepared statements for
+     * the specific type.
+     * @param t
+     * @return
+     */
     public Entry<PreparedStatement, SQLQuery> getSearchPK(JTable t) {
         try {
             return searchpk.get(t).take();
@@ -126,6 +189,14 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Recycles a PreparedStatement-SQLQuery pair of search-primary-keys-only type in the pool,
+     * after it's parameters are cleared. Use of this method is MANDATORY after
+     * using getSearchPK method. If PreparedStatements are not recycled the system
+     * will hang when the pool runs empty.
+     * @param pair the Entry pair that needs recycling.
+     * @param t the JTable in which the Entry belongs.
+     */
     public void recycleSearchPK(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
@@ -135,6 +206,15 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Removes an update operation type PreparedStatement-SQLQuery pair from the pool
+     * for a given JTable. This pair holds both the PreparedStatement and the
+     * Query specifics to assist in feeding the prepared statement with values.
+     * This method will block when the pool is empty of prepared statements for
+     * the specific type.
+     * @param t
+     * @return
+     */
     public Entry<PreparedStatement, SQLQuery> getUpdate(JTable t) {
         try {
             return update.get(t).take();
@@ -143,6 +223,14 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Recycles a PreparedStatement-SQLQuery pair of update type in the pool,
+     * after it's parameters are cleared. Use of this method is MANDATORY after
+     * using getUpdate method. If PreparedStatements are not recycled the system
+     * will hang when the pool runs empty.
+     * @param pair the Entry pair that needs recycling.
+     * @param t the JTable in which the Entry belongs.
+     */
     public void recycleUpdate(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
@@ -152,6 +240,15 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Removes a delete operation type PreparedStatement-SQLQuery pair from the pool
+     * for a given JTable. This pair holds both the PreparedStatement and the
+     * Query specifics to assist in feeding the prepared statement with values.
+     * This method will block when the pool is empty of prepared statements for
+     * the specific type.
+     * @param t
+     * @return
+     */
     public Entry<PreparedStatement, SQLQuery> getDelete(JTable t) {
         try {
             return delete.get(t).take();
@@ -160,6 +257,14 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Recycles a PreparedStatement-SQLQuery pair of delete type in the pool,
+     * after it's parameters are cleared. Use of this method is MANDATORY after
+     * using getDelete method. If PreparedStatements are not recycled the system
+     * will hang when the pool runs empty.
+     * @param pair the Entry pair that needs recycling.
+     * @param t the JTable in which the Entry belongs.
+     */
     public void recycleDelete(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
@@ -169,6 +274,11 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Inializes the pool for a given table by creating PreparedStatement objects
+     * for all query types and inserting them to the pool.
+     * @param table
+     */
     private void initTable(JTable table) {
         search.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
         searchpk.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
@@ -184,6 +294,11 @@ public class StatementPool {
         }
     }
 
+    /**
+     * Inializes the pool for a given relational table by creating PreparedStatement objects
+     * for all query types and inserting them to the pool.
+     * @param table
+     */
     private void initRelTable(JRelationalTable table){
         search.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
         register.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));

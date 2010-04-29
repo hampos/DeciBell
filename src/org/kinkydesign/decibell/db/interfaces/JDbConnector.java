@@ -12,7 +12,7 @@ public interface JDbConnector {
     /**
      * Choose a name for the database you want to create or a name for an existing
      * database. Then the URL of the database connection will be
-     * <code>jdbc:derby://{hostname}:{port}/{database_name}</code>. Set the database
+     * <code>{driver}//{hostname}:{port}/{database_name}</code>. Set the database
      * connection port and hostname usign the corresponding methods.
      * @param dbName
      *      The name of the database.

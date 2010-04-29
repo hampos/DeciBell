@@ -78,14 +78,28 @@ public abstract class Table implements JTable {
         this.tableName = tableName;
     }
 
+    /**
+     * Returns a Set of all table columns that exist in the Table. The default Set is
+     * declared as a LinkedHashSet because a specific column sequence is mantained.
+     * @return
+     */
     public Set<JTableColumn> getTableColumns() {
         return listOfColumns;
     }
 
+    /**
+     * Replaces all table columns in the table with a new Set of table columns.
+     * @param tableColumns a Set of TableColumn objects to replace the old table columns.
+     */
     public void setTableColumns(Set<JTableColumn> tableColumns) {
         this.listOfColumns = tableColumns;
     }
 
+    /**
+     * Adds a new table column to the table. This column cannot be null, must
+     * have a name, and must have an SQL Type.
+     * @param column a JTableColumn to be added to the table.
+     */
     public void addColumn(JTableColumn column) {
         if (column == null) {
             throw new NullPointerException("You cannot add a null column");
@@ -100,11 +114,19 @@ public abstract class Table implements JTable {
         this.listOfColumns.add(column);
     }
 
+    /**
+     * Removes the specifed column from the table.
+     * @param column a JTableColumn to be removed from the table.
+     */
     public void removeColumn(JTableColumn column) {
         this.listOfColumns.remove(column);
         column.setMasterTable(null);
     }
 
+    /**
+     * Sets the name of the table. The name cannot be null.
+     * @param tableName a String name for the table.
+     */
     public void setTableName(String tableName) {
         if (tableName == null) {
             throw new NullPointerException("The name of a table cannot be null");
@@ -112,10 +134,19 @@ public abstract class Table implements JTable {
         this.tableName = tableName;
     }
 
+    /**
+     * Returns the name of the table.
+     * @return a String name of the table.
+     */
     public String getTableName() {
         return this.tableName;
     }
 
+    /**
+     * Constructs and returns a new LinkedHashSet containing all table's columns that
+     * are primary key columns.
+     * @return a new LinkedHashSet containing all JTableColumn objects with isPrimaryKey=true.
+     */
     public Set<JTableColumn> getPrimaryKeyColumns() {
         Set<JTableColumn> primaryKeyColumns = new LinkedHashSet<JTableColumn>();
         for (JTableColumn column : listOfColumns) {
@@ -126,6 +157,13 @@ public abstract class Table implements JTable {
         return primaryKeyColumns;
     }
 
+    /**
+     * Constructs and returns a new Map that maps all foreign key columns in the table,
+     * with their coresponding columns in the foreign
+     * table they reference.
+     * @return a new HashMap that maps all JTableColumn objects with
+     * JTableColumn reference columns.
+     */
     public Map<JTableColumn, JTableColumn> referenceRelation() {
         Map<JTableColumn, JTableColumn> map = new HashMap<JTableColumn, JTableColumn>();
         for (JTableColumn masterColumn : getForeignKeyColumns()) {
@@ -134,6 +172,11 @@ public abstract class Table implements JTable {
         return map;
     }
 
+    /**
+     * Constructs and returns a new LinkedHashSet containing all table's columns that
+     * are foreign key columns.
+     * @return a new LinkedHashSet containing all JTableColumn objects with isForeignKey=true.
+     */
     public Set<JTableColumn> getForeignKeyColumns() {
         Set<JTableColumn> foreignKeyColumns = new LinkedHashSet<JTableColumn>();
         for (JTableColumn column : listOfColumns) {
@@ -144,6 +187,13 @@ public abstract class Table implements JTable {
         return foreignKeyColumns;
     }
 
+    /**
+     * Constructs and returns a new Set that contains Sets of foreign key table columns.
+     * The inner Sets are groups of table columns that are essentially the same
+     * foreign key, meaning they reference the same Table and together they consist
+     * a multiple foreign key on a multiple primary key of the foreign table.
+     * @return
+     */
     public Set<Set<JTableColumn>> getForeignColumnsByGroup() {
         Set<Set<JTableColumn>> groupedColumns = new HashSet<Set<JTableColumn>>();
         Set<JTableColumn> foreignColumns = getForeignKeyColumns();
@@ -182,6 +232,12 @@ public abstract class Table implements JTable {
         return groupedColumns;
     }
 
+    /**
+     * Returns the table's referenced tables, meaning the tables that are referenced
+     * by this table's foreign key columns.
+     * @return a new HashSet of JTable objects that are referenced by this table's
+     * JTableColumn objects with isForeignKey=true.
+     */
     public Set<JTable> getReferencedTables() {
         Set<JTable> remoteTables = new HashSet<JTable>();
 
@@ -191,14 +247,28 @@ public abstract class Table implements JTable {
         return remoteTables;
     }
 
+    /**
+     * Adds a relational table constructed for this table's Component class.
+     * Relational is considered a table that was created to accomodate a
+     * many-to-many relationship upon two Components.
+     * @param t a JRelationalTable to be added to the table.
+     */
     public void addRelation(JRelationalTable t) {
         relations.add(t);
     }
 
+    /**
+     * Returns the Set of relational tables that refer to this table.
+     * @return
+     */
     public Set<JRelationalTable> getRelations() {
         return relations;
     }
 
+    /**
+     * returns a set of unique columns.
+     * @return A new LinkedHashSet of JTableColumn objects that have isUnique=true.
+     */
     public Set<JTableColumn> getUniqueColumns() {
        Set<JTableColumn> uniqueColumns = new LinkedHashSet<JTableColumn>();
        for (JTableColumn c : getTableColumns()){

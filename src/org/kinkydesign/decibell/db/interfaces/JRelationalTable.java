@@ -44,12 +44,11 @@ package org.kinkydesign.decibell.db.interfaces;
 
 import java.lang.reflect.Field;
 import java.util.Set;
-import org.kinkydesign.decibell.db.TableColumn;
-import org.kinkydesign.decibell.db.derby.DerbyTable;
 
 /**
  *
- * @author hampos
+ * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
 public interface JRelationalTable extends JTable{
 
