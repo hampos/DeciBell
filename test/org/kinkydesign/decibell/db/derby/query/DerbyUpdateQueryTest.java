@@ -47,11 +47,11 @@ public class DerbyUpdateQueryTest {
         t3.setTableName("C");
         TableColumn c1 = new TableColumn("f");
         c1.setColumnType(SQLType.INTEGER);
-        c1.setPrimaryKey(true, false);
+        c1.setPrimaryKey(true);
         t3.addColumn(c1);
         TableColumn c2 = new TableColumn("k");
         c2.setColumnType(SQLType.VARCHAR);
-        c2.setPrimaryKey(true, true);
+        c2.setPrimaryKey(true);
         t3.addColumn(c2);
 
 
@@ -60,7 +60,7 @@ public class DerbyUpdateQueryTest {
         TableColumn b1 = new TableColumn("i");
         b1.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.NO_ACTION);
         b1.setColumnType(SQLType.INTEGER);
-        b1.setPrimaryKey(true, false);
+        b1.setPrimaryKey(true);
         t2.addColumn(b1);
         TableColumn b2 = new TableColumn("j");
         b2.setColumnType(SQLType.VARCHAR);
@@ -82,13 +82,13 @@ public class DerbyUpdateQueryTest {
         TableColumn tc3 = new TableColumn("z");
         tc3.setColumnType(SQLType.INTEGER);
         tc3.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.CASCADE);
-        tc3.setPrimaryKey(true, true);
+        tc3.setPrimaryKey(true);
         t.addColumn(tc3);
 
         TableColumn tc4 = new TableColumn("w");
         tc4.setColumnType(SQLType.INTEGER);
         tc4.setForeignKey(t3, c2, OnModification.CASCADE, OnModification.CASCADE);
-        tc4.setPrimaryKey(true, true);
+        tc4.setPrimaryKey(true);
         t.addColumn(tc4);
 
         DerbyUpdateQuery DU = new DerbyUpdateQuery(t);
