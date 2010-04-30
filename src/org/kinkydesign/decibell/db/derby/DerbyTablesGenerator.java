@@ -470,7 +470,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
              * Create an extra metadata column to store the type of Collection
              * the Relational Table stores
              */
-            JTableColumn metaCol = new TableColumn(METACOL);
+            JTableColumn metaCol = new TableColumn("METACOLUMN");
             metaCol.setColumnType(SQLType.VARCHAR);
             table.addColumn(metaCol);
             

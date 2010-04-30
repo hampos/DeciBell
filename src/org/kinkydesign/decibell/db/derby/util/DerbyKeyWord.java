@@ -249,5 +249,4 @@ public final class DerbyKeyWord {
      */
     public static final String DOUBLE_PERCENT = PERCENT + PERCENT;
 
-    public static final String METACOL = "METACOLUMN";
 }

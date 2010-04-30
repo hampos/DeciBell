@@ -69,6 +69,9 @@ public abstract class DeleteQuery implements SQLQuery {
 
     private void initPropositions(Collection<? extends JTableColumn> columns){
         for (JTableColumn tc : columns){
+            if(tc.getColumnName().equals("METACOLUMN")){
+                continue;
+            }
             Proposition p = new Proposition();
             p.setTableColumn(tc);
             if (tc.getColumnType().equals(SQLType.VARCHAR)

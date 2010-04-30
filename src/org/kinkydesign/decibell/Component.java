@@ -262,7 +262,7 @@ public abstract class Component<T extends Component> implements Cloneable {
                 for (Object o : collection) {
                     i = 1;
                     for (JTableColumn col : relTable.getTableColumns()) {
-                        if(col.getColumnName().equals("METACOLUMN")){
+                        if (col.getColumnName().equals("METACOLUMN")) {
                             Field f = relTable.getOnField();
                             ps.setObject(i, (Object) f.get(this).getClass().getName(), SQLType.VARCHAR.getType());
                             i++;
@@ -362,7 +362,7 @@ public abstract class Component<T extends Component> implements Cloneable {
                 i++;
             }
             ResultSet rs = ps.executeQuery();
-            pool.recycleSearch(entry, table);
+
             Constructor constructor = c.getDeclaredConstructor();
             constructor.setAccessible(true);
             while (rs.next() != false) {
@@ -385,6 +385,7 @@ public abstract class Component<T extends Component> implements Cloneable {
                         f.set(newObj, rs.getObject(col.getColumnName()));
                     }
                 }
+                pool.recycleSearch(entry, table);
 
                 for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
                     /*
@@ -468,7 +469,7 @@ public abstract class Component<T extends Component> implements Cloneable {
                     i = 1;
                     for (Proposition p : query.getPropositions()) {
                         JTableColumn col = p.getTableColumn();
-                        if(col.getColumnName().equals("METACOLUMN")){
+                        if (col.getColumnName().equals("METACOLUMN")) {
                             continue;
                         }
                         Field f = col.getField();
@@ -493,8 +494,7 @@ public abstract class Component<T extends Component> implements Cloneable {
                         i++;
                     }
                     ResultSet relRs = ps.executeQuery();
-                    pool.recycleSearch(entry, relTable);
-                    pool.recycleSearch(fentry, relTable);
+
                     String collectionJavaType = null;
                     while (relRs.next() != false) {
                         Class fclass = relTable.getSlaveColumns().iterator().next().
@@ -518,11 +518,12 @@ public abstract class Component<T extends Component> implements Cloneable {
                         relList.addAll(tempList);
                         collectionJavaType = relRs.getString("METACOLUMN");
                     }
+                    pool.recycleSearch(fentry, relTable);
 
                     Field onField = relTable.getOnField();
 //                    Class onClass = onField.getType();
 //                    Constructor con = onClass.getConstructor();
-                    Class onClass  = Class.forName(collectionJavaType);
+                    Class onClass = Class.forName(collectionJavaType);
                     Constructor con = onClass.getConstructor();
                     Object obj = con.newInstance();
                     Collection relCollection = (Collection) obj;
@@ -560,7 +561,7 @@ public abstract class Component<T extends Component> implements Cloneable {
             throw new RuntimeException(ex);
         } catch (InvocationTargetException ex) {
             throw new RuntimeException(ex);
-        } catch (ClassNotFoundException ex){
+        } catch (ClassNotFoundException ex) {
             throw new RuntimeException(ex);
         }
 
@@ -587,10 +588,6 @@ public abstract class Component<T extends Component> implements Cloneable {
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
         Table table = (Table) registry.get(c);
         StatementPool pool = StatementPool.getPool(db.getDbConnector());
-        Entry<PreparedStatement, SQLQuery> entry = pool.getUpdate(table);
-        PreparedStatement ps = entry.getKey();
-        SQLQuery query = entry.getValue();
-
         try {
             /*
              * Updating contained components first
@@ -600,8 +597,15 @@ public abstract class Component<T extends Component> implements Cloneable {
                 fkField.setAccessible(true);
                 Object obj = fkField.get(this);
                 Component component = (Component) obj;
-                component.update(db);
+                if (!this.equals(component)) {
+                    component.update(db);
+                }
             }
+
+            Entry<PreparedStatement, SQLQuery> entry = pool.getUpdate(table);
+            PreparedStatement ps = entry.getKey();
+            SQLQuery query = entry.getValue();
+
             /*
              * Updating normal entries
              */
@@ -681,6 +685,12 @@ public abstract class Component<T extends Component> implements Cloneable {
                 for (Object o : collection) {
                     i = 1;
                     for (JTableColumn col : relTable.getTableColumns()) {
+                        if (col.getColumnName().equals("METACOLUMN")) {
+                            Field f = relTable.getOnField();
+                            ps.setObject(i, (Object) obj.getClass().getName(), SQLType.VARCHAR.getType());
+                            i++;
+                            continue;
+                        }
                         Field f = col.getField();
                         f.setAccessible(true);
                         if (col.getReferenceTable().equals(relTable.getMasterTable())) {

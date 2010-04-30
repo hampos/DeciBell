@@ -135,7 +135,8 @@ public abstract class SelectQuery implements SQLQuery {
             Proposition p = new Proposition();
             p.setTableColumn(tc);
             if (tc.getColumnType().equals(SQLType.VARCHAR)
-                    || tc.getColumnType().equals(SQLType.CHAR)) {
+                    || tc.getColumnType().equals(SQLType.CHAR)
+                    || tc.getColumnType().equals(SQLType.LONG_VARCHAR)) {
                 p.setQualifier(Qualifier.LIKE);
                 p.setUnknown();
                 propositions.add(p);

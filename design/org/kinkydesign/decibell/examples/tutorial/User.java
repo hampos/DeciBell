@@ -4,7 +4,9 @@ package org.kinkydesign.decibell.examples.tutorial;
 Import org.kinkyDesign.decibell classes...
  */
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import org.kinkydesign.decibell.annotations.*;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.Component;
@@ -61,7 +63,7 @@ public class User extends Component<User> {
     private UserGroup group = null;
 
     @ForeignKey
-    private ArrayList<UserGroup> groups;
+    private Collection<UserGroup> groups;
 
     @Entry
     private Resource resource = new Pool(100, "child100");
@@ -71,6 +73,9 @@ public class User extends Component<User> {
 
     @ForeignKey
     User friend = null;
+
+    @Entry
+    Map<String,Integer> map = null;
 
     public User(){        
     }
@@ -107,11 +112,11 @@ public class User extends Component<User> {
         this.userName = userName;
     }
 
-    public List<UserGroup> getGroups() {
+    public Collection<UserGroup> getGroups() {
         return groups;
     }
 
-    public void setGroups(ArrayList<UserGroup> groups) {
+    public void setGroups(Collection<UserGroup> groups) {
         this.groups = groups;
     }
 
@@ -129,6 +134,14 @@ public class User extends Component<User> {
 
     public void setFriend(User friend) {
         this.friend = friend;
+    }
+
+    public Map<String, Integer> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, Integer> map) {
+        this.map = map;
     }
 
     
