@@ -282,7 +282,7 @@ public abstract class Component<T extends Component> implements Cloneable {
             throw new RuntimeException(ex);
         } catch (SQLException ex) {
             if (ex.getSQLState().equals("23505")) {
-                throw new DuplicateKeyException(this, db.getDbConnector());
+                throw new DuplicateKeyException(this, db.getDbConnector(),ex);
             } else {
                 throw new RuntimeException(ex);
             }
@@ -667,7 +667,7 @@ public abstract class Component<T extends Component> implements Cloneable {
             throw new RuntimeException(ex);
         } catch (SQLException ex) {
             if (ex.getSQLState().equals("23505")) {
-                throw new DuplicateKeyException(this, db.getDbConnector());
+                throw new DuplicateKeyException(this, db.getDbConnector(),ex);
             } else {
                 throw new RuntimeException(ex);
             }

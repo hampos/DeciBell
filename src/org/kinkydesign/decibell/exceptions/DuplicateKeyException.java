@@ -51,11 +51,14 @@ import org.kinkydesign.decibell.db.interfaces.JTableColumn;
  */
 public class DuplicateKeyException extends Exception {
 
+    String explanation = "Unknown cause of Exception";
+
     /**
      * Creates a new instance of <code>DuplicateKeyException</code> without detail message.
      * The detail message is <code>null</code>.
      */
     public DuplicateKeyException() {
+        super();
     }
 
     /**
@@ -66,47 +69,31 @@ public class DuplicateKeyException extends Exception {
      */
     public DuplicateKeyException(String msg) {
         super(msg);
+        this.explanation = msg;
     }
 
-    public DuplicateKeyException(Object obj, DbConnector con) {
+    public DuplicateKeyException(Throwable cause) {
+        super(cause);
+        explanation = cause.getMessage();
+    }
+
+    public DuplicateKeyException(String message, Throwable cause) {
+        super(message, cause);
+        this.explanation = message;
+    }
+
+    public DuplicateKeyException(Object obj, DbConnector con, Throwable ex) {
+        super(ex);
         String message = "Exception due to duplicate key. "
                 + "Object of type "
-                + obj.getClass().getCanonicalName()
-                + " with primary key";
-        Iterator<JTableColumn> it =
-                ComponentRegistry.getRegistry(con).get(obj.getClass()).getPrimaryKeyColumns().iterator();
-        String PKs = "";
-        int count = 0;
-        while (it.hasNext()) {
-            count++;
-            Field PKfield = it.next().getField();
-            PKfield.setAccessible(true);
-            PKs += PKfield.getName();
-            try {
-                Field f =
-                        obj.getClass().getDeclaredField(PKfield.getName());
-                f.setAccessible(true);
-                Object valueForField = f.get(obj);
-                PKs += " = " + valueForField.toString();
-            } catch (final Exception ex1) {
-                throw new RuntimeException(ex1);
-            }
-            if (it.hasNext()) {
-                PKs += ", ";
-            }
-        }
-        if (count > 1) {
-            message += "s ";
-        }
-        message += " " + PKs;
-
+                + obj.getClass().getCanonicalName();
         Set<JTableColumn> uniqueCols =
                 ComponentRegistry.getRegistry(con).get(obj.getClass()).getUniqueColumns();
-        count = 0;
+        int count = 0;
         String uniques = "";
         if (!uniqueCols.isEmpty()) {
-            message += " and unique field value";
-            it = uniqueCols.iterator();
+            message += " and unique/primary field value";
+            Iterator<JTableColumn> it = uniqueCols.iterator();
             while (it.hasNext()) {
                 count++;
                 Field uniqueField = it.next().getField();
@@ -130,5 +117,11 @@ public class DuplicateKeyException extends Exception {
             }
             message += " " + uniques;
         }
+        this.explanation = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.explanation;
     }
 }

@@ -453,7 +453,6 @@ public class DerbyTablesGenerator extends TablesGenerator {
                 //  slave.addRelation(table);
             }
             table.setOnField(f);
-            System.err.println(registry.get(f.getDeclaringClass()).getTableName());
             table.setMasterTable(registry.get(f.getDeclaringClass()));
             registry.setRelationTable(table);
         }
