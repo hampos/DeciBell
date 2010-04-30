@@ -336,7 +336,7 @@ public abstract class DbConnector {
      * @throws SQLException
      */
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return connection.prepareStatement(sql);
+        return connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
     }
 
     /**
