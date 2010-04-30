@@ -248,4 +248,6 @@ public final class DerbyKeyWord {
      * @see Qualifier#LIKE like operator
      */
     public static final String DOUBLE_PERCENT = PERCENT + PERCENT;
+
+    public static final String METACOL = "METACOLUMN";
 }

@@ -466,6 +466,14 @@ public class DerbyTablesGenerator extends TablesGenerator {
             }
             table.setOnField(f);
             table.setMasterTable(registry.get(f.getDeclaringClass()));
+            /*
+             * Create an extra metadata column to store the type of Collection
+             * the Relational Table stores
+             */
+            JTableColumn metaCol = new TableColumn(METACOL);
+            metaCol.setColumnType(SQLType.VARCHAR);
+            table.addColumn(metaCol);
+            
             registry.setRelationTable(table);
         }
     }

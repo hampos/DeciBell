@@ -104,6 +104,9 @@ public class DerbyRelationalTable extends DerbyTable implements JRelationalTable
     public Set<JTableColumn> getSlaveColumns() {
         Set<JTableColumn> foreignColumns = new LinkedHashSet<JTableColumn>();
         for(JTableColumn col : getTableColumns()){
+            if(col.getColumnName().equals("METACOLUMN")){
+                continue;
+            }
             if(!col.getReferenceTable().equals(this.masterTable)){
                 foreignColumns.add(col);
             }

@@ -262,6 +262,12 @@ public abstract class Component<T extends Component> implements Cloneable {
                 for (Object o : collection) {
                     i = 1;
                     for (JTableColumn col : relTable.getTableColumns()) {
+                        if(col.getColumnName().equals("METACOLUMN")){
+                            Field f = relTable.getOnField();
+                            ps.setObject(i, (Object) f.get(this).getClass().getName(), SQLType.VARCHAR.getType());
+                            i++;
+                            continue;
+                        }
                         Field f = col.getField();
                         f.setAccessible(true);
                         if (col.getReferenceTable().equals(relTable.getMasterTable())) {
@@ -462,6 +468,9 @@ public abstract class Component<T extends Component> implements Cloneable {
                     i = 1;
                     for (Proposition p : query.getPropositions()) {
                         JTableColumn col = p.getTableColumn();
+                        if(col.getColumnName().equals("METACOLUMN")){
+                            continue;
+                        }
                         Field f = col.getField();
                         f.setAccessible(true);
                         try {
@@ -486,9 +495,11 @@ public abstract class Component<T extends Component> implements Cloneable {
                     ResultSet relRs = ps.executeQuery();
                     pool.recycleSearch(entry, relTable);
                     pool.recycleSearch(fentry, relTable);
+                    String collectionJavaType = null;
                     while (relRs.next() != false) {
                         Class fclass = relTable.getSlaveColumns().iterator().next().
                                 getField().getDeclaringClass();
+                        //TODO: Maybe declared Constructor is the way to go?
                         Constructor fconstuctor = fclass.getConstructor();
                         fconstuctor.setAccessible(true);
                         Object fobj = fconstuctor.newInstance();
@@ -505,10 +516,13 @@ public abstract class Component<T extends Component> implements Cloneable {
                             throw new RuntimeException("Single foreign object list has size > 1");
                         }
                         relList.addAll(tempList);
+                        collectionJavaType = relRs.getString("METACOLUMN");
                     }
 
                     Field onField = relTable.getOnField();
-                    Class onClass = onField.getType();
+//                    Class onClass = onField.getType();
+//                    Constructor con = onClass.getConstructor();
+                    Class onClass  = Class.forName(collectionJavaType);
                     Constructor con = onClass.getConstructor();
                     Object obj = con.newInstance();
                     Collection relCollection = (Collection) obj;
@@ -545,6 +559,8 @@ public abstract class Component<T extends Component> implements Cloneable {
         } catch (InstantiationException ex) {
             throw new RuntimeException(ex);
         } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        } catch (ClassNotFoundException ex){
             throw new RuntimeException(ex);
         }
 
