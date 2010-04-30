@@ -54,6 +54,7 @@ import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.collections.LogicalOperator;
+import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.db.Table;
@@ -167,6 +168,17 @@ public class DerbyTablesGenerator extends TablesGenerator {
     }
 
     public void construct() {
+        /*
+         * First, create an 'initialization' table, just to
+         * initialize the schema and avoid some exceptions...
+         */
+        JTable initTable = new DerbyTable();
+        initTable.setTableName("DECIBELL_INIT_TAB");
+        JTableColumn initColumn = new TableColumn("AA");
+        initColumn.setColumnType(SQLType.SMALLINT);
+        initTable.addColumn(initColumn);
+        connector.execute(initTable.getCreationSQL());
+
         for (Class<? extends Component> c : components) {
             tableCreation(c);
         }

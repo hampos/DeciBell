@@ -108,6 +108,20 @@ public class DerbyTable extends Table {
                 SQL += COMMA + NEWLINE;
             }
         }
+
+        if (!getPrimaryKeyColumns().isEmpty()) {
+            SQL += COMMA + NEWLINE + Pk + SPACE + LEFT_PAR;
+            it = getPrimaryKeyColumns().iterator();
+            while (it.hasNext()) {
+                SQL += it.next().getColumnName();
+                if (it.hasNext()) {
+                    SQL += COMMA;
+                }
+            }
+            SQL += RIGHT_PAR;
+        }
+
+        
         Set<Set<JTableColumn>> foreignGroups = getForeignColumnsByGroup();
         if (!foreignGroups.isEmpty()) {
             SQL += COMMA + NEWLINE;
@@ -147,17 +161,8 @@ public class DerbyTable extends Table {
                 }
             }
         }
-        if (!getPrimaryKeyColumns().isEmpty()) {
-            SQL += COMMA + NEWLINE + Pk + SPACE + LEFT_PAR;
-            it = getPrimaryKeyColumns().iterator();
-            while (it.hasNext()) {
-                SQL += it.next().getColumnName();
-                if (it.hasNext()) {
-                    SQL += COMMA;
-                }
-            }
-            SQL += RIGHT_PAR;
-        }
+
+        
         SQL = SQL + NEWLINE + RIGHT_PAR;
         System.out.println(SQL);
         return SQL;

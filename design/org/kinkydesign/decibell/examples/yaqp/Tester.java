@@ -111,7 +111,7 @@ public class Tester {
         //t.register(db);
 
         ArrayList<? extends Component> list2 = new Task().search(db);
-        list2.get(2).print(System.out);
+        list2.get(0).print(System.out);
 
                        
     }

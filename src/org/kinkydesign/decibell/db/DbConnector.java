@@ -326,6 +326,7 @@ public abstract class DbConnector {
                 System.out.println(ex.getSQLState());
                 throw new RuntimeException(ex);
             }
+            
         }
     }
 
