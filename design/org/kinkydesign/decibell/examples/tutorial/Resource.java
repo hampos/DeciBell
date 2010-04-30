@@ -11,11 +11,9 @@ import java.io.Serializable;
  *
  * @author hampos
  */
-public class Resource {
+public abstract class Resource {
         private int id=-1;
         private String whatever;
-
-        private Pool pool = new Pool();
 
         public Resource(int id, String whatever){
             this.id = id;
