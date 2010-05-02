@@ -1,6 +1,6 @@
 /**
- *  Class : DeciBellTest
- *  Date  : May 1, 2010
+ *  Class : MultiFKTest
+ *  Date  : May 2, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -36,8 +36,10 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell;
+package org.kinkydesign.decibell.examples.multifk;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -45,33 +47,31 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.kinkydesign.decibell.examples.simple.Person;
-import org.kinkydesign.decibell.examples.simple.Pet;
+import org.kinkydesign.decibell.DeciBell;
 import static org.junit.Assert.*;
+import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
+import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 
 /**
  *
  * @author chung
  */
-public class DeciBellTest {
+public class MultiFKTest {
 
     private static DeciBell db = new DeciBell();
     private static final Lock lock = new ReentrantLock();
-    
 
-    public DeciBellTest() {
+    public MultiFKTest() {
     }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        // Initialize the database...
-        lock.lockInterruptibly();
-        db = new DeciBell();       
-        db.setDbName("decibellTestDB/dbcreation/my_db_creation");
-        db.attach(Person.class);
-        db.attach(Pet.class);
+        db = new DeciBell();
+        db.setDbName("decibellTestDB/multifk/masl");
+        db.attach(Master.class);
+        db.attach(Slave.class);
+        lock.lock();
         db.start();
-        assertTrue(db.isConnected());
         lock.unlock();
     }
 
@@ -88,29 +88,37 @@ public class DeciBellTest {
     }
 
     @Test
-    public synchronized void testDataBaseOnOff() {        
+    public void testRegisterMasterSlave() throws
+            DuplicateKeyException, ImproperRegistration {
+        Slave slave = new Slave("John", "Smith", 102);
+        Master master = new Master("Master", slave);
+
+        new Master().delete(db);
+        new Slave().delete(db);
+
         lock.lock();
-        db.reset();        
-        assertTrue(db.isConnected());
-        db.stop();        
-        assertFalse(db.getDbConnector().isServerRunning());
-        assertFalse(db.isConnected());
-        db.start();
-        assertTrue(db.isConnected());
-        assertTrue(db.getDbConnector().isServerRunning());
+        try {
+            slave.register(db);
+            master.register(db);
+        } catch (DuplicateKeyException ex) {
+            fail("Database should be empty!");
+        }
+
+        ArrayList<Master> retrievedMasters = new Master().search(db);
         lock.unlock();
-        assertEquals(db.getDatabaseUrl(),
-                "jdbc:derby://localhost:1527/decibellTestDB/dbcreation/my_db_creation;user=itsme");
+
+        assertEquals(retrievedMasters.size(), 1);
+        assertNotNull(retrievedMasters.get(0));
+        assertEquals(retrievedMasters.get(0).slave, slave);
+        assertEquals(retrievedMasters.get(0).slave.firstName, "John");
+        assertTrue(retrievedMasters.get(0).slave.date.before(new Date(System.currentTimeMillis())));
+        
     }
 
     @Test
-    public synchronized void onOffOnOff() throws InterruptedException{
-        lock.lock();        
-        testDataBaseOnOff();
-        testDataBaseOnOff();
+    public void doItAgain() throws DuplicateKeyException, ImproperRegistration{
+        lock.lock();
+        testRegisterMasterSlave();
         lock.unlock();
     }
-
-    
-
 }

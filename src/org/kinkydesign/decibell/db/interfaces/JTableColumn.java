@@ -535,7 +535,7 @@ public interface JTableColumn {
      * </p>
      * @param isUnique
      *      Whether the table column is </code>unique</code> (<code>true</code> if yes).
-     * @see JTableColumn#setPrimaryKey(boolean, boolean) primary key
+     * @see JTableColumn#setPrimaryKey(boolean) setPrimaryKey
      */
     void setUnique(boolean isUnique);
 

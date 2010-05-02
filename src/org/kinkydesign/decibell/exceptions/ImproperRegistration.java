@@ -1,4 +1,6 @@
 /**
+ *  Class : ImproperRegistration
+ *  Date  : May 1, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -38,39 +40,40 @@ package org.kinkydesign.decibell.exceptions;
 
 /**
  * <p  align="justify" style="width:60%">
- * Exception thrown when a component needs to provide some identifier, but no
- * primary key or unique field values are specified.
+ * Exception thrown in case an 'improper' entity is submitted for registration in
+ * a database. An entity is improper for registration when it holds a <code>null</code>
+ * Collection-type field.
  * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class NoUniqueFieldException extends RuntimeException {
+public class ImproperRegistration extends Exception {
 
     /**
      * <p  align="justify" style="width:60%">
-     * Creates a new instance of <code>NoUniqueFieldException</code> without
+     * Creates a new instance of <code>ImproperRegistration</code> without 
      * detail message. The detail message is initialized as <code>null</code>.
      * </p>
      */
-    public NoUniqueFieldException() {
+    public ImproperRegistration() {
     }
 
 
     /**
      * <p  align="justify" style="width:60%">
-     * Constructs an instance of <code>NoUniqueFieldException</code> with the specified
+     * Constructs an instance of <code>ImproperRegistration</code> with the specified 
      * detail message.
      * </p>
-     * @param msg
+     * @param msg 
      *      The detail message.
      */
-    public NoUniqueFieldException(String msg) {
+    public ImproperRegistration(String msg) {
         super(msg);
     }
 
     /**
      * <p  align="justify" style="width:60%">
-     * Constructs an instance of <code>NoUniqueFieldException</code>
+     * Constructs an instance of <code>ImproperRegistration</code>
      * with the specified cause and a detail
      * message of <tt>(cause==null ? null : cause.toString())</tt> (which
      * typically contains the class and detail message of <tt>cause</tt>).
@@ -81,13 +84,13 @@ public class NoUniqueFieldException extends RuntimeException {
      * <code>java.lang.Exception</code>.
      * </p>
      *
-     * @param  cause
+     * @param  cause 
      *         The cause (which is saved for later retrieval by the
      *         {@link #getCause()} method).  (A <tt>null</tt> value is
      *         permitted, and indicates that the cause is nonexistent or
      *         unknown.)
      */
-    public NoUniqueFieldException(Throwable cause) {
+    public ImproperRegistration(Throwable cause) {
         super(cause);
     }
 
@@ -104,9 +107,11 @@ public class NoUniqueFieldException extends RuntimeException {
      * @param message
      *      The detail message.
      */
-    public NoUniqueFieldException(String message, Throwable cause) {
+    public ImproperRegistration(String message, Throwable cause) {
         super(message, cause);
     }
+
+    
 
 
 }

@@ -1,6 +1,6 @@
 /**
- *  Class : TestSelfRef
- *  Date  : Apr 30, 2010
+ *  Class : SubEntityTest
+ *  Date  : May 1, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,28 +35,68 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.examples.selfRef;
 
+package org.kinkydesign.decibell.examples.subclassing;
+
+import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
+import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
+import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 
 /**
  *
- * @author Pantelis Sopasakis
- * @author Charalampos Chomenides
+ * @author chung
  */
-public class TestSelfRef {
+public class SubEntityTest {
 
-    public static void main(String... ags) throws DuplicateKeyException {
-        DeciBell db = new DeciBell();
-        db.setDriverHome("/home/chung/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
-        db.setDbName("database/chinv");
+    private static final Lock lock = new ReentrantLock();
+    private static DeciBell db;
 
-        db.attach(SelfRef.class);
-        
+    public SubEntityTest() {
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        db = new DeciBell();
+        db.setDbName("decibellTestDB/subclassing/tst");
+
+        db.attach(Entity.class);
+        db.attach(SubEntity.class);
+
+        db.start();
+        System.out.println("Database 'subclassing' created/initialized");
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() {
+    }
+
+    @After
+    public void tearDown() {
+    }
+
+    @Test
+    public void testSomeMethod() throws DuplicateKeyException, ImproperRegistration {
+
+        db.reset();
         db.start();
 
-        
+        System.err.println("[NOTICE] More work is needed to add full " +
+                "functionallity for subclassing..");
+        //se.register(db);
 
+        //new SubEntity().search(db).get(0).print(System.out);
     }
 }

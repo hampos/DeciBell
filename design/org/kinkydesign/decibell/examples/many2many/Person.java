@@ -1,4 +1,6 @@
-/*
+/**
+ *  Class : Person
+ *  Date  : May 1, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -33,13 +35,32 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
+package org.kinkydesign.decibell.examples.many2many;
+
+import java.util.Collection;
+import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.annotations.*;
+
 
 /**
- * Main package of the DeciBell&copy; project. Most users will only need to interact
- * with the classes of this package exclusively. The classes in this package and
- * the package org.kinkydesign.decibell.annotations are the only ones that a non-expert
- * user has to be aware of. We prompt the users to read the documentation of those classes
- * and examine the examples distributed with every copy of the source code.
+ *
+ * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
-package org.kinkydesign.decibell;
+public class Person extends Component<Person>{
 
+    @PrimaryKey
+    @NumericNull(numericNullValue="-1")
+    public int id = -1;
+
+    @Entry
+    public String x = "sdfk";
+
+    @ForeignKey
+    public Collection<Pet> petList;
+
+    @ForeignKey
+    public Collection<Pet> otherList;
+
+    
+}

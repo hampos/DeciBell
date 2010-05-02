@@ -64,7 +64,8 @@ public class DerbyConnector extends DbConnector {
         setDbName("db");
         setJavacmd("java");
         setJavaOptions("-Djava.net.preferIPv4Stack=true");
-        setDriverHome("/usr/local/sges-v3/javadb");
+        // setDriverHome("/usr/local/sges-v3/javadb");
+        setDriverHome(System.getProperty("user.home")+"/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
         setHost("localhost");
         setPort(1527);
         setDatabaseDriver("org.apache.derby.jdbc.EmbeddedDriver");
@@ -91,7 +92,10 @@ public class DerbyConnector extends DbConnector {
             "-jar", getDriverHome() + "/lib/derbyrun.jar", "server", "shutdown"
         };
         try {
-            Runtime.getRuntime().exec(derby_kill_command);
+            Process killing = Runtime.getRuntime().exec(derby_kill_command);
+            killing.waitFor();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DerbyConnector.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -111,6 +115,7 @@ public class DerbyConnector extends DbConnector {
                 return false;
             }
         } catch (IOException ex) {
+            ex.printStackTrace();
             return false;
         }
     }
@@ -126,6 +131,7 @@ public class DerbyConnector extends DbConnector {
             Table t = (Table) tables[i];
             execute("DROP TABLE " + t.getTableName());
         }
+        execute("DROP TABLE DECIBELL_INIT_TAB");
         execute("DROP SCHEMA " + getUser() + " RESTRICT");
     }
 
@@ -142,7 +148,7 @@ public class DerbyConnector extends DbConnector {
             "-p", Integer.toString(getPort()),};
         boolean derby_alive = isServerRunning();
         while (!derby_alive) {
-            getRuntime().exec(derby_start_command);
+            getRuntime().exec(derby_start_command);            
             try {
                 Thread.sleep(400);
             } catch (InterruptedException ex) {

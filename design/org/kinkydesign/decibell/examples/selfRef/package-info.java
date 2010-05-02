@@ -1,4 +1,6 @@
 /*
+ *  Package : org.kinkydesign.decibell.examples.selfRef
+ *  Date  : Apr 30, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,11 +37,13 @@
  */
 
 /**
- * Main package of the DeciBell&copy; project. Most users will only need to interact
- * with the classes of this package exclusively. The classes in this package and
- * the package org.kinkydesign.decibell.annotations are the only ones that a non-expert
- * user has to be aware of. We prompt the users to read the documentation of those classes
- * and examine the examples distributed with every copy of the source code.
+ * 
+ * The scope of this use case is to investigate the operability of
+ * DeciBell&copy; in cases where some entity has self References. Self-references,
+ * are foreign keys, that point to the same entity that holds them. A prime example
+ * for such a case, is User which has a friend-user (which is also a user). The same
+ * pattern is met in databases storing exceptional events and traces of errors where
+ * an Error has a cause (which is some other error bock to an error with no trace).
  */
-package org.kinkydesign.decibell;
+package org.kinkydesign.decibell.examples.selfRef;
 

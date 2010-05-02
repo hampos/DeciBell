@@ -36,6 +36,10 @@
 
 /**
  * Annotations are the most essential part of the DeciBell&copy; API. 
+ * The classes in this package and the package org.kinkydesign.decibell are the
+ * only ones that a non-expert user has to be aware of. We prompt the users to
+ * read the documentation of those classes and examine the examples distributed
+ * with every copy of the source code.
  */
 package org.kinkydesign.decibell.annotations;
 

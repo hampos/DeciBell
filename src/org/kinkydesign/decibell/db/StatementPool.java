@@ -35,7 +35,6 @@
  */
 package org.kinkydesign.decibell.db;
 
-import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -46,6 +45,7 @@ import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTable;
 import org.kinkydesign.decibell.db.query.SQLQuery;
+import org.kinkydesign.decibell.db.util.Pair;
 import org.kinkydesign.decibell.db.util.StatementFactory;
 
 /**
@@ -149,9 +149,9 @@ public class StatementPool {
      * @param t the JTable for which a search type prepared statement is needed.
      * @return a PreparedStatement-SQLQuer pair of type Search for the given JTable.
      */
-    public Entry<PreparedStatement, SQLQuery> getSearch(JTable t) {
+    public Pair<PreparedStatement, SQLQuery> getSearch(JTable t) {
         try {
-            return search.get(t).take();
+            return (Pair<PreparedStatement, SQLQuery>) search.get(t).take();
         } catch (InterruptedException ex) {
             return getSearch(t);
         }

@@ -1,6 +1,6 @@
-/**
- *  Class : test
- *  Date  : Apr 29, 2010
+/*
+ *  Package : org.kinkydesign.decibell.examples.simple
+ *  Date  : Apr 30, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -37,21 +37,14 @@
  */
 
 
-package org.kinkydesign.decibell.exceptions;
-
 /**
  *
- * @author Pantelis Sopasakis
- * @author Charalampos Chomenides
+ * Package containing a couple of classes that consist a very simple use case of
+ * two entities interconnected with a foreign key constraint. Just for demonstration
+ * purposes, as a simple tutorial and for preliminary debugging purposes. This use
+ * case consists of the class <code>Person</code> which has a foreign key to the
+ * class <code>Pet</code>. Both entities posses single primary keys and no other
+ * foreign key constraints participate.
  */
-public class test {
+package org.kinkydesign.decibell.examples.simple;
 
-    public static void main(String... args){
-        long i = 100000234L;
-        long l = Long.parseLong("123283748577");
-        double d = Double.parseDouble(Long.toString(Long.MAX_VALUE));
-        
-        System.out.println(d);
-    }
-
-}

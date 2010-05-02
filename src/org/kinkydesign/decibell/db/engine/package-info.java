@@ -1,4 +1,6 @@
-/*
+/**
+ *  Package : org.kinkydesign.decibell.db.engine
+ *  Date  : May 1, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,11 +37,12 @@
  */
 
 /**
- * Main package of the DeciBell&copy; project. Most users will only need to interact
- * with the classes of this package exclusively. The classes in this package and
- * the package org.kinkydesign.decibell.annotations are the only ones that a non-expert
- * user has to be aware of. We prompt the users to read the documentation of those classes
- * and examine the examples distributed with every copy of the source code.
+ *
+ * Contains the delegates of the four elementary operations in SQL: <code>INSERT,
+ * SELECT, UPDATE</code> and <code>DELETE</code> which form the interconnection
+ * between the Java objects and entries in database tables. Each engine is responsible
+ * for parsing the contents of a Java objects and performing the necessary database
+ * operations in order to register, delete, update or search for a given object.
  */
-package org.kinkydesign.decibell;
+package org.kinkydesign.decibell.db.engine;
 

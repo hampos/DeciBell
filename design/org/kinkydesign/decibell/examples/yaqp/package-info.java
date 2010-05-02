@@ -1,4 +1,6 @@
 /*
+ *  Package : org.kinkydesign.decibell.examples.yaqp
+ *  Date  : Apr 30, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -8,8 +10,9 @@
  * an easy-to-use interface making it easy for the developer to build a relational
  * database and moreover perform database operations easily!
  *  This project was developed at the Automatic Control Lab in the Chemical Engineering
- * School of the National Technical University of Athens. Please read README for more
- * information.
+ * School of the National Technical University of Athens.
+ *
+ * Supervising Professor: Haralampos Sarimveis
  *
  * Copyright (C) 2009-2010 Charalampos Chomenides & Pantelis Sopasakis
  *                         kinkyDesign ~ OpenSource Development

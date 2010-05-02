@@ -1,4 +1,6 @@
-/*
+/**
+ *  Class : Slave
+ *  Date  : May 2, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -34,12 +36,45 @@
  * tel. +30 210 7723236
  */
 
-/**
- * Main package of the DeciBell&copy; project. Most users will only need to interact
- * with the classes of this package exclusively. The classes in this package and
- * the package org.kinkydesign.decibell.annotations are the only ones that a non-expert
- * user has to be aware of. We prompt the users to read the documentation of those classes
- * and examine the examples distributed with every copy of the source code.
- */
-package org.kinkydesign.decibell;
 
+package org.kinkydesign.decibell.examples.multifk;
+
+import java.util.Date;
+import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.NumericNull;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
+
+/**
+ *
+ * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
+ */
+public class Slave extends Component<Slave>{
+
+    public Slave() {
+    }   
+    
+    @PrimaryKey
+    public String firstName;
+
+    @PrimaryKey
+    public String surName;
+
+    @Entry
+    @NumericNull(numericNullValue="-1")
+    public int x = -1;
+
+    @Entry
+    public Date date;
+
+    public Slave(String firstName, String surName, int x) {
+        if (x==-1) throw new IllegalArgumentException("Initialized Slave with null numeric value!");
+        this.firstName = firstName;
+        this.surName = surName;
+        this.x = x;
+        date = new Date(System.currentTimeMillis());
+    }
+
+
+}

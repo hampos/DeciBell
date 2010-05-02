@@ -1,4 +1,6 @@
-/*
+/**
+ *  Class : Master
+ *  Date  : May 2, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -34,12 +36,38 @@
  * tel. +30 210 7723236
  */
 
-/**
- * Main package of the DeciBell&copy; project. Most users will only need to interact
- * with the classes of this package exclusively. The classes in this package and
- * the package org.kinkydesign.decibell.annotations are the only ones that a non-expert
- * user has to be aware of. We prompt the users to read the documentation of those classes
- * and examine the examples distributed with every copy of the source code.
- */
-package org.kinkydesign.decibell;
 
+package org.kinkydesign.decibell.examples.multifk;
+
+import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.annotations.ForeignKey;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
+
+/**
+ *
+ * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
+ */
+public class Master extends Component<Master>{
+
+    public Master() {
+    }
+
+    
+
+    public Master(String masterName) {
+        this.masterName = masterName;
+    }
+
+    public Master(String masterName, Slave slave) {
+        this.masterName = masterName;
+        this.slave = slave;
+    }
+
+    @PrimaryKey
+    public String masterName;
+
+    @ForeignKey
+    public Slave slave;
+
+}

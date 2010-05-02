@@ -120,6 +120,7 @@ public abstract class TablesGenerator {
     protected boolean isList(Class c){
         return TypeMap.isSubClass(c, List.class);
     }
+    
 
     /**
      * Returns true if a given class is a sub class of Set.class

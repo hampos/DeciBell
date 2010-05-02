@@ -61,7 +61,6 @@ public class DeciBell {
      * increased flexibility. This is the private DbConnector object held by Decibell.
      */
     private DbConnector connector = new DerbyConnector();
-
     private static Map<Class<? extends Component>, DeciBell> componentDBmap =
             new HashMap<Class<? extends Component>, DeciBell>();
     /**
@@ -102,7 +101,7 @@ public class DeciBell {
         }
         TablesGenerator tables = new DerbyTablesGenerator(connector, components);
         tables.construct();
-        StatementPool pool = new StatementPool(connector,10);
+        StatementPool pool = new StatementPool(connector, 10);
     }
 
     /**
@@ -118,12 +117,13 @@ public class DeciBell {
         connector.connect();
     }
 
-
     /**
      * <p  align="justify" style="width:60%">
      * Clears the whole database structure (removes all tables from the database)
      * and removes the user as well. Be careful when invoking this method because
-     * <b>all data in this database will be permanently lost!</b>.
+     * <b>all data in this database will be permanently lost!</b>. The database
+     * structure will be also lost. Use methods {@link DeciBell#attach(java.lang.Class) attach}
+     * and {@link DeciBell#start() start} to reconstruct a database.
      * </p>
      */
     public void reset() {
@@ -138,6 +138,13 @@ public class DeciBell {
     public void stop() {
         connector.disconnect();
         connector.killServer();
+        try {
+            while (connector.isConnected() || connector.isServerRunning()) {
+                Thread.sleep(100);
+            }
+        } catch (InterruptedException ex) {
+            throw new RuntimeException("Interrupted while stopping...", ex);
+        }
     }
 
     /**
@@ -226,8 +233,39 @@ public class DeciBell {
      * </p>
      * @return this DeciBell's DbConnector.
      */
-    protected DbConnector getDbConnector() {
+    public DbConnector getDbConnector() {
         return connector;
     }
 
+    public boolean isServerRunning() {
+        return connector.isServerRunning();
+    }
+
+    public boolean isConnected() {
+        return connector.isConnected();
+    }
+
+    public String getUser() {
+        return connector.getUser();
+    }
+
+    public String getHost() {
+        return connector.getHost();
+    }
+
+    public String getDriverHome() {
+        return connector.getDriverHome();
+    }
+
+    public String getDbName() {
+        return connector.getDbName();
+    }
+
+    public String getDatabaseUrl() {
+        return connector.getDatabaseUrl();
+    }
+
+    public String getDatabaseDriver() {
+        return connector.getDatabaseDriver();
+    }
 }
