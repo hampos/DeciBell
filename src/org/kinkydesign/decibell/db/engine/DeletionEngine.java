@@ -62,6 +62,7 @@ import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
  * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @since 0.1.0.0
  */
 public class DeletionEngine {
 

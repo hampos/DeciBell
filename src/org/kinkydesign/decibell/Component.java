@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.kinkydesign.decibell.annotations.ForeignKey;
+import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.db.engine.DeletionEngine;
 import org.kinkydesign.decibell.db.engine.RegistrationEngine;
@@ -128,17 +129,22 @@ public abstract class Component<T extends Component> implements Cloneable {
     /**
      *
      * <p  align="justify" style="width:60%">
-     * Get all the components from the database which resemble the given component.
-     * The current component is used as a prototype for the performed search. Any
-     * fields set to <code>null</code> are ommited throughout the search. This search is
-     * based on prepared statements for increased performance and security. These statements
-     * are prepared upon the startup of decibell.
+     * Get all the components from the database which <em>resemble</em> the given component
+     * on which the <code>search</code> method is applied.
+     * The current component is used as a <em>prototype</em> for the performed search. Any
+     * fields set to <code>null</code> are ommited throughout the search. Of course you
+     * cannot assign a <code>null</code> value to a primitive-type field (like <code>int, long
+     * ,float, double</code>) but you can use its numericNull value instead specified by
+     * the annotation {@link NumericNull }. This search is based on prepared statements
+     * for increased performance and security. These statements are prepared upon
+     * the startup of decibell ({@link DeciBell#start() start DeciBell}).
      * </p>
      * @param db
      *      The decibell object which identifies a database connection
      * @return
-     *      List of objects found
+     *      List of objects found in the database
      * @see SearchEngine
+     * @see NumericNull
      */
     public ArrayList<T> search(DeciBell db) {
         SearchEngine<T> engine = new SearchEngine<T>(db);

@@ -66,6 +66,7 @@ import org.kinkydesign.decibell.exceptions.ImproperRegistration;
  * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @since 0.1.0.0
  */
 public class RegistrationEngine {
 

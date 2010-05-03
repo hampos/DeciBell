@@ -68,9 +68,16 @@ import org.kinkydesign.decibell.db.util.Pair;
 
 
 /**
- *
+ * <p  align="justify" style="width:60%">
+ * This search engine helps retrieving data from the underlying database as Java
+ * objects (which subclass {@link Component }. So what is returned by such a search operation
+ * is an ArrayList of Component-type objects.
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @see Component
+ * @see RegistrationEngine
+ * @since 0.1.0.0
  */
 public class SearchEngine<T> {
 
@@ -108,6 +115,7 @@ public class SearchEngine<T> {
      * <code>object.field.equals(object)==true</code>.
      * </p>
      *
+     *
      */
     protected static final int PENETRATION = 2; // Attention! This number should not exceed (StatementPool.poolSize-1)
 
@@ -117,6 +125,13 @@ public class SearchEngine<T> {
         this.db = db;
     }
 
+    /**
+     *
+     * @param whatToSearch
+     *      Object to search for in the database.
+     * @return
+     *      List of objects found in the database
+     */
     public ArrayList<T> search(Component whatToSearch) {
         return search(whatToSearch, new Component[PENETRATION]);
     }
