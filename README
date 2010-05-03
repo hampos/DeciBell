@@ -1,0 +1,22 @@
+DeciBell     :   A Novell Approach to the ORM Problem for Java.
+
+
+    	              Charalampos Chomenides, Sopasakis Pantelis
+
+
+keywords:   Relational Databases, ORM, Java Programming, JDBC, SQL.
+
+Abstract
+  DeciBell is an open  source tool  developed  to tackle in a uniform and  structured way 
+the problem of Java and  SQL cooperation. In  DeciBell, Java  classes are related to rela-
+tional  database  entities  automatically  and in  a transparent  way as far as  the back-
+ground operations are concerned. So, on the one hand, non-expert users  can  work on Java 
+code exclusively  while an expert one will  be able to focus on more  algorithmic aspects 
+of the problem he/she tries to solve rather than with trivial database management issues. 
+In contrast to the  existing ORM  programs,  DeciBell does not require any  configuration 
+files or  composite query structures,  but only a proper annotation of  certain fields of 
+the classes.  This annotation is carried  out by means of the Java Annotations which is a 
+modern trend in Java programming. Among its supported features, DeciBell supports primary 
+keys (single and multiple), foreign keys, constraints, one-to-one, one-to-many, and many-
+to-many relations.  Finally DeciBell  translates the  hierarchical  relationships between 
+Java objects into table structure.
