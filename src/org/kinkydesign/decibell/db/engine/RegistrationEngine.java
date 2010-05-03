@@ -86,9 +86,6 @@ public class RegistrationEngine {
 
     /**
      * Register a component in a database identified by a {@link DeciBell } object.
-     * @param db
-     *      The DeciBell object that identifies the connections the engine will use
-     *      to register the data.
      * @param toBeWritten
      *      The object to be registered in the database. Note that only objects which
      *      can be cast as Components is possible to be written in the database.
@@ -103,7 +100,7 @@ public class RegistrationEngine {
      *      of that list, to be able afterwards to retrieve these data in the proper form.
      */
     public void register(Component toBeWritten) throws DuplicateKeyException, ImproperRegistration{
-        registerPart(db, toBeWritten);
+        registerPart(toBeWritten);
     }
 
     /**
@@ -134,9 +131,7 @@ public class RegistrationEngine {
         } catch (Exception ex) {throw new RuntimeException(ex);}
     }
 
-    private void registerPart(
-            /* Where to write it: */ DeciBell db,
-            /* what to write:     */ Component whatToWrite) throws DuplicateKeyException, ImproperRegistration {
+    private void registerPart(  /* what to write:     */ Component whatToWrite) throws DuplicateKeyException, ImproperRegistration {
 
 
         /*
@@ -148,7 +143,7 @@ public class RegistrationEngine {
          */
         if (whatToWrite.getClass().getSuperclass() != Component.class) {
             whatToWrite = (Component) getSuperComponent(whatToWrite);
-            registerPart(db, whatToWrite);
+            registerPart( whatToWrite);
         }
 
         // TODO: Check if the problem with registration of indirect subclasses of Component is really fixed.

@@ -47,9 +47,35 @@ import org.kinkydesign.decibell.db.derby.DerbyTablesGenerator;
 import org.reflections.Reflections;
 
 /**
+ *
  * <p  align="justify" style="width:60%">
- * Class used to manipulate a database connection, define object to DB entities mappings
- * and handle the database server (start/stop/restart).
+ * A DeciBell object is an identifier for a database connection also responsible for
+ * the monitoring of the connection (check if the database server is up and the
+ * connection is alive). It contains methods for the hondlung of the datbase connection
+ * like {@link DeciBell#start() start}, {@link DeciBell#stop() stop},
+ * {@link DeciBell#reset() reset} and {@link DeciBell#restart() restart}.
+ * </p>
+ * <p  align="justify" style="width:60%">
+ * DeciBell is an open source tool developed to tackle in a uniform and structured
+ * way the problem of Java and SQL cooperation. In DeciBell, Java classes are
+ * related to relational database entities automatically and in a transparent way
+ * as far as the background operations are concerned. So, on the one hand, non-expert
+ * users can work on Java code exclusively while an expert one will be able to
+ * focus on more algorithmic aspects of the problem he/she tries to solve rather
+ * than with trivial database management issues. In contrast to the existing ORM
+ * programs, DeciBell does not require any configuration files or composite query
+ * structures, but only a proper annotation of certain fields of the classes.
+ * This annotation is carried out by means of the Java Annotations which is a modern
+ * trend in Java programming. Among its supported features, DeciBell supports
+ * primary keys (single and multiple), foreign keys, constraints, one-to-one,
+ * one-to-many, and many-to-many relations. Finally DeciBell translates the
+ * hierarchical relationships between Java objects into a table structure.
+ * </p>
+ * <p  align="justify" style="width:60%">
+ * If the datbase does not exist, the method {@link DeciBell#start() start} triggers
+ * the table creation. The class {@link TablesGenerator } undertakes the creation of
+ * all necessary tables in the database (Note that this class is abstract; There is
+ * a derby-specific implementation of this class, namely {@link DerbyTablesGenerator }.
  * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
@@ -118,6 +144,7 @@ public class DeciBell {
     }
 
     /**
+     *
      * <p  align="justify" style="width:60%">
      * Clears the whole database structure (removes all tables from the database)
      * and removes the user as well. Be careful when invoking this method because
@@ -142,6 +169,7 @@ public class DeciBell {
             while (connector.isConnected() || connector.isServerRunning()) {
                 Thread.sleep(100);
             }
+            Thread.sleep(1000); // <== wait a little bit more
         } catch (InterruptedException ex) {
             throw new RuntimeException("Interrupted while stopping...", ex);
         }
@@ -237,6 +265,11 @@ public class DeciBell {
         return connector;
     }
 
+    /**
+     * Whether the database server is up and running,
+     * @return
+     *      <code>true</code> if the database server is up.
+     */
     public boolean isServerRunning() {
         return connector.isServerRunning();
     }
