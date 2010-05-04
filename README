@@ -20,3 +20,20 @@ modern trend in Java programming. Among its supported features, DeciBell support
 keys (single and multiple), foreign keys, constraints, one-to-one, one-to-many, and many-
 to-many relations.  Finally DeciBell  translates the  hierarchical  relationships between 
 Java objects into table structure.
+
+Source Code Dependencies:
+1. Derby JDBC server:
+   The  Derby JDBC server is freely distributed  under the Apache license. DeciBell  makes 
+   use of the transitional alpha release of Derby 10.6.0. but will soon upgrade to the la-
+   test release 10.6.1 ( see http://wiki.apache.org/db-derby/DerbyTenSixOneRelease )
+2. Reflections:
+   Reflections  is an  opensource/free java metadata  analysis software  distributed under  
+   the GNU Lesser GPL license. Project web page @ http://code.google.com/p/reflections.
+3. XStream:
+   Library for the (de)serialization of objects  in Java to and from  XML. It is  used in
+   DeciBell for registering in the database non-Component objects of unknown structure.It
+   is an open source software distributed under a BSD license. XStream is available for 
+   download at http://xstream.codehaus.org .
+
+
+
