@@ -120,10 +120,12 @@ public class SearchEngine<T> {
     protected static final int PENETRATION = 2; // Attention! This number should not exceed (StatementPool.poolSize-1)
     private final DeciBell db;
     private final StatementPool pool;
+    private final ComponentRegistry registry;
 
     public SearchEngine(final DeciBell db) {
         this.db = db;
         pool = StatementPool.getPool(db.getDbConnector());
+        registry = ComponentRegistry.getRegistry(db.getDbConnector());
     }
 
     /**
@@ -142,7 +144,7 @@ public class SearchEngine<T> {
     private ArrayList<T> search(Component whatToSearch, Component[] tempComponent) {
         ArrayList<T> resultList = new ArrayList<T>();
         Class c = whatToSearch.getClass();
-        ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
+        
         Table table = (Table) registry.get(c);
         Pair<PreparedStatement, SQLQuery> entry = pool.getSearch(table);
         PreparedStatement ps = entry.getKey();
@@ -155,7 +157,6 @@ public class SearchEngine<T> {
             Constructor constructor = c.getDeclaredConstructor();
             constructor.setAccessible(true);
             while (rs.next() != false) {
-                System.out.println("*");
                 Object newObj = constructor.newInstance();
                 for (JTableColumn col : table.getTableColumns()) {
                     Field f = col.getField();
@@ -175,7 +176,6 @@ public class SearchEngine<T> {
                         f.set(newObj, rs.getObject(col.getColumnName()));
                     }
                 }
-                
 
                 handleForeignKeys(table, rs, whatToSearch, tempComponent, newObj);
                 handleRelationalTables(table, newObj);
@@ -184,12 +184,10 @@ public class SearchEngine<T> {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-
         return resultList;
     }
 
     private ResultSet acquireResults(SQLQuery query, PreparedStatement ps, Component whatToSearch) throws Exception {
-        System.out.println("** " + query.getSQL());
         int i = 1;
         for (Proposition p : query.getPropositions()) {
             JTableColumn col = p.getTableColumn();
@@ -266,11 +264,15 @@ public class SearchEngine<T> {
                      */
                     Field f = group.iterator().next().getField();
                     f.setAccessible(true);
-                    ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
+                    ArrayList newObjFields = new ArrayList();
+                    for(JTableColumn newObjCol : registry.get(newObj.getClass()).getTableColumns()){
+                        newObjFields.add(newObjCol.getField());
+                    }
                     if (newObjFields.contains(f)) {
                         f.set(newObj, tempList.get(0));
                     } else {
-                        for(Field superField : tempList.get(0).getClass().getDeclaredFields()){
+                        for ( JTableColumn superCol : registry.get(tempList.get(0).getClass()).getTableColumns()) {
+                            Field superField = superCol.getField();
                             superField.setAccessible(true);
                             superField.set(newObj, superField.get(tempList.get(0)));
                         }
@@ -333,7 +335,6 @@ public class SearchEngine<T> {
                 Field f = group.iterator().next().getField();
                 f.setAccessible(true);
                 f.set(newObj, tempList.get(0));
-                //System.out.println("setting " + f.getName() + " = " + tempList.get(0));
             }
         }
         /*
@@ -408,12 +409,8 @@ public class SearchEngine<T> {
                 relList.addAll(tempList);
                 collectionJavaType = relRs.getString("METACOLUMN");
             }
-            
 
             Field onField = relTable.getOnField();
-//                    Class onClass = onField.getType();
-//                    Constructor con = onClass.getConstructor();
-            System.out.println("JAVA TYPE = " + collectionJavaType);
             Class onClass = Class.forName(collectionJavaType);
             Constructor con = onClass.getConstructor();
             Object obj = con.newInstance();
