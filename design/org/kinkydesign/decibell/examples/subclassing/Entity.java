@@ -41,6 +41,7 @@ package org.kinkydesign.decibell.examples.subclassing;
 
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
@@ -57,7 +58,8 @@ public class Entity extends Component<Entity>{
     public String message;
 
     @Entry
-    public int number;
+    @NumericNull(numericNullValue="-1")
+    public int number = -1;
 
 
 

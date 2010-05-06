@@ -40,6 +40,7 @@
 package org.kinkydesign.decibell.examples.subclassing;
 
 import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.NumericNull;
 
 /**
  *
@@ -52,6 +53,7 @@ public class SubEntity extends Entity{
     @Entry
     public String info;
 
-    @Entry double xyz;
+    @NumericNull(numericNullValue="-1")
+    @Entry double xyz = -1;
 
 }

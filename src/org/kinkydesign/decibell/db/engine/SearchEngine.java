@@ -153,6 +153,7 @@ public class SearchEngine<T> {
             Constructor constructor = c.getDeclaredConstructor();
             constructor.setAccessible(true);
             while (rs.next() != false) {
+                System.out.println("*");
                 Object newObj = constructor.newInstance();
                 for (JTableColumn col : table.getTableColumns()) {
                     Field f = col.getField();
@@ -186,16 +187,13 @@ public class SearchEngine<T> {
     }
 
     private ResultSet acquireResults(SQLQuery query, PreparedStatement ps, Component whatToSearch) throws Exception {
-
+        System.out.println("** "+query.getSQL());
         int i = 1;
-
-
         for (Proposition p : query.getPropositions()) {
             JTableColumn col = p.getTableColumn();
             Field field = col.getField();
             field.setAccessible(true);
             Object obj = null;
-
 
             try {
                 obj = field.get(whatToSearch);
@@ -220,7 +218,6 @@ public class SearchEngine<T> {
             }
             i++;
         }
-
         return ps.executeQuery();
     }
 
@@ -259,6 +256,7 @@ public class SearchEngine<T> {
 
                 } else if (tempList.size() == 1) {
                     Field f = group.iterator().next().getField();
+                    System.out.println("Setting the field : "+f.getName());
                     f.setAccessible(true);
                     f.set(newObj, tempList.get(0));
                 }

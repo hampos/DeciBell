@@ -65,7 +65,7 @@ public class SubEntityTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/subclassing/tst355");
+        db.setDbName("decibellTestDB/subclassing/tst379");
 
         db.attach(Entity.class);
         db.attach(SubEntity.class);
@@ -95,11 +95,12 @@ public class SubEntityTest {
         se.id = UUID.randomUUID().toString().replaceAll("-", "");
         se.info = "info";
         se.message = "my msg";
+        se.number = 102;
         se.xyz = 1433.3;
         lock.lock();
         se.register(db);
         lock.unlock();
 
-        //new SubEntity().search(db).get(0).print(System.out);
+        new SubEntity().search(db);
     }
 }
