@@ -170,7 +170,6 @@ public class RegistrationEngine {
         SQLQuery sqlQuery = entry.getValue();
 
         try {
-            System.out.println("Registering "+whatToWrite.getClass().getName());
             int i = 1;
             /*
              * Here we feed the prepared statement:
