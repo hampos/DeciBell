@@ -35,8 +35,6 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
 package org.kinkydesign.decibell.db.engine;
 
 import com.thoughtworks.xstream.XStream;
@@ -66,13 +64,14 @@ import org.kinkydesign.decibell.db.query.SQLQuery;
 import org.kinkydesign.decibell.db.util.Infinity;
 import org.kinkydesign.decibell.db.util.Pair;
 
-
 /**
  * <p  align="justify" style="width:60%">
  * This search engine helps retrieving data from the underlying database as Java
  * objects (which subclass {@link Component }. So what is returned by such a search operation
  * is an ArrayList of Component-type objects.
- * </p>
+ * </p
+ * @param <T>
+ *      Generic parameter used to identify the searched objects.
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  * @see Component
@@ -118,11 +117,12 @@ public class SearchEngine<T> {
      *
      */
     protected static final int PENETRATION = 2; // Attention! This number should not exceed (StatementPool.poolSize-1)
-
     private final DeciBell db;
+    private final StatementPool pool;
 
     public SearchEngine(final DeciBell db) {
         this.db = db;
+        pool = StatementPool.getPool(db.getDbConnector());
     }
 
     /**
@@ -143,46 +143,13 @@ public class SearchEngine<T> {
         Class c = whatToSearch.getClass();
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
         Table table = (Table) registry.get(c);
-        StatementPool pool = StatementPool.getPool(db.getDbConnector());
         Pair<PreparedStatement, SQLQuery> entry = pool.getSearch(table);
         PreparedStatement ps = entry.getKey();
         SQLQuery query = entry.getValue();
 
         //TODO: Add comments inside the method content to tell what every line does...
         try {
-            int i = 1;
-            for (Proposition p : query.getPropositions()) {
-                JTableColumn col = p.getTableColumn();
-                Field field = col.getField();
-                field.setAccessible(true);
-                Object obj = null;
-                try {
-                    obj = field.get(whatToSearch);
-                    if (col.isForeignKey()) {
-                        Field f = col.getReferenceColumn().getField();
-                        f.setAccessible(true);
-                        ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
-                    } else if (obj == null
-                            || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull())))) {
-                        Infinity inf = new Infinity(db.getDbConnector());
-                        ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                    } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                        ps.setObject(i, obj, col.getColumnType().getType());
-                    } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                        ps.setObject(i, obj, col.getColumnType().getType());
-                    } else {
-                        XStream xstream = new XStream();
-                        String xml = xstream.toXML(obj);
-                        ps.setString(i, xml);
-                    }
-                } catch (NullPointerException ex) {
-                    Infinity inf = new Infinity(db.getDbConnector());
-                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                }
-                i++;
-            }
-            ResultSet rs = ps.executeQuery();
-
+            ResultSet rs = acquireResults(query, ps, whatToSearch);
             Constructor constructor = c.getDeclaredConstructor();
             constructor.setAccessible(true);
             while (rs.next() != false) {
@@ -207,178 +174,239 @@ public class SearchEngine<T> {
                 }
                 pool.recycleSearch(entry, table);
 
-                for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
-                    /*
-                     * Retrieve the object of the SAME type which is referenced by a
-                     * self-referencing foreign column.
-                     */
-                    Class refClass = group.iterator().next().getReferencesClass();
-                    Constructor refConstructor = refClass.getDeclaredConstructor();
-                    refConstructor.setAccessible(true);
-                    Object refObj = refConstructor.newInstance();
-                    for (JTableColumn col : group) {
-                        Field f = col.getReferenceColumn().getField();
-                        f.setAccessible(true);
-                        f.set(refObj, rs.getObject(col.getColumnName()));
-                    }
-                    Component component = (Component) refObj;
-
-
-                    /*
-                     * Foreign Key but NOT a self-reference!
-                     */
-                    if ((component.getClass().equals(whatToSearch.getClass()) && !component.equals(whatToSearch))
-                            || !component.getClass().equals(whatToSearch.getClass())) {
-                        ArrayList tempList = component.search(db);
-                        if (tempList.size() > 1) {
-                            throw new RuntimeException("Single foreign object list has size > 1");
-                        } else if (tempList.size() == 1) {
-                            Field f = group.iterator().next().getField();
-                            f.setAccessible(true);
-                            f.set(newObj, tempList.get(0));
-                        }
-                    } else if (component.getClass().equals(whatToSearch.getClass()) && component.equals(whatToSearch)) {
-                        // <editor-fold defaultstate="collapsed" desc="Self Referencing FK">
-                        /*
-                         * A boolean flag which specifies whether the search is complete or
-                         * if we need to search into other objects as well.
-                         */
-                        boolean bin = false;
-
-                        /*
-                         * Examine whether the search should continue the tree spanning
-                         * or quit here. This is parametrized by means of the integer PENETRATION.
-                         */
-                        if (hasNullElement(tempComponent)) {
-                            bin = true;
-                        } else {
-                            for (Component compo : tempComponent) {
-                                bin = bin || (!component.equals(compo));
-                            }
-                        }
-
-                        if (bin) {
-                            for (int k = 0; k < PENETRATION - 1; k++) {
-                                tempComponent[k] = tempComponent[k + 1];
-                            }
-                            tempComponent[PENETRATION - 1] = component;
-                            ArrayList tempList = search(whatToSearch, tempComponent);
-                            if (tempList.size() > 1) {
-                                throw new RuntimeException("Single foreign object list has size > 1");
-                            } else if (tempList.size() == 1) {
-                                Field f = group.iterator().next().getField();
-                                f.setAccessible(true);
-                                f.set(newObj, tempList.get(0));
-                                //System.out.println("setting " + f.getName() + " = " + tempList.get(0));
-                            }
-                        }
-                        /*
-                         * Well...we need to study this case a little!
-                         */
-                        // </editor-fold>
-                    }
-
-                }
-
-                /**
-                 * Perform search into the relational tables.
-                 */
-                // <editor-fold defaultstate="collapsed" desc="Relational Tables">
-                for (JRelationalTable relTable : table.getRelations()) {
-                    ArrayList relList = new ArrayList();
-                    Entry<PreparedStatement, SQLQuery> fentry = pool.getSearch(relTable);
-                    ps = fentry.getKey();
-                    query = fentry.getValue();
-                    Field field = relTable.getOnField();
-                    field.setAccessible(true);
-                    i = 1;
-                    for (Proposition p : query.getPropositions()) {
-                        JTableColumn col = p.getTableColumn();
-                        if (col.getColumnName().equals("METACOLUMN")) {
-                            continue;
-                        }
-                        Field f = col.getField();
-                        f.setAccessible(true);
-                        try {
-                            if (!col.getReferenceTable().equals(relTable.getMasterTable())) {
-                                Infinity inf = new Infinity(db.getDbConnector());
-                                ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                            } else {
-                                Object obj = f.get(newObj);
-                                //TODO: NumericNull must be checked here.
-                                if (obj == null) {
-                                    Infinity inf = new Infinity(db.getDbConnector());
-                                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                                }
-                                ps.setObject(i, obj, col.getColumnType().getType());
-                            }
-                        } catch (NullPointerException ex) {
-                            Infinity inf = new Infinity(db.getDbConnector());
-                            ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                        }
-                        i++;
-                    }
-                    ResultSet relRs = ps.executeQuery();
-
-                    String collectionJavaType = null;
-                    while (relRs.next() != false) {
-                        Class fclass = relTable.getSlaveColumns().iterator().next().
-                                getField().getDeclaringClass();
-                        //TODO: Maybe declared Constructor is the way to go?
-                        Constructor fconstuctor = fclass.getConstructor();
-                        fconstuctor.setAccessible(true);
-                        Object fobj = fconstuctor.newInstance();
-                        for (JTableColumn col : relTable.getSlaveColumns()) {
-                            Field ffield = col.getField();
-                            ffield.setAccessible(true);
-                            ffield.set(fobj, relRs.getObject(col.getColumnName()));
-                        }
-                        Component component = (Component) fobj;
-                        ArrayList tempList = component.search(db);
-                        if (tempList.isEmpty()) {
-                            throw new RuntimeException("Empty list on search for foreign objects");
-                        } else if (tempList.size() > 1) {
-                            throw new RuntimeException("Single foreign object list has size > 1");
-                        }
-                        relList.addAll(tempList);
-                        collectionJavaType = relRs.getString("METACOLUMN");
-                    }
-                    pool.recycleSearch(fentry, relTable);
-
-                    Field onField = relTable.getOnField();
-//                    Class onClass = onField.getType();
-//                    Constructor con = onClass.getConstructor();
-                    System.out.println("JAVA TYPE = " + collectionJavaType);
-                    Class onClass = Class.forName(collectionJavaType);
-                    Constructor con = onClass.getConstructor();
-                    Object obj = con.newInstance();
-                    Collection relCollection = (Collection) obj;
-                    relCollection.addAll(relList);
-                    onField.set(newObj, relCollection);
-
-                }// </editor-fold>
-
+                handleForeignKeys(table, rs, whatToSearch, tempComponent, newObj);
+                handleRelationalTables(table, newObj);
                 resultList.add((T) fixSelfReferences((Component) newObj));
             }
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException(ex);
-        } catch (SecurityException ex) {
-            throw new RuntimeException(ex);
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
 
         return resultList;
     }
 
+    private ResultSet acquireResults(SQLQuery query, PreparedStatement ps, Component whatToSearch) throws Exception {
+
+        int i = 1;
+
+
+        for (Proposition p : query.getPropositions()) {
+            JTableColumn col = p.getTableColumn();
+            Field field = col.getField();
+            field.setAccessible(true);
+            Object obj = null;
+
+
+            try {
+                obj = field.get(whatToSearch);
+                if (col.isForeignKey()) {
+                    Field f = col.getReferenceColumn().getField();
+                    f.setAccessible(true);
+                    ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
+                } else if (obj == null
+                        || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull())))) {
+                    Infinity inf = new Infinity(db.getDbConnector());
+                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                    ps.setObject(i, obj, col.getColumnType().getType());
+                } else {
+                    XStream xstream = new XStream();
+                    String xml = xstream.toXML(obj);
+                    ps.setString(i, xml);
+                }
+            } catch (NullPointerException ex) {
+                Infinity inf = new Infinity(db.getDbConnector());
+                ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+            }
+            i++;
+        }
+
+        return ps.executeQuery();
+    }
+
+    void handleForeignKeys(
+            Table table,
+            ResultSet rs,
+            Component whatToSearch,
+            Component[] tempComponent,
+            Object newObj) throws Exception {
+        for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
+            /*
+             * Retrieve the object of the SAME type which is referenced by a
+             * self-referencing foreign column.
+             */
+            Class refClass = group.iterator().next().getReferencesClass();
+            Constructor refConstructor = refClass.getDeclaredConstructor();
+            refConstructor.setAccessible(true);
+            Object refObj = refConstructor.newInstance();
+
+            for (JTableColumn col : group) {
+                Field f = col.getReferenceColumn().getField();
+                f.setAccessible(true);
+                f.set(refObj, rs.getObject(col.getColumnName()));
+            }
+            Component component = (Component) refObj;
+
+            /*
+             * Foreign Key but NOT a self-reference!
+             */
+            if ((component.getClass().equals(whatToSearch.getClass()) && !component.equals(whatToSearch))
+                    || !component.getClass().equals(whatToSearch.getClass())) {
+                ArrayList tempList = component.search(db);
+
+                if (tempList.size() > 1) {
+                    throw new RuntimeException("Single foreign object list has size > 1");
+
+                } else if (tempList.size() == 1) {
+                    Field f = group.iterator().next().getField();
+                    f.setAccessible(true);
+                    f.set(newObj, tempList.get(0));
+                }
+            } else if (component.getClass().equals(whatToSearch.getClass()) && component.equals(whatToSearch)) {
+                handleSelfRefTables(tempComponent, whatToSearch, group, component, newObj);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param tempComponent
+     * @param whatToSearch
+     * @param group
+     * @param component
+     * @param newObj
+     *      This is an input and output parameter.
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     */
+    private void handleSelfRefTables(
+            Component[] tempComponent,
+            Component whatToSearch,
+            Set<JTableColumn> group,
+            Component component,
+            Object newObj) throws IllegalArgumentException, IllegalAccessException {
+        // <editor-fold defaultstate="collapsed" desc="Self Referencing FK">
+                        /*
+         * A boolean flag which specifies whether the search is complete or
+         * if we need to search into other objects as well.
+         */
+        boolean bin = false;
+
+        /*
+         * Examine whether the search should continue the tree spanning
+         * or quit here. This is parametrized by means of the integer PENETRATION.
+         */
+        if (hasNullElement(tempComponent)) {
+            bin = true;
+
+        } else {
+            for (Component compo : tempComponent) {
+                bin = bin || (!component.equals(compo));
+            }
+        }
+
+        if (bin) {
+            for (int k = 0; k
+                    < PENETRATION - 1; k++) {
+                tempComponent[k] = tempComponent[k + 1];
+            }
+            tempComponent[PENETRATION - 1] = component;
+            ArrayList tempList = search(whatToSearch, tempComponent);
+
+            if (tempList.size() > 1) {
+                throw new RuntimeException("Single foreign object list has size > 1");
+            } else if (tempList.size() == 1) {
+                Field f = group.iterator().next().getField();
+                f.setAccessible(true);
+                f.set(newObj, tempList.get(0));
+                //System.out.println("setting " + f.getName() + " = " + tempList.get(0));
+            }
+        }
+        /*
+         * Well...we need to study this case a little!
+         */
+        // </editor-fold>
+    }
+
+    private void handleRelationalTables(Table table, Object newObj) throws Exception {
+        /**
+         * Perform search into the relational tables.
+         */
+        // <editor-fold defaultstate="collapsed" desc="Relational Tables">
+        for (JRelationalTable relTable : table.getRelations()) {
+            ArrayList relList = new ArrayList();
+            Entry<PreparedStatement, SQLQuery> fentry = pool.getSearch(relTable);
+            PreparedStatement ps = fentry.getKey();
+            SQLQuery query = fentry.getValue();
+            Field field = relTable.getOnField();
+            field.setAccessible(true);
+            int i = 1;
+            for (Proposition p : query.getPropositions()) {
+                JTableColumn col = p.getTableColumn();
+                if (col.getColumnName().equals("METACOLUMN")) {
+                    continue;
+                }
+                Field f = col.getField();
+                f.setAccessible(true);
+                try {
+                    if (!col.getReferenceTable().equals(relTable.getMasterTable())) {
+                        Infinity inf = new Infinity(db.getDbConnector());
+                        ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+
+                    } else {
+                        Object obj = f.get(newObj);
+                        //TODO: NumericNull must be checked here.
+                        if (obj == null) {
+                            Infinity inf = new Infinity(db.getDbConnector());
+                            ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                        }
+                        ps.setObject(i, obj, col.getColumnType().getType());
+                    }
+                } catch (NullPointerException ex) {
+                    Infinity inf = new Infinity(db.getDbConnector());
+                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                }
+                i++;
+            }
+            ResultSet relRs = ps.executeQuery();
+            String collectionJavaType = null;
+            while (relRs.next() != false) {
+                Class fclass = relTable.getSlaveColumns().iterator().next().
+                        getField().getDeclaringClass();
+                //TODO: Maybe declared Constructor is the way to go?
+                Constructor fconstuctor = fclass.getConstructor();
+                fconstuctor.setAccessible(true);
+                Object fobj = fconstuctor.newInstance();
+
+                for (JTableColumn col : relTable.getSlaveColumns()) {
+                    Field ffield = col.getField();
+                    ffield.setAccessible(true);
+                    ffield.set(fobj, relRs.getObject(col.getColumnName()));
+                }
+                Component component = (Component) fobj;
+                ArrayList tempList = component.search(db);
+                if (tempList.isEmpty()) {
+                    throw new RuntimeException("Empty list on search for foreign objects");
+                } else if (tempList.size() > 1) {
+                    throw new RuntimeException("Single foreign object list has size > 1");
+                }
+                relList.addAll(tempList);
+                collectionJavaType = relRs.getString("METACOLUMN");
+            }
+            pool.recycleSearch(fentry, relTable);
+
+            Field onField = relTable.getOnField();
+//                    Class onClass = onField.getType();
+//                    Constructor con = onClass.getConstructor();
+            System.out.println("JAVA TYPE = " + collectionJavaType);
+            Class onClass = Class.forName(collectionJavaType);
+            Constructor con = onClass.getConstructor();
+            Object obj = con.newInstance();
+            Collection relCollection = (Collection) obj;
+            relCollection.addAll(relList);
+            onField.set(newObj, relCollection);
+        }// </editor-fold>
+    }
 
     private boolean hasNullElement(Object[] array) {
         for (Object o : array) {
@@ -435,6 +463,7 @@ public class SearchEngine<T> {
                     // Make the field to point to itself!
                     foreignField.set(output, output);
                 }
+
             } catch (IllegalArgumentException ex) {
                 Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalAccessException ex) {
@@ -444,5 +473,4 @@ public class SearchEngine<T> {
         }
         return output;
     }
-
 }

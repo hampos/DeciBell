@@ -56,6 +56,7 @@ import org.kinkydesign.decibell.db.Table;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import org.kinkydesign.decibell.db.query.SQLQuery;
+import org.kinkydesign.decibell.examples.multifk.Master;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 
@@ -119,7 +120,13 @@ public class RegistrationEngine {
         try {
             Component.class.cast(obj);
         } catch (Exception ex) {
-            throw new ClassCastException();
+            // This is not a component class
+            throw new IllegalArgumentException("This is not a component!");
+        }
+
+        if (obj.getClass().getSuperclass()==Component.class){
+            // This is a direct subclass of Compoenent
+            return obj;
         }
 
         Field[] superFields = obj.getClass().getSuperclass().getDeclaredFields();
@@ -131,6 +138,7 @@ public class RegistrationEngine {
             return superObject;
         } catch (Exception ex) {throw new RuntimeException(ex);}
     }
+
 
     private void registerPart(  /* what to write:     */ Component whatToWrite) throws DuplicateKeyException, ImproperRegistration {
 

@@ -43,7 +43,7 @@
  * are foreign keys, that point to the same entity that holds them. A prime example
  * for such a case, is User which has a friend-user (which is also a user). The same
  * pattern is met in databases storing exceptional events and traces of errors where
- * an Error has a cause (which is some other error bock to an error with no trace).
+ * an Error has a cause (which is some other error back to some error with no trace).
  */
 package org.kinkydesign.decibell.examples.selfRef;
 

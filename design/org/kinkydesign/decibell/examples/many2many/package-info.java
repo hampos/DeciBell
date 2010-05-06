@@ -1,6 +1,6 @@
-/**
- *  Class : Person
- *  Date  : May 1, 2010
+/*
+ *  Package : org.kinkydesign.decibell.examples.many2many
+ *  Date    : May 3, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,49 +35,11 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.examples.many2many;
-
-import java.util.Collection;
-import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.*;
 
 
 /**
- *
- * @author Pantelis Sopasakis
- * @author Charalampos Chomenides
+ * Contains classes which comprise a use case for the study of many-to-many relations
+ * in DeciBell. 
  */
-public class Person extends Component<Person>{
+package org.kinkydesign.decibell.examples.many2many;
 
-    @PrimaryKey
-    @NumericNull(numericNullValue="-1")
-    public int id = -1;
-
-    @Entry
-    public String x = "sdfk";
-
-    /**
-     * <p  align="justify" style="width:60%">
-     * This field uses the generic type <code>Collection</code> in java and
-     * maps to a many-to-many relation in the generated database. If you supply
-     * this field with a value which uses a certain implementation of the <code>Collection</code>
-     * interface and you retrieve the registered object from the database then its
-     * included collection will be of the same type as the one you registered. For example,
-     * if you register a LinkedHashSet, the petList will be of that type once you
-     * retrieve it using the method {@link Component#search(org.kinkydesign.decibell.DeciBell) search(db)}
-     * </p>
-     */
-    @ForeignKey
-    public Collection<Pet> petList;
-
-    /**
-     * <p  align="justify" style="width:60%">
-     * Many lists can be included in a subclass of components. Note that the
-     * annotation @{@link ForeignKey } is used to annotate collections/lists/sets.
-     * </p>
-     */
-    @ForeignKey
-    public Collection<Pet> otherList;
-
-    
-}
