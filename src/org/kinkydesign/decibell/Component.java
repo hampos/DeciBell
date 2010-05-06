@@ -92,7 +92,7 @@ public abstract class Component<T extends Component> implements Cloneable {
      * be specified in order for the delete operation to take place.
      * This operation is based on prepared statements.
      * </p>
-     * @param db 
+     * @param db
      *      The decibell object which identifies a database connection
      * @throws NoUniqueFieldException
      *      In case there is no identifier for the object to be deleted. No primary
@@ -102,7 +102,7 @@ public abstract class Component<T extends Component> implements Cloneable {
     public void delete(DeciBell db) throws NoUniqueFieldException {
         DeletionEngine engine = new DeletionEngine(db);
         engine.delete(this);
-    }   
+    }
 
     /**
      *
@@ -124,7 +124,7 @@ public abstract class Component<T extends Component> implements Cloneable {
     public void register(DeciBell db) throws DuplicateKeyException, ImproperRegistration {
         RegistrationEngine engine = new RegistrationEngine(db);
         engine.register(this);
-    }      
+    }
 
     /**
      *
@@ -147,263 +147,11 @@ public abstract class Component<T extends Component> implements Cloneable {
      * @see NumericNull
      */
     public ArrayList<T> search(DeciBell db) {
-<<<<<<< Updated upstream
         SearchEngine<T> engine = new SearchEngine<T>(db);
         return engine.search(this);
-=======
-        return search(db, new Component[PENETRATION]);
     }
 
-    private ArrayList<T> search(DeciBell db, Component[] tempComponent) {
-        ArrayList<T> resultList = new ArrayList<T>();
-        Class c = this.getClass();
-        ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
-        Table table = (Table) registry.get(c);
-        StatementPool pool = StatementPool.getPool(db.getDbConnector());
-        Entry<PreparedStatement, SQLQuery> entry = pool.getSearch(table);
-        PreparedStatement ps = entry.getKey();
-        SQLQuery query = entry.getValue();
-        try {
-            int i = 1;
-            for (Proposition p : query.getPropositions()) {
-                JTableColumn col = p.getTableColumn();
-                Field field = col.getField();
-                field.setAccessible(true);
-                Object obj = null;
-                try {
-                    obj = field.get(this);
-                    if (col.isForeignKey()) {
-                        Field f = col.getReferenceColumn().getField();
-                        f.setAccessible(true);
-                        ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
-                    } else if (obj == null
-                            || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull())))) {
-                        Infinity inf = new Infinity(db.getDbConnector());
-                        ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                    } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                        ps.setObject(i, obj, col.getColumnType().getType());
-                    } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                        ps.setObject(i, obj, col.getColumnType().getType());
-                    } else {
-                        XStream xstream = new XStream();
-                        String xml = xstream.toXML(obj);
-                        ps.setString(i, xml);
-                    }
-                } catch (NullPointerException ex) {
-                    Infinity inf = new Infinity(db.getDbConnector());
-                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                }
-                i++;
-            }
-            ResultSet rs = ps.executeQuery();
 
-            Constructor constructor = c.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            while (rs.next() != false) {
-                Object newObj = constructor.newInstance();
-                for (JTableColumn col : table.getTableColumns()) {
-                    Field f = col.getField();
-                    f.setAccessible(true);
-                    if (col.isForeignKey()) {
-                        continue;
-                    } else if (col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                        XStream xstream = new XStream();
-                        Object xobj = null;
-                        try {
-                            xobj = xstream.fromXML((String) rs.getObject(col.getColumnName()));
-                        } catch (NullPointerException ex) {
-                            xobj = null;
-                        }
-                        f.set(newObj, xobj);
-                    } else {
-                        f.set(newObj, rs.getObject(col.getColumnName()));
-                    }
-                }
-                pool.recycleSearch(entry, table);
-
-                for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
-                    /*
-                     * Retrieve the object of the SAME type which is referenced by a
-                     * self-referencing foreign column.
-                     */
-                    Class refClass = group.iterator().next().getReferencesClass();
-                    Constructor refConstructor = refClass.getDeclaredConstructor();
-                    refConstructor.setAccessible(true);
-                    Object refObj = refConstructor.newInstance();
-                    for (JTableColumn col : group) {
-                        Field f = col.getReferenceColumn().getField();
-                        f.setAccessible(true);
-                        f.set(refObj, rs.getObject(col.getColumnName()));
-                    }
-                    Component component = (Component) refObj;
-
-
-                    if (component.getClass().equals(this.getClass()) && !component.equals(this)
-                            || !component.getClass().equals(this.getClass())) {
-                        ArrayList tempList = component.search(db);
-                        if (tempList.size() > 1) {
-                            throw new RuntimeException("Single foreign object list has size > 1");
-                        } else if (tempList.size() == 1) {
-                            Field f = group.iterator().next().getField();
-                            f.setAccessible(true);
-                            f.set(newObj, tempList.get(0));
-                        }
-                    } else if (component.getClass().equals(this.getClass()) && component.equals(this)) {
-                        /*
-                         * A boolean flag which specifies whether the search is complete or
-                         * if we need to search into other objects as well.
-                         */
-                        boolean bin = false;
-
-                        /*
-                         * Examine whether the search should continue the tree spanning
-                         * or quit here. This is parametrized by means of the integer PENETRATION.
-                         */
-                        if (hasNullElement(tempComponent)) {
-                            bin = true;
-                        } else {
-                            for (Component compo : tempComponent) {
-                                bin = bin || (!component.equals(compo));
-                            }
-                        }
-
-                        if (bin) {
-                            for (int k = 0; k < PENETRATION - 1; k++) {
-                                tempComponent[k] = tempComponent[k + 1];
-                            }
-                            tempComponent[PENETRATION - 1] = component;
-                            ArrayList tempList = component.search(db, tempComponent);
-                            if (tempList.size() > 1) {
-                                throw new RuntimeException("Single foreign object list has size > 1");
-                            } else if (tempList.size() == 1) {
-                                Field f = group.iterator().next().getField();
-                                f.setAccessible(true);
-                                f.set(newObj, tempList.get(0));
-                                //System.out.println("setting " + f.getName() + " = " + tempList.get(0));
-                            }
-                        }
-                        /*
-                         * Well...we need to study this case a little!
-                         */
-                    }
-
-                }
-
-
-                /**
-                 * Perform search into the relational tables.
-                 */
-                for (JRelationalTable relTable : table.getRelations()) {
-                    ArrayList relList = new ArrayList();
-                    Entry<PreparedStatement, SQLQuery> fentry = pool.getSearch(relTable);
-                    ps = fentry.getKey();
-                    query = fentry.getValue();
-                    Field field = relTable.getOnField();
-                    field.setAccessible(true);
-                    i = 1;
-                    for (Proposition p : query.getPropositions()) {
-                        JTableColumn col = p.getTableColumn();
-                        if (col.getColumnName().equals("METACOLUMN")) {
-                            continue;
-                        }
-                        Field f = col.getField();
-                        f.setAccessible(true);
-                        try {
-                            if (!col.getReferenceTable().equals(relTable.getMasterTable())) {
-                                Infinity inf = new Infinity(db.getDbConnector());
-                                ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                            } else {
-                                Object obj = f.get(newObj);
-                                //TODO: check if NumericNull must be checked here.
-                                if (obj == null) {
-                                    Infinity inf = new Infinity(db.getDbConnector());
-                                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                                }
-                                ps.setObject(i, obj, col.getColumnType().getType());
-                            }
-                        } catch (NullPointerException ex) {
-                            Infinity inf = new Infinity(db.getDbConnector());
-                            ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                        }
-                        i++;
-                    }
-                    ResultSet relRs = ps.executeQuery();
-
-                    String collectionJavaType = null;
-                    while (relRs.next() != false) {
-                        Class fclass = relTable.getSlaveColumns().iterator().next().
-                                getField().getDeclaringClass();
-                        //TODO: Maybe declared Constructor is the way to go?
-                        Constructor fconstuctor = fclass.getConstructor();
-                        fconstuctor.setAccessible(true);
-                        Object fobj = fconstuctor.newInstance();
-                        for (JTableColumn col : relTable.getSlaveColumns()) {
-                            Field ffield = col.getField();
-                            ffield.setAccessible(true);
-                            ffield.set(fobj, relRs.getObject(col.getColumnName()));
-                        }
-                        Component component = (Component) fobj;
-                        ArrayList tempList = component.search(db);
-                        if (tempList.isEmpty()) {
-                            throw new RuntimeException("Empty list on search for foreign objects");
-                        } else if (tempList.size() > 1) {
-                            throw new RuntimeException("Single foreign object list has size > 1");
-                        }
-                        relList.addAll(tempList);
-                        collectionJavaType = relRs.getString("METACOLUMN");
-                    }
-                    pool.recycleSearch(fentry, relTable);
-
-                    Field onField = relTable.getOnField();
-//                    Class onClass = onField.getType();
-//                    Constructor con = onClass.getConstructor();
-                    Class onClass = Class.forName(collectionJavaType);
-                    Constructor con = onClass.getConstructor();
-                    Object obj = con.newInstance();
-                    Collection relCollection = (Collection) obj;
-                    relCollection.addAll(relList);
-                    onField.set(newObj, relCollection);
-//
-//                    if (TypeMap.isSubClass(onField.getType(), Set.class)) {
-//                        Class onClass = onField.getType();
-//                        Constructor con = onClass.getConstructor();
-//                        Object obj = con.newInstance();
-//                        Set relSet = (Set)obj;
-//                        relSet.addAll(relList);
-//                        onField.set(newObj, relSet);
-//                    } else {
-//                        Class onClass = onField.getType();
-//                        Constructor con = onClass.getConstructor();
-//                        Object obj = con.newInstance();
-//                        List list = (List)obj;
-//                        list.addAll(relList);
-//                        onField.set(newObj, list);
-//                    }
-                }
-
-                resultList.add((T) fixSelfReferences((Component) newObj));
-            }
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException(ex);
-        } catch (SecurityException ex) {
-            throw new RuntimeException(ex);
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-        } catch (ClassNotFoundException ex) {
-            throw new RuntimeException(ex);
-        }
-
-        return resultList;
->>>>>>> Stashed changes
-    }
-
-    
 
     /**
      * <p  align="justify" style="width:60%">
@@ -546,7 +294,7 @@ public abstract class Component<T extends Component> implements Cloneable {
      *
      * @param obj
      *          the reference Component with which to compare.
-     * @return 
+     * @return
      *          <code>true</code> if this object is the same as the obj
      *          argument; <code>false</code> otherwise.
      *
@@ -621,7 +369,7 @@ public abstract class Component<T extends Component> implements Cloneable {
      * <p  align="justify" style="width:60%">
      * Returns a list of those @{@link org.kinkydesign.decibell.annotations.Entry Entry}
      * fields which are tagged as autogenerated
-     * always as identity using the annotation method 
+     * always as identity using the annotation method
      * {@link org.kinkydesign.decibell.annotations.Entry#autoGenerated()  }.
      * </p>
      * @return
@@ -643,7 +391,7 @@ public abstract class Component<T extends Component> implements Cloneable {
      * Whether the component has a field annotated as primary key. Note that it is
      * mandatory to annotate at least one field as @{@link PrimaryKey } in order to
      * attach it to some instance of {@link DeciBell } and include it in the table
-     * creation mechanism of DeciBell&copy;. This method is provided for easy 
+     * creation mechanism of DeciBell&copy;. This method is provided for easy
      * checking.
      * </p>
      * @return
@@ -701,7 +449,7 @@ public abstract class Component<T extends Component> implements Cloneable {
         return false;
     }
 
-    
+
     @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
