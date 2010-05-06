@@ -47,7 +47,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
-import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 
@@ -91,13 +90,16 @@ public class SubEntityTest {
     public void testSomeMethod() throws DuplicateKeyException, ImproperRegistration {
         db.start();
 
+
         SubEntity se = new SubEntity();
-        se.id = "some id";
+        se.id = UUID.randomUUID().toString().replaceAll("-", "");
         se.info = "info";
         se.message = "my msg";
         se.xyz = 1433.3;
+        lock.lock();
         se.register(db);
+        lock.unlock();
 
-        new SubEntity().search(db).get(0).print(System.out);
+        //new SubEntity().search(db).get(0).print(System.out);
     }
 }
