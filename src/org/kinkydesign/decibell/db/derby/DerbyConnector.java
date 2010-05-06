@@ -65,7 +65,11 @@ public class DerbyConnector extends DbConnector {
         setJavacmd("java");
         setJavaOptions("-Djava.net.preferIPv4Stack=true");
         // setDriverHome("/usr/local/sges-v3/javadb");
-        setDriverHome(System.getProperty("user.home")+"/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
+        if(System.getProperty("os.name").contains("Mac")){
+            setDriverHome(System.getenv("DERBY_HOME"));
+        }else{
+            setDriverHome(System.getProperty("user.home")+"/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
+        }
         setHost("localhost");
         setPort(1527);
         setDatabaseDriver("org.apache.derby.jdbc.EmbeddedDriver");

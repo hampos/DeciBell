@@ -45,6 +45,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
@@ -150,6 +151,7 @@ public class SearchEngine<T> {
         //TODO: Add comments inside the method content to tell what every line does...
         try {
             ResultSet rs = acquireResults(query, ps, whatToSearch);
+            pool.recycleSearch(entry, table);
             Constructor constructor = c.getDeclaredConstructor();
             constructor.setAccessible(true);
             while (rs.next() != false) {
@@ -173,7 +175,7 @@ public class SearchEngine<T> {
                         f.set(newObj, rs.getObject(col.getColumnName()));
                     }
                 }
-                pool.recycleSearch(entry, table);
+                
 
                 handleForeignKeys(table, rs, whatToSearch, tempComponent, newObj);
                 handleRelationalTables(table, newObj);
@@ -187,7 +189,7 @@ public class SearchEngine<T> {
     }
 
     private ResultSet acquireResults(SQLQuery query, PreparedStatement ps, Component whatToSearch) throws Exception {
-        System.out.println("** "+query.getSQL());
+        System.out.println("** " + query.getSQL());
         int i = 1;
         for (Proposition p : query.getPropositions()) {
             JTableColumn col = p.getTableColumn();
@@ -255,10 +257,24 @@ public class SearchEngine<T> {
                     throw new RuntimeException("Single foreign object list has size > 1");
 
                 } else if (tempList.size() == 1) {
+                    /*
+                     * We discern between 2 cases. Firstly the foreign key points to
+                     * a foreign table which does not correspond to a superclass of
+                     * newObj(whatToSearch), and secondly a foreign table that really
+                     * is a superclass of the searched object. In the second case
+                     * all superfields of newObj have to be set.
+                     */
                     Field f = group.iterator().next().getField();
-                    System.out.println("Setting the field : "+f.getName());
                     f.setAccessible(true);
-                    f.set(newObj, tempList.get(0));
+                    ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
+                    if (newObjFields.contains(f)) {
+                        f.set(newObj, tempList.get(0));
+                    } else {
+                        for(Field superField : tempList.get(0).getClass().getDeclaredFields()){
+                            superField.setAccessible(true);
+                            superField.set(newObj, superField.get(tempList.get(0)));
+                        }
+                    }
                 }
             } else if (component.getClass().equals(whatToSearch.getClass()) && component.equals(whatToSearch)) {
                 handleSelfRefTables(tempComponent, whatToSearch, group, component, newObj);
@@ -367,6 +383,7 @@ public class SearchEngine<T> {
                 i++;
             }
             ResultSet relRs = ps.executeQuery();
+            pool.recycleSearch(fentry, relTable);
             String collectionJavaType = null;
             while (relRs.next() != false) {
                 Class fclass = relTable.getSlaveColumns().iterator().next().
@@ -391,7 +408,7 @@ public class SearchEngine<T> {
                 relList.addAll(tempList);
                 collectionJavaType = relRs.getString("METACOLUMN");
             }
-            pool.recycleSearch(fentry, relTable);
+            
 
             Field onField = relTable.getOnField();
 //                    Class onClass = onField.getType();

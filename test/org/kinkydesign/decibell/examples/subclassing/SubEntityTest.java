@@ -35,10 +35,12 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
 package org.kinkydesign.decibell.examples.subclassing;
 
+import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -46,6 +48,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
@@ -66,6 +69,7 @@ public class SubEntityTest {
     public static void setUpClass() throws Exception {
         db = new DeciBell();
         db.setDbName("decibellTestDB/subclassing/tst379");
+        db.setDriverHome(System.getenv("DERBY_HOME"));
 
         db.attach(Entity.class);
         db.attach(SubEntity.class);
@@ -91,7 +95,7 @@ public class SubEntityTest {
         db.start();
 
 
-        SubEntity se = new SubEntity();
+        final SubEntity se = new SubEntity();
         se.id = UUID.randomUUID().toString().replaceAll("-", "");
         se.info = "info";
         se.message = "my msg";
@@ -101,6 +105,22 @@ public class SubEntityTest {
         se.register(db);
         lock.unlock();
 
-        new SubEntity().search(db);
+        Thread t = new Thread(){
+
+            @Override
+            public void run() {
+                ArrayList<Entity> results = new SubEntity().search(db);
+                assertTrue(results.size()>=1);
+                assertEquals(results.get(0).message,se.message);
+                assertEquals(results.get(0).number,se.number);
+                assertTrue(((SubEntity)results.get(0)).xyz==se.xyz);
+            }
+
+        };
+        ExecutorService ex = Executors.newFixedThreadPool(8);
+        for (int i = 0; i < 20; i++) {
+            ex.submit(t);
+        }
+        ex.shutdown();
     }
 }
