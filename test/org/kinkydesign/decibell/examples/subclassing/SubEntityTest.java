@@ -68,8 +68,7 @@ public class SubEntityTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/subclassing/tst379");
-        db.setDriverHome(System.getenv("DERBY_HOME"));
+        db.setDbName("decibellTestDB/subclassing/tst380");
 
         db.attach(Entity.class);
         db.attach(SubEntity.class);
@@ -108,7 +107,7 @@ public class SubEntityTest {
         Thread t = new Thread(){
 
             @Override
-            public void run() {
+            public void run() throws AssertionError{
                 ArrayList<Entity> results = new SubEntity().search(db);
                 assertTrue(results.size()>=1);
                 assertEquals(results.get(0).message,se.message);
@@ -117,8 +116,8 @@ public class SubEntityTest {
             }
 
         };
-        ExecutorService ex = Executors.newFixedThreadPool(8);
-        for (int i = 0; i < 20; i++) {
+        ExecutorService ex = Executors.newCachedThreadPool();
+        for (int i = 0; i < 200; i++) {
             ex.submit(t);
         }
         ex.shutdown();
