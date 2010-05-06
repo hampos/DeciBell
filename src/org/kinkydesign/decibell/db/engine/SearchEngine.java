@@ -240,71 +240,31 @@ public class SearchEngine<T> {
             refConstructor.setAccessible(true);
             Object refObj = refConstructor.newInstance();
 
-
-
-
-
-
             for (JTableColumn col : group) {
                 Field f = col.getReferenceColumn().getField();
                 f.setAccessible(true);
                 f.set(refObj, rs.getObject(col.getColumnName()));
-
-
-
-
-
-
             }
             Component component = (Component) refObj;
 
             /*
              * Foreign Key but NOT a self-reference!
              */
-
-
-
-
-
-
             if ((component.getClass().equals(whatToSearch.getClass()) && !component.equals(whatToSearch))
                     || !component.getClass().equals(whatToSearch.getClass())) {
                 ArrayList tempList = component.search(db);
 
-
-
-
-
-
                 if (tempList.size() > 1) {
                     throw new RuntimeException("Single foreign object list has size > 1");
-
-
-
-
-
 
                 } else if (tempList.size() == 1) {
                     Field f = group.iterator().next().getField();
                     f.setAccessible(true);
                     f.set(newObj, tempList.get(0));
-
-
-
-
-
-
                 }
             } else if (component.getClass().equals(whatToSearch.getClass()) && component.equals(whatToSearch)) {
                 handleSelfRefTables(tempComponent, whatToSearch, group, component, newObj);
-
-
-
-
-
-
             }
-
         }
     }
 
@@ -336,29 +296,12 @@ public class SearchEngine<T> {
          * Examine whether the search should continue the tree spanning
          * or quit here. This is parametrized by means of the integer PENETRATION.
          */
-
-
-
-
-
-
         if (hasNullElement(tempComponent)) {
             bin = true;
-
-
-
-
-
 
         } else {
             for (Component compo : tempComponent) {
                 bin = bin || (!component.equals(compo));
-
-
-
-
-
-
             }
         }
 
@@ -366,40 +309,17 @@ public class SearchEngine<T> {
             for (int k = 0; k
                     < PENETRATION - 1; k++) {
                 tempComponent[k] = tempComponent[k + 1];
-
-
-
-
-
-
             }
             tempComponent[PENETRATION - 1] = component;
             ArrayList tempList = search(whatToSearch, tempComponent);
 
-
-
-
-
-
             if (tempList.size() > 1) {
                 throw new RuntimeException("Single foreign object list has size > 1");
-
-
-
-
-
-
             } else if (tempList.size() == 1) {
                 Field f = group.iterator().next().getField();
                 f.setAccessible(true);
                 f.set(newObj, tempList.get(0));
                 //System.out.println("setting " + f.getName() + " = " + tempList.get(0));
-
-
-
-
-
-
             }
         }
         /*
@@ -420,108 +340,36 @@ public class SearchEngine<T> {
             SQLQuery query = fentry.getValue();
             Field field = relTable.getOnField();
             field.setAccessible(true);
-
-
-
-
-
-
             int i = 1;
-
-
-
-
-
-
             for (Proposition p : query.getPropositions()) {
                 JTableColumn col = p.getTableColumn();
-
-
-
-
-
-
                 if (col.getColumnName().equals("METACOLUMN")) {
                     continue;
-
-
-
-
-
-
                 }
                 Field f = col.getField();
                 f.setAccessible(true);
-
-
-
-
-
-
                 try {
                     if (!col.getReferenceTable().equals(relTable.getMasterTable())) {
                         Infinity inf = new Infinity(db.getDbConnector());
                         ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
 
-
-
-
-
-
                     } else {
                         Object obj = f.get(newObj);
                         //TODO: NumericNull must be checked here.
-
-
-
-
-
-
                         if (obj == null) {
                             Infinity inf = new Infinity(db.getDbConnector());
                             ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-
-
-
-
-
-
                         }
                         ps.setObject(i, obj, col.getColumnType().getType());
-
-
-
-
-
-
                     }
                 } catch (NullPointerException ex) {
                     Infinity inf = new Infinity(db.getDbConnector());
                     ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-
-
-
-
-
-
                 }
                 i++;
-
-
-
-
-
-
             }
             ResultSet relRs = ps.executeQuery();
-
             String collectionJavaType = null;
-
-
-
-
-
-
             while (relRs.next() != false) {
                 Class fclass = relTable.getSlaveColumns().iterator().next().
                         getField().getDeclaringClass();
@@ -530,55 +378,20 @@ public class SearchEngine<T> {
                 fconstuctor.setAccessible(true);
                 Object fobj = fconstuctor.newInstance();
 
-
-
-
-
-
                 for (JTableColumn col : relTable.getSlaveColumns()) {
                     Field ffield = col.getField();
                     ffield.setAccessible(true);
                     ffield.set(fobj, relRs.getObject(col.getColumnName()));
-
-
-
-
-
-
                 }
                 Component component = (Component) fobj;
                 ArrayList tempList = component.search(db);
-
-
-
-
-
-
                 if (tempList.isEmpty()) {
                     throw new RuntimeException("Empty list on search for foreign objects");
-
-
-
-
-
-
                 } else if (tempList.size() > 1) {
                     throw new RuntimeException("Single foreign object list has size > 1");
-
-
-
-
-
-
                 }
                 relList.addAll(tempList);
                 collectionJavaType = relRs.getString("METACOLUMN");
-
-
-
-
-
-
             }
             pool.recycleSearch(fentry, relTable);
 
@@ -592,36 +405,16 @@ public class SearchEngine<T> {
             Collection relCollection = (Collection) obj;
             relCollection.addAll(relList);
             onField.set(newObj, relCollection);
-
-
-
-
-
-
-
         }// </editor-fold>
-
     }
 
     private boolean hasNullElement(Object[] array) {
         for (Object o : array) {
             if (o == null) {
                 return true;
-
-
-
-
-
-
             }
         }
         return false;
-
-
-
-
-
-
     }
 
     /**
@@ -657,29 +450,11 @@ public class SearchEngine<T> {
      */
     private Component fixSelfReferences(Component input) {
         Component output = input;
-
-
-
-
-
-
         if (input == null) {
             throw new NullPointerException("Cannot fix self-references in a null component!");
-
-
-
-
-
-
         }
         for (Field foreignField : (List<Field>) input.getForeignKeyFields()) {
             foreignField.setAccessible(true);
-
-
-
-
-
-
             try {
                 // ...foreign key is a self-reference pointing to the same entry (this)
                 if (foreignField.getType().equals(input.getClass())
@@ -687,15 +462,6 @@ public class SearchEngine<T> {
                         ) {
                     // Make the field to point to itself!
                     foreignField.set(output, output);
-
-
-
-
-
-
-
-
-
                 }
 
             } catch (IllegalArgumentException ex) {
@@ -703,17 +469,8 @@ public class SearchEngine<T> {
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException("Unexpected condition - Field '" + foreignField.getName() + "' was supposed "
                         + "to be accessible. Method could not access the field!", ex);
-
-
-
-
-
-
             }
         }
         return output;
-
-
-
     }
 }
