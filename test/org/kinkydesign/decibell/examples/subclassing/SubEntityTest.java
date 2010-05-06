@@ -66,7 +66,7 @@ public class SubEntityTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/subclassing/tst");
+        db.setDbName("decibellTestDB/subclassing/tst355");
 
         db.attach(Entity.class);
         db.attach(SubEntity.class);
@@ -89,14 +89,15 @@ public class SubEntityTest {
 
     @Test
     public void testSomeMethod() throws DuplicateKeyException, ImproperRegistration {
-
-        db.reset();
         db.start();
 
-        System.err.println("[NOTICE] More work is needed to add full " +
-                "functionallity for subclassing..");
-        //se.register(db);
+        SubEntity se = new SubEntity();
+        se.id = "some id";
+        se.info = "info";
+        se.message = "my msg";
+        se.xyz = 1433.3;
+        se.register(db);
 
-        //new SubEntity().search(db).get(0).print(System.out);
+        new SubEntity().search(db).get(0).print(System.out);
     }
 }

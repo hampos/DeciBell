@@ -1,9 +1,11 @@
-Manifest-Version: 1.0
+Manifest-Version: 1.2
 
 Name: org/kinkydesign/decibell
-Specification-Title: DeciBell: A Novell approach to the Object Relational Mapping for Java
-Specification-Version: 0.1.0.0 (alpha)
-Specification-Vendor: National Technical University of Athens, School of Chemical Engineering, Automatic Control Laboratory
-Implementation-Vendor: National Technical University of Athens, School of Chemical Engineering, Automatic Control Laboratory
-Authors: Charalampos Chomenides, Sopasakis Pantelis
-License: GNU GPL v.3.
+Specification-Title: "DeciBell: A Novell approach to the Object Relational Mapping for Java"
+Specification-Version: "0.1 alpha release for tesing"
+Specification-Vendor: "National Technical University of Athens, School of Chemical Engineering, Automatic Control Laboratory"
+Implementation-title: "org.kinkydesign.decibell"
+Implementation-version: "0.1.0.0"
+Implementation-Vendor: "National Technical University of Athens, School of Chemical Engineering, Automatic Control Laboratory"
+Developed-by: "Charalampos Chomenides, Sopasakis Pantelis"
+License: "GNU GPL v.3."

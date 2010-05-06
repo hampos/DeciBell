@@ -94,6 +94,11 @@ public class DerbyConnector extends DbConnector {
         try {
             Process killing = Runtime.getRuntime().exec(derby_kill_command);
             killing.waitFor();
+            int N_TRIES = 5, i=0;
+            while (killing.exitValue()!=0 && i<N_TRIES){
+             Thread.sleep(1000);
+             i++;
+            }
         } catch (InterruptedException ex) {
             Logger.getLogger(DerbyConnector.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
