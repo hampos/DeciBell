@@ -151,8 +151,7 @@ public class RegistrationEngine {
          * working for such cases...
          */
         if (whatToWrite.getClass().getSuperclass() != Component.class) {
-            whatToWrite = (Component) getSuperComponent(whatToWrite);
-            registerPart( whatToWrite);
+            registerPart((Component) getSuperComponent(whatToWrite));
         }
 
         // TODO: Check if the problem with registration of indirect subclasses of Component is really fixed.
@@ -171,6 +170,7 @@ public class RegistrationEngine {
         SQLQuery sqlQuery = entry.getValue();
 
         try {
+            System.out.println("Registering "+whatToWrite.getClass().getName());
             int i = 1;
             /*
              * Here we feed the prepared statement:
