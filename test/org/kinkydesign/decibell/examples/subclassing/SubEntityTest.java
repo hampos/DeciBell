@@ -68,8 +68,8 @@ public class SubEntityTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/subclassing/tewt44666");
-        db.setDriverHome(System.getenv("DERBY_HOME"));
+        db.setDbName("decibellTestDB/subclassing/tst380");
+
 
         db.attach(Entity.class);
         db.attach(SubEntity.class);
@@ -111,26 +111,15 @@ public class SubEntityTest {
         se.register(db);
         lock.unlock();
 
-//        Thread t = new Thread(){
-//
-//            @Override
-//            public void run() {
-                ArrayList<Entity> results = new SubEntity().search(db);
-                System.out.println(((SubEntity)results.get(0)).info);
-                System.out.println(((SubEntity)results.get(0)).xyz);
-                System.out.println(((SubEntity)results.get(0)).message);
-//                ((SubEntity)results.get(0)).print(System.out);
-                assertTrue(results.size()>=1);
-                assertEquals(results.get(0).message,se.message);
-                assertEquals(results.get(0).number,se.number);
-                assertTrue(((SubEntity)results.get(0)).xyz==se.xyz);
-//            }
-//
-//        };
-//        ExecutorService ex = Executors.newFixedThreadPool(8);
-//        for (int i = 0; i < 20; i++) {
-//            ex.submit(t);
-//        }
-//        ex.shutdown();
+
+        ArrayList<Entity> results = new SubEntity().search(db);
+        System.out.println(((SubEntity) results.get(0)).info);
+        System.out.println(((SubEntity) results.get(0)).xyz);
+        System.out.println(((SubEntity) results.get(0)).message);
+        assertTrue(results.size() >= 1);
+        assertEquals(results.get(0).message, se.message);
+        assertEquals(results.get(0).number, se.number);
+        assertTrue(((SubEntity) results.get(0)).xyz == se.xyz);
+
     }
 }
