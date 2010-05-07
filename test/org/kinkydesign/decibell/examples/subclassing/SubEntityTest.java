@@ -68,7 +68,7 @@ public class SubEntityTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/subclassing/tst379");
+        db.setDbName("decibellTestDB/subclassing/tewt44666");
         db.setDriverHome(System.getenv("DERBY_HOME"));
 
         db.attach(Entity.class);
@@ -94,6 +94,9 @@ public class SubEntityTest {
     public void testSomeMethod() throws DuplicateKeyException, ImproperRegistration {
         db.start();
 
+        RemoteEntity rem = new RemoteEntity();
+        rem.id = 5;
+        rem.name = "motsp";
 
         final SubEntity se = new SubEntity();
         se.id = UUID.randomUUID().toString().replaceAll("-", "");
@@ -101,26 +104,33 @@ public class SubEntityTest {
         se.message = "my msg";
         se.number = 102;
         se.xyz = 1433.3;
+        se.remote = rem;
+        se.subremote = se;
         lock.lock();
+        rem.register(db);
         se.register(db);
         lock.unlock();
 
-        Thread t = new Thread(){
-
-            @Override
-            public void run() {
+//        Thread t = new Thread(){
+//
+//            @Override
+//            public void run() {
                 ArrayList<Entity> results = new SubEntity().search(db);
+                System.out.println(((SubEntity)results.get(0)).info);
+                System.out.println(((SubEntity)results.get(0)).xyz);
+                System.out.println(((SubEntity)results.get(0)).message);
+//                ((SubEntity)results.get(0)).print(System.out);
                 assertTrue(results.size()>=1);
                 assertEquals(results.get(0).message,se.message);
                 assertEquals(results.get(0).number,se.number);
                 assertTrue(((SubEntity)results.get(0)).xyz==se.xyz);
-            }
-
-        };
-        ExecutorService ex = Executors.newFixedThreadPool(8);
-        for (int i = 0; i < 20; i++) {
-            ex.submit(t);
-        }
-        ex.shutdown();
+//            }
+//
+//        };
+//        ExecutorService ex = Executors.newFixedThreadPool(8);
+//        for (int i = 0; i < 20; i++) {
+//            ex.submit(t);
+//        }
+//        ex.shutdown();
     }
 }

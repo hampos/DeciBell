@@ -1,6 +1,6 @@
 /**
- *  Class : SubEntity
- *  Date  : May 1, 2010
+ *  Class : RemoteEntity
+ *  Date  : 7 Μαϊ 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -36,32 +36,23 @@
  * tel. +30 210 7723236
  */
 
-
 package org.kinkydesign.decibell.examples.subclassing;
 
+import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
-import org.kinkydesign.decibell.annotations.ForeignKey;
-import org.kinkydesign.decibell.annotations.NumericNull;
-import org.kinkydesign.decibell.collections.OnModification;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
  *
- * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
+ * @author Pantelis Sopasakis
  */
-public class SubEntity extends Entity{
+public class RemoteEntity extends Component<SubEntity>{
 
-    // TODO: Registration of non-direct subclasses of Component!
+    @PrimaryKey
+    public String name = null;
+
     @Entry
-    public String info;
-
-    @NumericNull(numericNullValue="-1")
-    @Entry double xyz = -1;
-
-    @ForeignKey()
-    RemoteEntity remote = null;
-
-    @ForeignKey(onDelete=OnModification.CASCADE)
-    SubEntity subremote = null;
+    public int id = -1;
 
 }

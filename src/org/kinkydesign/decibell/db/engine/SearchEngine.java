@@ -264,13 +264,12 @@ public class SearchEngine<T> {
                      */
                     Field f = group.iterator().next().getField();
                     f.setAccessible(true);
-                    ArrayList newObjFields = new ArrayList();
-                    for(JTableColumn newObjCol : registry.get(newObj.getClass()).getTableColumns()){
-                        newObjFields.add(newObjCol.getField());
-                    }
+                    ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
                     if (newObjFields.contains(f)) {
+                        System.out.println("Setting "+f.getName());//////
                         f.set(newObj, tempList.get(0));
                     } else {
+                        System.out.println("**Setting "+f.getName());
                         for ( JTableColumn superCol : registry.get(tempList.get(0).getClass()).getTableColumns()) {
                             Field superField = superCol.getField();
                             superField.setAccessible(true);
