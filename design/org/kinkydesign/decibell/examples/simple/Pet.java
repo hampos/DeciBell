@@ -35,8 +35,6 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
 package org.kinkydesign.decibell.examples.simple;
 
 import org.kinkydesign.decibell.Component;
@@ -49,16 +47,46 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class Pet extends Component<Pet>{
+public class Pet extends Component<Pet> {
 
     @PrimaryKey
-    String name;
-
+    private String name = null;
     @Entry
-    String color;
-
+    private String color = null;
     @Entry
-    @NumericNull(numericNullValue="-1")
-    int numberOfFeet = -1;
+    @NumericNull(numericNullValue = "-1")
+    private int numberOfFeet = -1;
 
+    public Pet() {
+    }
+
+    public Pet(String name, String color, int numberOfFeet) {
+        this.name = name;
+        this.color = color;
+        this.numberOfFeet = numberOfFeet;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getNumberOfFeet() {
+        return numberOfFeet;
+    }
+
+    public void setNumberOfFeet(int numberOfFeet) {
+        this.numberOfFeet = numberOfFeet;
+    }
 }

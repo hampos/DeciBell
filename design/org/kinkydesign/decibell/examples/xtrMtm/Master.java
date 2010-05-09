@@ -62,12 +62,38 @@ public class Master extends Component<Master>{
     
 
     @PrimaryKey
-    public String masterName;
+    private String masterName;
 
     @ForeignKey
-    Collection<Slave> firstList;
+    private Collection<Slave> firstList;
 
     @ForeignKey
-    Collection<Slave> secondList;
+    private Collection<Slave> secondList;
+
+    public Collection<Slave> getFirstList() {
+        return firstList;
+    }
+
+    public void setFirstList(Collection<Slave> firstList) {
+        this.firstList = firstList;
+    }
+
+    public String getMasterName() {
+        return masterName;
+    }
+
+    public void setMasterName(String masterName) {
+        this.masterName = masterName;
+    }
+
+    public Collection<Slave> getSecondList() {
+        return secondList;
+    }
+
+    public void setSecondList(Collection<Slave> secondList) {
+        this.secondList = secondList;
+    }
+
+    
 
 }

@@ -109,9 +109,9 @@ public class MultiFKTest {
 
         assertEquals(retrievedMasters.size(), 1);
         assertNotNull(retrievedMasters.get(0));
-        assertEquals(retrievedMasters.get(0).slave, slave);
-        assertEquals(retrievedMasters.get(0).slave.firstName, "John");
-        assertTrue(retrievedMasters.get(0).slave.date.before(new Date(System.currentTimeMillis())));
+        assertEquals(retrievedMasters.get(0).getSlave(), slave);
+        assertEquals(retrievedMasters.get(0).getSlave().getFirstName(), "John");
+        assertTrue(retrievedMasters.get(0).getSlave().getDate().before(new Date(System.currentTimeMillis())));
         
     }
 

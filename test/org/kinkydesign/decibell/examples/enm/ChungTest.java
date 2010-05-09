@@ -35,7 +35,7 @@ public class ChungTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/chung/abc");
+        db.setDbName("decibellTestDB/chung/abcnew");
 
         db.attach(Chung.class);
         lock.lock();
@@ -77,8 +77,5 @@ public class ChungTest {
     }
 
 
-    @Test
-    public void testOrderRespect() {
-        assertEquals(Chung.STATUS.HIGH, new Chung().search(db).get(0).getStatus());
-    }
+    
 }

@@ -51,13 +51,13 @@ import org.kinkydesign.decibell.collections.OnModification;
 public class DoubleSelfRef extends Component<DoubleSelfRef> {
 
     @PrimaryKey
-    public int uid = -1;
+    private int uid = -1;
     @Entry
-    public String entry;
+    private String entry;
     @ForeignKey(onDelete = OnModification.CASCADE)
-    public DoubleSelfRef me;
+    private DoubleSelfRef me;
     @ForeignKey(onDelete = OnModification.CASCADE)
-    public DoubleSelfRef my;
+    private DoubleSelfRef my;
 
     public DoubleSelfRef() {
     }
@@ -67,4 +67,38 @@ public class DoubleSelfRef extends Component<DoubleSelfRef> {
         this.entry = entry;
 
     }
+
+    public String getEntry() {
+        return entry;
+    }
+
+    public void setEntry(String entry) {
+        this.entry = entry;
+    }
+
+    public DoubleSelfRef getMe() {
+        return me;
+    }
+
+    public void setMe(DoubleSelfRef me) {
+        this.me = me;
+    }
+
+    public DoubleSelfRef getMy() {
+        return my;
+    }
+
+    public void setMy(DoubleSelfRef my) {
+        this.my = my;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
+    
 }

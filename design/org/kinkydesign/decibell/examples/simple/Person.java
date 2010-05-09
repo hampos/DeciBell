@@ -54,15 +54,58 @@ public class Person extends Component<Person>{
 
     @PrimaryKey
     @NumericNull(numericNullValue="-1")
-    int id = -1;
+    private int id = -1;
 
     @Entry
-    String firstName;
+    private String firstName = null;
 
     @Entry
-    String lastName;
+    private String lastName = null;
 
     @ForeignKey
-    Pet friend;
+    private Pet friend = null;
+
+    public Person() {
+    }
+
+    public Person(String firstName, String lastName, Pet friend) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.friend = friend;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public Pet getFriend() {
+        return friend;
+    }
+
+    public void setFriend(Pet friend) {
+        this.friend = friend;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+
 
 }

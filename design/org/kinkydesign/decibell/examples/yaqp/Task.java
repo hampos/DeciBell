@@ -35,8 +35,6 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
 package org.kinkydesign.decibell.examples.yaqp;
 
 import java.net.URI;
@@ -53,36 +51,82 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
  */
 public class Task extends Component<Task> {
 
+    @PrimaryKey
+    @NumericNull(numericNullValue = "-1")
+    private int uid = -1;
+    @Entry
+    @NumericNull(numericNullValue = "-1")
+    private int taskStatus = -1;
+    @Entry
+    private URI resultURI;
+    @ForeignKey
+    private ErrorReport er;
+    @Entry
+    @NumericNull(numericNullValue = "-1")
+    private long timeStart = -1L;
+    @Entry
+    @NumericNull(numericNullValue = "-1")
+    private long timeFinish = -1L;
+    @Entry
+    @NumericNull(numericNullValue = "-1")
+    private long durationMS = -1L;
+
     public Task() {
     }
 
+    public long getDurationMS() {
+        return durationMS;
+    }
 
-    @PrimaryKey
-    @NumericNull(numericNullValue="-1")
-    public int uid = -1;
+    public void setDurationMS(long durationMS) {
+        this.durationMS = durationMS;
+    }
 
-    @Entry
-    @NumericNull(numericNullValue="-1")
-    public int taskStatus = -1;
+    public ErrorReport getEr() {
+        return er;
+    }
 
-    @Entry
-    public URI resultURI;
+    public void setEr(ErrorReport er) {
+        this.er = er;
+    }
 
-    @ForeignKey
-    public ErrorReport er;
+    public URI getResultURI() {
+        return resultURI;
+    }
 
-    @Entry
-    @NumericNull(numericNullValue="-1")
-    public long timeStart = -1L;
+    public void setResultURI(URI resultURI) {
+        this.resultURI = resultURI;
+    }
 
-    @Entry
-    @NumericNull(numericNullValue="-1")
-    public long timeFinish = -1L;
+    public int getTaskStatus() {
+        return taskStatus;
+    }
 
-    @Entry
-    @NumericNull(numericNullValue="-1")
-    public long durationMS = -1L;
+    public void setTaskStatus(int taskStatus) {
+        this.taskStatus = taskStatus;
+    }
 
-    
+    public long getTimeFinish() {
+        return timeFinish;
+    }
 
+    public void setTimeFinish(long timeFinish) {
+        this.timeFinish = timeFinish;
+    }
+
+    public long getTimeStart() {
+        return timeStart;
+    }
+
+    public void setTimeStart(long timeStart) {
+        this.timeStart = timeStart;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
 }

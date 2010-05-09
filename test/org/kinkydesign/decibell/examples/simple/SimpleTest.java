@@ -32,9 +32,9 @@ public class SimpleTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        
+
         // Initialize the database...
-        db.setDbName("decibellTestDB/simple/s1");
+        db.setDbName("decibellTestDB/simple/s91");
         db.attach(Person.class);
         db.attach(Pet.class);
         lock.lock();
@@ -66,20 +66,20 @@ public class SimpleTest {
 
         // Construct a new Pet
         Pet myDog = new Pet();
-        myDog.name = "Mitsos";
-        myDog.color = "Pink with black dots";
-        myDog.numberOfFeet = 4;
+        myDog.setName("Mitsos");
+        myDog.setColor("Pink with black dots");
+        myDog.setNumberOfFeet(4);
 
         // Contsruct a new Person having the abovementioned Pet
         Person u = new Person();
-        u.firstName = "Pantelis";
-        u.lastName = "Sopasakis";
-        u.id = 102;
-        u.friend = myDog;
+        u.setFirstName("Pantelis");
+        u.setLastName("Sopasakis");
+        u.setId(102);
+        u.setFriend(myDog);
 
         /**
          * Attempt to register the
-         */
+         */        
         try {
             myDog.register(db);
             System.out.println("[SUCCESS] Dog Registered");
@@ -102,13 +102,13 @@ public class SimpleTest {
         assertEquals(userList.size(), 1);
         Person retrievedUser = userList.get(0);
         assertEquals(retrievedUser, u);
-        assertEquals(retrievedUser.firstName, u.firstName);
-        assertEquals(retrievedUser.lastName, u.lastName);
+        assertEquals(retrievedUser.getFirstName(), u.getFirstName());
+        assertEquals(retrievedUser.getLastName(), u.getLastName());
 
         /**
          * Update the name of the user to John
          */
-        u.firstName = "John";
+        u.setFirstName("John");
         u.update(db);
 
         /**
@@ -117,7 +117,7 @@ public class SimpleTest {
         userList = new Person().search(db);
         assertEquals(userList.size(), 1);
         retrievedUser = userList.get(0);
-        assertEquals(retrievedUser.firstName, u.firstName);
+        assertEquals(retrievedUser.getFirstName(), u.getFirstName());
 
         /**
          * Delete everything from the database!
@@ -141,8 +141,8 @@ public class SimpleTest {
 
     }
 
-    @Test
-    public void doItAgain() throws 
+   // @Test
+    public void doItAgain() throws
             NoUniqueFieldException,
             DuplicateKeyException,
             ImproperRegistration {

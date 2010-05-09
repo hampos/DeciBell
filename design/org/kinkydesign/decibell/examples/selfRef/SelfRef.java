@@ -54,12 +54,41 @@ public class SelfRef extends Component<SelfRef>{
 
     @PrimaryKey
     @NumericNull(numericNullValue="-1")
-    public int x = -1;
+    private int x = -1;
 
     @ForeignKey
-    public SelfRef friend = null;
+    private SelfRef friend = null;
 
     @Entry
-    public String message = null;
+    private String message = null;
+
+    public SelfRef() {
+    }
+
+    public SelfRef getFriend() {
+        return friend;
+    }
+
+    public void setFriend(SelfRef friend) {
+        this.friend = friend;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    
 
 }

@@ -35,8 +35,6 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
 package org.kinkydesign.decibell.examples.xtrMtm;
 
 import org.kinkydesign.decibell.Component;
@@ -48,7 +46,12 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class Something extends Component<Something>{
+public class Something extends Component<Something> {
+
+    @PrimaryKey
+    private String name;
+    @Entry
+    private String attribute;
 
     public Something() {
     }
@@ -59,11 +62,19 @@ public class Something extends Component<Something>{
         this.attribute = attribute;
     }
 
-    @PrimaryKey
-    public String name;
+    public String getAttribute() {
+        return attribute;
+    }
 
-    @Entry
-    public String attribute;
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
+    }
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }

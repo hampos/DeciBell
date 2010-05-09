@@ -62,6 +62,7 @@ import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.SQLQuery;
+import org.kinkydesign.decibell.db.util.DeciBellReflectUtils;
 import org.kinkydesign.decibell.db.util.Infinity;
 import org.kinkydesign.decibell.db.util.Pair;
 
@@ -144,7 +145,7 @@ public class SearchEngine<T> {
     private ArrayList<T> search(Component whatToSearch, Component[] tempComponent) {
         ArrayList<T> resultList = new ArrayList<T>();
         Class c = whatToSearch.getClass();
-        
+
         Table table = (Table) registry.get(c);
         Pair<PreparedStatement, SQLQuery> entry = pool.getSearch(table);
         PreparedStatement ps = entry.getKey();
@@ -197,10 +198,27 @@ public class SearchEngine<T> {
 
             try {
                 obj = field.get(whatToSearch);
+
                 if (col.isForeignKey()) {
                     Field f = col.getReferenceColumn().getField();
                     f.setAccessible(true);
-                    ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
+
+                    if (!col.isTypeNumeric()) {
+                        ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
+                    } else {
+
+                        try {
+                            if (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull()))) {
+                                Infinity inf = new Infinity(db.getDbConnector());
+                                ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                            } else if (col.isTypeNumeric() && !((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull()))) {
+                                ps.setObject(i, obj, col.getColumnType().getType());
+                            }
+                        } catch (NumberFormatException nfex) {
+                            ps.setObject(i, f.get(obj), col.getColumnType().getType());
+                        }
+                    }
+
                 } else if (obj == null
                         || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull())))) {
                     Infinity inf = new Infinity(db.getDbConnector());
@@ -264,13 +282,14 @@ public class SearchEngine<T> {
                      */
                     Field f = group.iterator().next().getField();
                     f.setAccessible(true);
-                    ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
+                    //@Old:  ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
+                    Set<Field> newObjFields = DeciBellReflectUtils.getAllFields(newObj.getClass(), true);
                     if (newObjFields.contains(f)) {
-                        System.out.println("Setting "+f.getName());//////
+                        System.out.println("Setting " + f.getName());//////
                         f.set(newObj, tempList.get(0));
                     } else {
-                        System.out.println("**Setting "+f.getName());
-                        for ( JTableColumn superCol : registry.get(tempList.get(0).getClass()).getTableColumns()) {
+                        System.out.println("**Setting " + f.getName());
+                        for (JTableColumn superCol : registry.get(tempList.get(0).getClass()).getTableColumns()) {
                             Field superField = superCol.getField();
                             superField.setAccessible(true);
                             superField.set(newObj, superField.get(tempList.get(0)));

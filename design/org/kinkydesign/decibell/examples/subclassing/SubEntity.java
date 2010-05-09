@@ -35,8 +35,6 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
 package org.kinkydesign.decibell.examples.subclassing;
 
 import org.kinkydesign.decibell.annotations.Entry;
@@ -49,19 +47,61 @@ import org.kinkydesign.decibell.collections.OnModification;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class SubEntity extends Entity{
+public class SubEntity extends Entity {
 
     // TODO: Registration of non-direct subclasses of Component!
     @Entry
-    public String info;
+    private String info = null;
 
-    @NumericNull(numericNullValue="-1")
-    @Entry double xyz = -1;
+    @NumericNull(numericNullValue = "-1")
+    @Entry
+    private double xyz = -1;
 
     @ForeignKey()
-    RemoteEntity remote = null;
+    private RemoteEntity remote = null;
+    
+    @ForeignKey(onDelete = OnModification.CASCADE)
+    private SubEntity subremote = null;
 
-    @ForeignKey(onDelete=OnModification.CASCADE)
-    SubEntity subremote = null;
+    public SubEntity() {
+    }
+
+    public SubEntity(String message, int number) {
+        super(message, number);
+    }
+    
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    public RemoteEntity getRemote() {
+        return remote;
+    }
+
+    public void setRemote(RemoteEntity remote) {
+        this.remote = remote;
+    }
+
+    public SubEntity getSubremote() {
+        return subremote;
+    }
+
+    public void setSubremote(SubEntity subremote) {
+        this.subremote = subremote;
+    }
+
+    public double getXyz() {
+        return xyz;
+    }
+
+    public void setXyz(double xyz) {
+        this.xyz = xyz;
+    }
+
 
 }

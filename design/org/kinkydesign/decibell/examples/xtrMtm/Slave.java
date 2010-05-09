@@ -61,12 +61,37 @@ public class Slave extends Component<Slave>{
     }
 
     @PrimaryKey
-    public String name;
+    private String name;
 
     @Entry
-    public String attribute;
+    private String attribute;
 
     @ForeignKey
-    public Collection<Something> someCollection;
+    private Collection<Something> someCollection;
+
+    public String getAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Collection<Something> getSomeCollection() {
+        return someCollection;
+    }
+
+    public void setSomeCollection(Collection<Something> someCollection) {
+        this.someCollection = someCollection;
+    }
+    
 
 }

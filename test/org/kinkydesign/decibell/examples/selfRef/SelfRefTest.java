@@ -53,9 +53,9 @@ public class SelfRefTest {
     @Test
     public void testSelfReferencingEntities() throws DuplicateKeyException, ImproperRegistration {
         SelfRef sr = new SelfRef();
-        sr.message = "this is a message";
-        sr.x = 12;
-        sr.friend = sr;
+        sr.setMessage("this is a message");
+        sr.setX(12);
+        sr.setFriend(sr);
 
         lock.lock();
             new SelfRef().delete(db);
@@ -65,8 +65,8 @@ public class SelfRefTest {
             assertEquals(retrievedSelfRefs.size(), 1);
             SelfRef retrSR = retrievedSelfRefs.get(0);
             assertNotNull(retrSR);
-            assertNotNull(retrSR.friend.friend);
-            assertEquals(retrSR.friend.friend.friend.friend, retrSR);
+            assertNotNull(retrSR.getFriend().getFriend());
+            assertEquals(retrSR.getFriend().getFriend().getFriend().getFriend(), retrSR);
         lock.unlock();
     }
 

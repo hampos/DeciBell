@@ -44,7 +44,6 @@ import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
-import org.kinkydesign.decibell.collections.OnModification;
 
 /**
  *
@@ -56,19 +55,63 @@ public class ErrorReport extends Component<ErrorReport> {
     
     @PrimaryKey
     @NumericNull(numericNullValue="-1")
-    public int uid=-1;
+    private int uid=-1;
 
     @ForeignKey
-    public ErrorCode errorCode=null;
+    private ErrorCode errorCode=null;
 
     @Entry(defaultValue="default_value")
-    public String details = null;
+    private String details = null;
 
     @Entry
-    public String actor=null;
+    private String actor=null;
 
     @ForeignKey
-    public ErrorReport trace=null;
+    private ErrorReport trace=null;
+
+    public ErrorReport() {
+    }
+
+    public String getActor() {
+        return actor;
+    }
+
+    public void setActor(String actor) {
+        this.actor = actor;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public ErrorReport getTrace() {
+        return trace;
+    }
+
+    public void setTrace(ErrorReport trace) {
+        this.trace = trace;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+    
 
 
 }

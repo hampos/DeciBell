@@ -50,31 +50,66 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class Slave extends Component<Slave>{
-
-    public Slave() {
-    }   
+public class Slave extends Component<Slave>{    
     
     @PrimaryKey
-    public String firstName;
+    private String firstName;
 
     @PrimaryKey
-    public String surName;
+    private String surName;
 
     @Entry
     @NumericNull(numericNullValue="-1")
-    public int x = -1;
+    private int x = -1;
 
     @Entry
-    public Date date;
+    private Date date;
+
+    public Slave() {
+    }
 
     public Slave(String firstName, String surName, int x) {
+        this();
         if (x==-1) throw new IllegalArgumentException("Initialized Slave with null numeric value!");
         this.firstName = firstName;
         this.surName = surName;
         this.x = x;
         date = new Date(System.currentTimeMillis());
     }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getSurName() {
+        return surName;
+    }
+
+    public void setSurName(String surName) {
+        this.surName = surName;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    
 
 
 }

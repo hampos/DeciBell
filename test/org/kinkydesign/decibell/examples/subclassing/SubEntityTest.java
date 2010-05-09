@@ -38,9 +38,6 @@
 package org.kinkydesign.decibell.examples.subclassing;
 
 import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -68,14 +65,15 @@ public class SubEntityTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/subclassing/tst38012");
-
+        db.setDbName("decibellTestDB/subclassing/tst38039");
 
         db.attach(Entity.class);
         db.attach(SubEntity.class);
+        db.attach(RemoteEntity.class);
 
         db.start();
-        System.out.println("Database 'subclassing' created/initialized");
+        System.out.println("*******\n" +
+                "CONNECT '"+db.getDatabaseUrl()+"'");
     }
 
     @AfterClass
@@ -92,34 +90,33 @@ public class SubEntityTest {
 
     @Test
     public void testSomeMethod() throws DuplicateKeyException, ImproperRegistration {
-        db.start();
+        db.start();        
+
 
         RemoteEntity rem = new RemoteEntity();
-        rem.id = 5;
-        rem.name = "motsp";
+        rem.setId(5);
+        rem.setName("motsp");
 
         final SubEntity se = new SubEntity();
-        se.id = UUID.randomUUID().toString().replaceAll("-", "");
-        se.info = "info";
-        se.message = "my msg";
-        se.number = 102;
-        se.xyz = 1433.3;
-        se.remote = rem;
-        se.subremote = se;
+        se.setId(44723);
+        se.setInfo("info");
+        se.setMessage("my msg");
+        se.setNumber (102);
+        se.setXyz(1433.3    );
+        se.setRemote(rem);
+        se.setSubremote(se);
         lock.lock();
-        rem.register(db);
-        se.register(db);
+        //rem.register(db);
+        //se.register(db);
         lock.unlock();
 
 
         ArrayList<Entity> results = new SubEntity().search(db);
-        System.out.println(((SubEntity) results.get(0)).info);
-        System.out.println(((SubEntity) results.get(0)).xyz);
-        System.out.println(((SubEntity) results.get(0)).message);
+        System.out.println(((SubEntity) results.get(0)));
         assertTrue(results.size() >= 1);
-        assertEquals(results.get(0).message, se.message);
-        assertEquals(results.get(0).number, se.number);
-        assertTrue(((SubEntity) results.get(0)).xyz == se.xyz);
+        assertEquals(results.get(0).getMessage(), se.getMessage());
+        assertEquals(results.get(0).getNumber(), se.getNumber());
+        assertTrue(((SubEntity) results.get(0)).getXyz() == se.getXyz());
 
     }
 }

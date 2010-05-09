@@ -1,4 +1,3 @@
-
 package org.kinkydesign.decibell.examples.selfRef;
 
 import java.util.logging.Level;
@@ -27,7 +26,7 @@ public class DoubleSelfRefTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/subclassing/e012");       
+        db.setDbName("decibellTestDB/subclassing/e012");
         db.start();
     }
 
@@ -49,10 +48,10 @@ public class DoubleSelfRefTest {
         new DoubleSelfRef().delete(db);
 
         DoubleSelfRef dsr = new DoubleSelfRef(14, "mlka");
-        dsr.me = dsr;
-        dsr.my = dsr;
-        dsr.me = dsr;
-        dsr.my = dsr;                
+        dsr.setMe(dsr);
+        dsr.setMy(dsr);
+        dsr.setMe(dsr);
+        dsr.setMy(dsr);
         try {
             dsr.register(db);
         } catch (DuplicateKeyException ex) {
@@ -61,9 +60,8 @@ public class DoubleSelfRefTest {
             fail();
         }
 
-        assertEquals(new DoubleSelfRef().search(db).get(0).me, dsr);
-        assertEquals(new DoubleSelfRef().search(db).get(0).my, dsr);
+        assertEquals(new DoubleSelfRef().search(db).get(0).getMe(), dsr);
+        assertEquals(new DoubleSelfRef().search(db).get(0).getMy(), dsr);
 
     }
-
 }

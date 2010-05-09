@@ -35,12 +35,11 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
 package org.kinkydesign.decibell.examples.yaqp;
 
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
@@ -48,29 +47,43 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class ErrorCode extends Component<ErrorCode>{
+public class ErrorCode extends Component<ErrorCode> {
 
     public ErrorCode() {
     }
 
-    
-
     public ErrorCode(int code) {
         this.code = code;
     }
-
-
-    
-
     @PrimaryKey
-    public int code=-1;
-
+    @NumericNull(numericNullValue = "-1")
+    private int code = -1;
     @Entry
-    public int httpStatus=-1;
-
+    private int httpStatus = -1;
     @Entry
-    public String message;
+    private String message;
 
-    
+    public int getCode() {
+        return code;
+    }
 
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+
+    public void setHttpStatus(int httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

@@ -92,16 +92,16 @@ public class YAQPTest {
     @Test
     public void testYaqpOperations() throws URISyntaxException, DuplicateKeyException, ImproperRegistration {
         ErrorCode ec = new ErrorCode();
-        ec.code = 12342;
-        ec.httpStatus = 500;
-        ec.message = "unknown error";
+        ec.setCode(12342);
+        ec.setHttpStatus(500);
+        ec.setMessage("unknown error");
 
         ErrorReport er = new ErrorReport();
-        er.uid = 7;
-        er.errorCode = ec;
-        er.trace = er;
-        er.actor = "none";
-        er.details = "details";
+        er.setUid(7);
+        er.setErrorCode(ec);
+        er.setTrace(er);
+        er.setActor("none");
+        er.setDetails("details");
 
         lock.lock();
         new Task().delete(db);
@@ -135,8 +135,8 @@ public class YAQPTest {
 
         ArrayList<ErrorReport> retrievedReports = new ErrorReport().search(db);
         assertNotNull("[FAIL] Failed to resolve self-references",
-                retrievedReports.get(0).trace.trace.trace.trace.trace);
-        assertEquals(retrievedReports.get(0).trace.trace.trace.trace.trace.errorCode.message, ec.message);
+                retrievedReports.get(0).getTrace().getTrace().getTrace());
+        assertEquals(retrievedReports.get(0).getTrace().getTrace().getTrace().getErrorCode().getMessage(), ec.getMessage());
 
         lock.unlock();
     }
@@ -145,7 +145,7 @@ public class YAQPTest {
     public void YAQPTaskTest() throws URISyntaxException, DuplicateKeyException, ImproperRegistration {
 
         ErrorReport er = new ErrorReport();
-        er.uid = 7; // <== this is already in the database!
+        er.setUid(7); // <== this is already in the database!
 
         /*
          * Delete all tasks from the database...
@@ -154,19 +154,19 @@ public class YAQPTest {
         assertEquals(new Task().search(db).size(), 0); // there should now be no tasks in the database
 
         Task task = new Task();
-        task.er = er;
-        task.durationMS = 1002;
-        task.resultURI = new URI("http://something.com");
-        task.taskStatus = 143;
-        task.timeStart = 15;
-        task.timeFinish = 998;
-        task.uid = 555;
+        task.setEr(er);
+        task.setDurationMS(1002);
+        task.setResultURI(new URI("http://something.com"));
+        task.setTaskStatus(143);
+        task.setTimeStart(15);
+        task.setTimeFinish(998);
+        task.setUid(555);
 
         lock.lock();
             task.register(db);
             Task retrievedTask = task.search(db).get(0);
-            assertNotNull(retrievedTask.er.trace.trace.errorCode);
-            assertEquals(retrievedTask.er.errorCode.httpStatus, 500);
+            assertNotNull(retrievedTask.getEr().getTrace().getTrace().getErrorCode());
+            assertEquals(retrievedTask.getEr().getErrorCode().getHttpStatus(), 500);
             task.search(db).get(0).print(System.out);
         lock.unlock();
     }

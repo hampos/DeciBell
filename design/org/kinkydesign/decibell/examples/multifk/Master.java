@@ -65,9 +65,27 @@ public class Master extends Component<Master>{
     }
 
     @PrimaryKey
-    public String masterName;
+    private String masterName;
 
     @ForeignKey
-    public Slave slave;
+    private Slave slave;
+
+    public String getMasterName() {
+        return masterName;
+    }
+
+    public void setMasterName(String masterName) {
+        this.masterName = masterName;
+    }
+
+    public Slave getSlave() {
+        return slave;
+    }
+
+    public void setSlave(Slave slave) {
+        this.slave = slave;
+    }
+
+    
 
 }

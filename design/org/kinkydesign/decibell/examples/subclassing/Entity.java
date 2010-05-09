@@ -35,8 +35,6 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
 package org.kinkydesign.decibell.examples.subclassing;
 
 import org.kinkydesign.decibell.Component;
@@ -49,18 +47,48 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class Entity extends Component<Entity>{
+public class Entity extends Component<Entity> {
 
     @PrimaryKey
-    public String id;
-
+    @NumericNull(numericNullValue = "-1")
+    private int id = -1;
     @Entry
-    public String message;
-
+    private String message = null;
     @Entry
-    @NumericNull(numericNullValue="-1")
-    public int number = -1;
+    @NumericNull(numericNullValue = "-1")
+    private int number = -1;
 
+    public Entity() {
+    }
 
+    public Entity(String message, int number) {
+        this.message = message;
+        this.number = number;
+    }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    
 }

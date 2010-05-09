@@ -50,9 +50,28 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
 public class RemoteEntity extends Component<SubEntity>{
 
     @PrimaryKey
-    public String name = null;
+    private String name = null;
 
     @Entry
-    public int id = -1;
+    private int id = -1;
+
+    public RemoteEntity() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }    
 
 }
