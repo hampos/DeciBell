@@ -57,6 +57,7 @@ public class ChungTest {
 
      @Test
     public void testEnumeration() throws DuplicateKeyException, ImproperRegistration {
+        lock.lock();
         new Chung().delete(db);
 
         Chung chung = new Chung(UUID.randomUUID().toString(), Chung.STATUS.HIGH);
@@ -74,7 +75,15 @@ public class ChungTest {
 
         assertTrue(new Chung(null, Chung.STATUS.MEDIUM).search(db).size() == 0);
         assertNotNull(new Chung().search(db).get(0).getStatus());
+        lock.unlock();
     }
+
+     @Test
+     public void doItAgain() throws DuplicateKeyException, ImproperRegistration{
+         lock.lock();
+         testEnumeration();
+         lock.unlock();
+     }
 
 
     

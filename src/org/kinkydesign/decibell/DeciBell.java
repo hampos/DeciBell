@@ -35,15 +35,26 @@
  */
 package org.kinkydesign.decibell;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.db.derby.DerbyConnector;
 import org.kinkydesign.decibell.db.derby.DerbyTablesGenerator;
+import org.kinkydesign.decibell.exceptions.ImproperDatabaseException;
+import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;
 import org.reflections.Reflections;
 
 /**
@@ -108,6 +119,7 @@ public class DeciBell {
         if (components == null) {
             components = new HashSet<Class<? extends Component>>();
         }
+
         this.components.add(c);
         componentDBmap.put(c, this);
     }
@@ -119,16 +131,80 @@ public class DeciBell {
      * and the annotations therein. Upon startup, some SQL statements are prepared.
      * </p>
      */
-    public void start() {
+    public void start() throws ImproperDatabaseException {
         connector.connect();
         if (this.components == null) {
             Reflections reflections = new Reflections("");
             components = reflections.getSubTypesOf(Component.class);
         }
+        checkConsistencybefore();
         TablesGenerator tables = new DerbyTablesGenerator(connector, components);
         tables.construct();
         StatementPool pool = new StatementPool(connector, 10);
     }
+
+    /**
+     * Check the consistency of the attached components before the
+     * @throws ImproperDatabaseException
+     */
+    // <editor-fold defaultstate="collapsed" desc="Check Consistency of Attached Components - Before DB creation">
+    private void checkConsistencybefore() throws ImproperDatabaseException {
+        for (Class<? extends Component> c : components) {
+            Constructor<? extends Component> constructor = null;
+            try {
+                constructor = c.getDeclaredConstructor();
+            } catch (NoSuchMethodException ex) {
+                throw new ImproperDatabaseException("The class " + c.getName() + " does "
+                        + "not have a constructor with no parameters.", ex);
+            } catch (SecurityException ex) {
+                throw new ImproperDatabaseException("The class " + c.getName() + " has "
+                        + "a constructor with no parameters which is not accessible.", ex);
+            }
+            try {
+                Component component = (Component) constructor.newInstance();
+                if (component.getPrimaryKeyFields().size() == 0 && component.getClass().getSuperclass().equals(Component.class)) {
+                    throw new NoPrimaryKeyException("Every component should have (at least) one "
+                            + "primary key. Use @PrimaryKey to annotate your primary key fields.");
+                }
+                List<Field> foreignFields = component.getForeignKeyFields();
+                for (Field f : foreignFields) {
+                    Class fieldType = f.getType();
+                    if (!components.contains(fieldType) && !Collection.class.isAssignableFrom(fieldType)) {
+                        throw new ImproperDatabaseException("Did you forget to attach the class " + f.getType().getSimpleName() + " in the"
+                                + " DeciBell object?");
+                    }
+                    if (Collection.class.isAssignableFrom(fieldType)) {
+                        try {
+                            ParameterizedType parametrizedType = (ParameterizedType) f.getGenericType();
+                            Type collectionType = parametrizedType.getActualTypeArguments()[0];
+                            if (!Component.class.isAssignableFrom((Class<?>) collectionType)) {
+                                throw new ImproperDatabaseException("A collection of non-component elements (" + ((Class) collectionType).getName() + ") "
+                                        + "cannot use the @ForeignKey annotation. Use @Entry instead.");
+                            }
+                        } catch (ClassCastException ex) {
+                            throw new ImproperDatabaseException("A non-parametrized collection should not be annotated with "
+                                    + "a @ForeignKey annotation.");
+                        }
+                    } else if (!Component.class.isAssignableFrom(fieldType)) {
+                        throw new ImproperDatabaseException("Use @ForeignKey only with Components and collections of such.");
+                    }
+                }
+            } catch (InstantiationException ex) {
+                throw new ImproperDatabaseException("The constructor of the class" + c.getName() + " fails "
+                        + "to instantiate new objects! (InstantiationException)", ex);
+            } catch (IllegalAccessException ex) {
+                throw new ImproperDatabaseException("The class " + c.getName() + " has "
+                        + "a non-accessible (not public) constructor with no parameters. Make it public.", ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(DeciBell.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvocationTargetException ex) {
+                throw new ImproperDatabaseException("The constructor of the class" + c.getName() + " failed "
+                        + "to instantiate new objects because it threw an exception.\nSee next exception for details...", ex);
+            }
+
+        }
+    }// </editor-fold>
+    
 
     /**
      * <p  align="justify" style="width:60%">

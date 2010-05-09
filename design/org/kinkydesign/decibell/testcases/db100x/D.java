@@ -1,6 +1,6 @@
 /**
- *  Class : RemoteEntity
- *  Date  : 7 Μαϊ 2010
+ *  Class : D
+ *  Date  : May 9, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -36,42 +36,37 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.examples.subclassing;
+
+package org.kinkydesign.decibell.testcases.db100x;
 
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
  *
- * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
-public class RemoteEntity extends Component<SubEntity>{
+public class D extends Component<D>{
 
     @PrimaryKey
-    private String name = null;
+    @NumericNull(numericNullValue="-1")
+    private int d = -1;
 
-    @Entry
-    private long id = -1;
-
-    public RemoteEntity() {
+    public D() {
     }
 
-    public long getId() {
-        return id;
+    public D(int d) {
+        this.d = d;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public int getD() {
+        return d;
     }
 
-    public String getName() {
-        return name;
+    public void setD(int d) {
+        this.d = d;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }    
 
 }

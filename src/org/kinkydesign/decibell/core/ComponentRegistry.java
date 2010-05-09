@@ -146,7 +146,7 @@ public class ComponentRegistry {
      * @param value a database table.
      * @return the previous JTable associated with the specific Component.
      */
-    public JTable put(Class<? extends Component> key, JTable value) {
+    public JTable put(Class<? extends Component> key, JTable value) {        
         return components.put(key, value);
     }
 

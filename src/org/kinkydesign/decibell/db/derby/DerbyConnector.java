@@ -91,6 +91,7 @@ public class DerbyConnector extends DbConnector {
     }
 
     public void killServer() {
+        System.err.print("KILLING DERBY JDBC SERVER...");
         final String[] derby_kill_command = {
             getJavacmd(), getJavaOptions(),
             "-jar", getDriverHome() + "/lib/derbyrun.jar", "server", "shutdown"
@@ -103,11 +104,13 @@ public class DerbyConnector extends DbConnector {
              Thread.sleep(1000);
              i++;
             }
+            Thread.sleep(1500);
         } catch (InterruptedException ex) {
             Logger.getLogger(DerbyConnector.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+        System.err.print(" DERBY IS DOWN!\n");
     }
 
     public boolean isServerRunning() {

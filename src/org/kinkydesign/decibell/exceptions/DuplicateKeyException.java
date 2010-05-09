@@ -38,7 +38,6 @@ package org.kinkydesign.decibell.exceptions;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Set;
-import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.interfaces.JTableColumn;
@@ -49,7 +48,7 @@ import org.kinkydesign.decibell.db.interfaces.JTableColumn;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class DuplicateKeyException extends Exception {
+public class DuplicateKeyException extends DeciBellException {
 
     String explanation = "Unknown cause of Exception";
 

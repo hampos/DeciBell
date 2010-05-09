@@ -1,11 +1,11 @@
 /**
- *  Class : RemoteEntity
- *  Date  : 7 Μαϊ 2010
+ *  Class : C
+ *  Date  : May 9, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
  *
- * DeciBell : A Java Tool for creating and managing relational databases.
+ * DeciBell : C Java Tool for creating and managing relational databases.
  *  DeciBell is a Object - Relation database mapper for java applications providing
  * an easy-to-use interface making it easy for the developer to build a relational
  * database and moreover perform database operations easily!
@@ -23,7 +23,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR C PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -36,42 +36,37 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.examples.subclassing;
+
+package org.kinkydesign.decibell.testcases.db100x;
 
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
  *
- * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
-public class RemoteEntity extends Component<SubEntity>{
+public class C extends Component<C>{
 
     @PrimaryKey
-    private String name = null;
+    private String c;
 
-    @Entry
-    private long id = -1;
-
-    public RemoteEntity() {
+    public C() {
     }
 
-    public long getId() {
-        return id;
+    public C(String c) {
+        this.c = c;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public String getC() {
+        return c;
     }
 
-    public String getName() {
-        return name;
+    public void setC(String c) {
+        this.c = c;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }    
+
 
 }

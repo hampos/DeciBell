@@ -1,6 +1,6 @@
 /**
- *  Class : RemoteEntity
- *  Date  : 7 Μαϊ 2010
+ *  Class : XSearchEngine
+ *  Date  : May 9, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -36,42 +36,28 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.examples.subclassing;
 
+package org.kinkydesign.decibell.db.engine;
+
+import java.util.ArrayList;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.DeciBell;
 
 /**
  *
- * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
-public class RemoteEntity extends Component<SubEntity>{
+public class XSearchEngine<T> {
 
-    @PrimaryKey
-    private String name = null;
+    private DeciBell db;
 
-    @Entry
-    private long id = -1;
-
-    public RemoteEntity() {
+    public XSearchEngine(DeciBell db) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public long getId() {
-        return id;
+    public ArrayList<T> search(Component whatToSearch) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }    
 
 }

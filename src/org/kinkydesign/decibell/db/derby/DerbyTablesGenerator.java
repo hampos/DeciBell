@@ -395,7 +395,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
                     table.addColumn(column);
                 }
             } else {
-                throw new NoPrimaryKeyException("Component " + c.getName() + " does not have a valid declared primary key");
+                throw new RuntimeException("Component " + c.getName() + " does not have a valid declared primary key");
             }
         }
 

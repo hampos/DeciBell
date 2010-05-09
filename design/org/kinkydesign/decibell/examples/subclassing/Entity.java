@@ -51,7 +51,7 @@ public class Entity extends Component<Entity> {
 
     @PrimaryKey
     @NumericNull(numericNullValue = "-1")
-    private int id = -1;
+    private long id = -1;
     @Entry
     private String message = null;
     @Entry
@@ -66,7 +66,7 @@ public class Entity extends Component<Entity> {
         this.number = number;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -86,7 +86,7 @@ public class Entity extends Component<Entity> {
         this.number = number;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

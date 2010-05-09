@@ -49,6 +49,7 @@ import org.kinkydesign.decibell.db.engine.DeletionEngine;
 import org.kinkydesign.decibell.db.engine.RegistrationEngine;
 import org.kinkydesign.decibell.db.engine.SearchEngine;
 import org.kinkydesign.decibell.db.engine.UpdateEngine;
+import org.kinkydesign.decibell.db.engine.XSearchEngine;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
@@ -127,6 +128,33 @@ public abstract class Component<T extends Component> implements Cloneable {
     }
 
     /**
+     * <p  align="justify" style="width:60%">
+     * Attempts to register the component in the database.
+     * An invokation of {@link Component#register(org.kinkydesign.decibell.DeciBell) register} masking
+     * the {@link DuplicateKeyException Duplicate Key Exception}. Returns an integer flag to tell whether
+     * the component is already registered (or a component with the same primary key is registered) or
+     * if the component was registered in the database for the first time.
+     * </p>
+     * @param db
+     *      The decibell object which identifies a database connection.
+     * @return
+     *      An integer identifier of whether the component was registered or not. Returns <code>0</code>
+     *      if it was registered and <code>1</code> otherwise.
+     * @throws ImproperRegistration
+     *      In case the component cannot be registered in the database. This is the
+     *      case when the candidate object posseses a null Collection-type field.
+     */
+    public int attemptRegister(DeciBell db) throws ImproperRegistration {
+        RegistrationEngine engine = new RegistrationEngine(db);
+        try {
+            engine.register(this);
+            return 0;
+        } catch (DuplicateKeyException ex) {
+            return 1;
+        }
+    }
+
+    /**
      *
      * <p  align="justify" style="width:60%">
      * Get all the components from the database which <em>resemble</em> the given component
@@ -147,11 +175,16 @@ public abstract class Component<T extends Component> implements Cloneable {
      * @see NumericNull
      */
     public ArrayList<T> search(DeciBell db) {
-        SearchEngine<T> engine = new SearchEngine<T>(db);
-        return engine.search(this);
+        if (Component.class.equals(this.getClass().getSuperclass())) { // Direct subclass of Component
+            SearchEngine<T> engine = new SearchEngine<T>(db);
+            return engine.search(this);
+        } else {// Indirect subclass of component
+            XSearchEngine<T> engine = new XSearchEngine<T>(db);
+            return engine.search(this);
+        }
+
+
     }
-
-
 
     /**
      * <p  align="justify" style="width:60%">
@@ -330,7 +363,6 @@ public abstract class Component<T extends Component> implements Cloneable {
         return areEqual;
     }
 
-
     public List<Field> getPrimaryKeyFields() {
         List<Field> primaryKeyFields = new LinkedList<Field>();
         for (Field fieldOfThis : getClass().getDeclaredFields()) {
@@ -448,7 +480,6 @@ public abstract class Component<T extends Component> implements Cloneable {
         }
         return false;
     }
-
 
     @Override
     protected Object clone() throws CloneNotSupportedException {

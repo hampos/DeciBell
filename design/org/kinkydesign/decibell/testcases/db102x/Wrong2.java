@@ -1,6 +1,6 @@
 /**
- *  Class : RemoteEntity
- *  Date  : 7 Μαϊ 2010
+ *  Class : Wrong2
+ *  Date  : May 9, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -36,42 +36,22 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.examples.subclassing;
 
+package org.kinkydesign.decibell.testcases.db102x;
+
+import java.util.Set;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
  *
- * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
-public class RemoteEntity extends Component<SubEntity>{
+public class Wrong2 extends Component<Wrong2> {
 
-    @PrimaryKey
-    private String name = null;
-
-    @Entry
-    private long id = -1;
-
-    public RemoteEntity() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }    
+    @PrimaryKey public String pk;
+    @ForeignKey public Set mySet;
 
 }

@@ -1,6 +1,4 @@
 /**
- *  Class : DeciBellTest
- *  Date  : May 1, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,9 +33,9 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
+package org.kinkydesign.decibell.examples.simple;
 
-package org.kinkydesign.decibell;
-
+import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -47,36 +45,26 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.kinkydesign.decibell.examples.simple.Person;
-import org.kinkydesign.decibell.examples.simple.Pet;
+import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.ImproperDatabaseException;
+import org.kinkydesign.decibell.exceptions.ImproperRegistration;
+import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
 /**
  *
  * @author chung
  */
-public class DeciBellTest {
+public class ForgotAttachmentTest {
 
-    private static DeciBell db = new DeciBell();
     private static final Lock lock = new ReentrantLock();
-    private static final int N_TEST = 1;
-    
 
-    public DeciBellTest() {
+    public ForgotAttachmentTest() {
     }
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-        // Initialize the database...
-        lock.lockInterruptibly();
-        db = new DeciBell();       
-        db.setDbName("decibellTestDB/dbcreation/my_db_creation");
-        db.attach(Person.class);
-        db.attach(Pet.class);
-        db.start();
-        assertTrue(db.isConnected());
-        lock.unlock();
+    public static void setUpClass() throws Exception {        
     }
 
     @AfterClass
@@ -91,35 +79,22 @@ public class DeciBellTest {
     public void tearDown() {
     }
 
+    
     @Test
-    public synchronized void testDataBaseOnOff() {        
+    public void testForgot2() throws DuplicateKeyException, ImproperRegistration {
         lock.lock();
-        db.reset();        
-        assertTrue(db.isConnected());
-        db.stop();        
-        assertFalse(db.getDbConnector().isServerRunning());
-        assertFalse(db.isConnected());
+        DeciBell db = new DeciBell();
+        db.setDbName("decibellTestDB/simple/forgot/x707");
+        db.attach(Person.class); // Person points to Pet but Pet is not attached!
+        boolean success = true;
         try {
             db.start();
-        } catch (ImproperDatabaseException ex) {
-            fail();
-        }
-        assertTrue(db.isConnected());
-        assertTrue(db.getDbConnector().isServerRunning());
-        lock.unlock();
-        assertEquals(db.getDatabaseUrl(),
-                "jdbc:derby://localhost:1527/decibellTestDB/dbcreation/my_db_creation;user=itsme");
-    }
-
-    @Test
-    public synchronized void onOffOnOff() throws InterruptedException{
-        lock.lock();
-        for (int i=0;i<N_TEST;i++){
-            testDataBaseOnOff();
+        } catch (ImproperDatabaseException ex) { // Exception is thrown to tell that a component has not been attached
+            success = false;
+            System.out.println(ex);
         }        
+        if (success) fail("Should have failed!");
         lock.unlock();
     }
-
-    
 
 }

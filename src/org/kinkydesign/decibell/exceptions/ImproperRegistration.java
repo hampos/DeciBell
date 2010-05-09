@@ -47,7 +47,7 @@ package org.kinkydesign.decibell.exceptions;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class ImproperRegistration extends Exception {
+public class ImproperRegistration extends DeciBellException {
 
     /**
      * <p  align="justify" style="width:60%">

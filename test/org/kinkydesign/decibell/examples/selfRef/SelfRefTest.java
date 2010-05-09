@@ -57,24 +57,56 @@ public class SelfRefTest {
         sr.setX(12);
         sr.setFriend(sr);
 
-        lock.lock();
-            new SelfRef().delete(db);
-            sr.register(db);
+        SelfRef sr2 = new SelfRef();
+        sr2.setX(4523);
+        sr2.setMessage("afff");
+        sr2.setFriend(sr);
 
-            ArrayList<SelfRef> retrievedSelfRefs = new SelfRef().search(db);
-            assertEquals(retrievedSelfRefs.size(), 1);
-            SelfRef retrSR = retrievedSelfRefs.get(0);
-            assertNotNull(retrSR);
-            assertNotNull(retrSR.getFriend().getFriend());
-            assertEquals(retrSR.getFriend().getFriend().getFriend().getFriend(), retrSR);
+        lock.lock();
+        new SelfRef().delete(db);
+        sr.register(db);
+        sr2.register(db);
+
+        ArrayList<SelfRef> retrievedSelfRefs = new SelfRef().search(db);
+        assertEquals(retrievedSelfRefs.size(), 2);
+        assertTrue(retrievedSelfRefs.contains(sr));
+        assertTrue(retrievedSelfRefs.contains(sr2));
+
+        SelfRef retrSR = retrievedSelfRefs.get(0);
+        assertNotNull(retrSR);
+        assertNotNull(retrSR.getFriend().getFriend());
+        assertEquals(retrSR.getFriend().getFriend().getFriend().getFriend(), sr);
+        if (retrSR.equals(sr)){
+            assertEquals(retrSR.getFriend(), sr.getFriend());
+        }else if (retrSR.equals(sr2)){
+            assertEquals(retrSR.getFriend(), sr2.getFriend());
+        }else{
+            fail();
+        }
+
+        retrSR = retrievedSelfRefs.get(1);
+        assertNotNull(retrSR);
+        assertNotNull(retrSR.getFriend().getFriend());
+        assertEquals(retrSR.getFriend().getFriend().getFriend().getFriend(), sr);
+        if (retrSR.equals(sr)){
+            assertEquals(retrSR.getFriend(), sr.getFriend());
+        }else if (retrSR.equals(sr2)){
+            assertEquals(retrSR.getFriend(), sr2.getFriend());
+        }else{
+            fail();
+        }
+
+        assertEquals(sr.attemptRegister(db), 1);
+        assertEquals(sr2.attemptRegister(db), 1);
+        System.out.println("CONNECT '"+db.getDatabaseUrl()+"';");
         lock.unlock();
     }
 
-    @Test
-    public void doItAgain() throws DuplicateKeyException, ImproperRegistration{
+    //@Test
+    public void doItAgain() throws DuplicateKeyException, ImproperRegistration {
         lock.lock();
-            testSelfReferencingEntities();
-            testSelfReferencingEntities();
+        testSelfReferencingEntities();
+        testSelfReferencingEntities();
         lock.unlock();
     }
 }

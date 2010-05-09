@@ -1,6 +1,6 @@
 /**
- *  Class : RemoteEntity
- *  Date  : 7 Μαϊ 2010
+ *  Class : L
+ *  Date  : May 9, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,43 +35,33 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-package org.kinkydesign.decibell.examples.subclassing;
+package org.kinkydesign.decibell.testcases.db101x;
 
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
  *
- * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
-public class RemoteEntity extends Component<SubEntity>{
+public class L extends Component<L> {
 
     @PrimaryKey
-    private String name = null;
+    protected String l;
 
-    @Entry
-    private long id = -1;
-
-    public RemoteEntity() {
+    public L() {
     }
 
-    public long getId() {
-        return id;
+    public L(String b) {
+        this.l = b;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public String getL() {
+        return l;
     }
 
-    public String getName() {
-        return name;
+    public void setL(String b) {
+        this.l = b;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }    
-
 }

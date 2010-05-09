@@ -66,6 +66,7 @@ public class Person extends Component<Person>{
     private Pet friend = null;
 
     public Person() {
+        
     }
 
     public Person(String firstName, String lastName, Pet friend) {

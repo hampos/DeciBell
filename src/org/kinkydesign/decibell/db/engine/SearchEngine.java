@@ -40,12 +40,9 @@ package org.kinkydesign.decibell.db.engine;
 import com.thoughtworks.xstream.XStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
@@ -180,7 +177,14 @@ public class SearchEngine<T> {
 
                 handleForeignKeys(table, rs, whatToSearch, tempComponent, newObj);
                 handleRelationalTables(table, newObj);
-                resultList.add((T) fixSelfReferences((Component) newObj));
+                T toBeadded = (T) fixSelfReferences((Component) newObj);
+                /*
+                 * This check stands only for increased secutiry
+                 * TODO: remove the following check in beta version!
+                 */
+                if (!resultList.contains(toBeadded)) {
+                    resultList.add(toBeadded);
+                }
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -245,6 +249,7 @@ public class SearchEngine<T> {
             Component whatToSearch,
             Component[] tempComponent,
             Object newObj) throws Exception {
+
         for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
             /*
              * Retrieve the object of the SAME type which is referenced by a
@@ -285,10 +290,10 @@ public class SearchEngine<T> {
                     //@Old:  ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
                     Set<Field> newObjFields = DeciBellReflectUtils.getAllFields(newObj.getClass(), true);
                     if (newObjFields.contains(f)) {
-                        System.out.println("Setting " + f.getName());//////
+                        //System.out.println("Setting " + f.getName());//////
                         f.set(newObj, tempList.get(0));
                     } else {
-                        System.out.println("**Setting " + f.getName());
+                        //System.out.println("**Setting " + f.getName());
                         for (JTableColumn superCol : registry.get(tempList.get(0).getClass()).getTableColumns()) {
                             Field superField = superCol.getField();
                             superField.setAccessible(true);

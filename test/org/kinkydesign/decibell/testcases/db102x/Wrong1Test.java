@@ -1,6 +1,6 @@
 /**
- *  Class : RemoteEntity
- *  Date  : 7 Μαϊ 2010
+ *  Class : Wrong1Test
+ *  Date  : May 9, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -36,42 +36,58 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.examples.subclassing;
+package org.kinkydesign.decibell.testcases.db102x;
 
-import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.kinkydesign.decibell.DeciBell;
+import static org.junit.Assert.*;
+import org.kinkydesign.decibell.exceptions.ImproperDatabaseException;
 
 /**
  *
- * @author Charalampos Chomenides
- * @author Pantelis Sopasakis
+ * @author chung
  */
-public class RemoteEntity extends Component<SubEntity>{
+public class Wrong1Test {
 
-    @PrimaryKey
-    private String name = null;
-
-    @Entry
-    private long id = -1;
-
-    public RemoteEntity() {
+    public Wrong1Test() {
     }
 
-    public long getId() {
-        return id;
+    @BeforeClass
+    public static void setUpClass() throws Exception {
     }
 
-    public void setId(long id) {
-        this.id = id;
+    @AfterClass
+    public static void tearDownClass() throws Exception {
     }
 
-    public String getName() {
-        return name;
+    @Before
+    public void setUp() {
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }    
+    @After
+    public void tearDown() {
+    }
+
+    @Test
+    public void testSomeMethod()  {
+        DeciBell db = new DeciBell();
+        db.setDbName("testDB/db102x/ddaf");
+        db.attach(Wrong1.class);
+        boolean success = true;
+        try {
+            db.start();
+        } catch (ImproperDatabaseException ex) {
+            System.out.println(ex);
+            success = false;
+        }
+
+        if (success){
+            fail("SHOULD HAVE FAILED");
+        }
+    }
 
 }

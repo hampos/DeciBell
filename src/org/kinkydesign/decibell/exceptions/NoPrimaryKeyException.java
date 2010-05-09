@@ -41,15 +41,19 @@ import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
- * 
+ *
+ * <p  align="justify" style="width:60%">
  * Any subclass of {@link Component } attached to a {@link DeciBell DeciBell Manager}
  * must be endowed by a primary key field using the annotation {@link PrimaryKey }. This
- * not beign the case, a No-Primary-Key Excpetion is thrown.
+ * not beign the case, a No-Primary-Key Excpetion is thrown. When this exception is thrown
+ * the database is NOT created and the user is asked to make the nessecary modifications
+ * in the attached components.
+ * </p>
  *
  * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
  */
-public class NoPrimaryKeyException extends RuntimeException {
+public class NoPrimaryKeyException extends ImproperDatabaseException {
 
     /**
      * Creates a new instance of <code>NoPrimaryKeyException</code> without

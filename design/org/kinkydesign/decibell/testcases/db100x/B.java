@@ -1,6 +1,6 @@
 /**
- *  Class : RemoteEntity
- *  Date  : 7 Μαϊ 2010
+ *  Class : B
+ *  Date  : May 9, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,43 +35,56 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
+package org.kinkydesign.decibell.testcases.db100x;
 
-package org.kinkydesign.decibell.examples.subclassing;
-
+import java.util.List;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.collections.OnModification;
 
 /**
  *
- * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
  */
-public class RemoteEntity extends Component<SubEntity>{
+public class B extends Component<B> {
 
     @PrimaryKey
-    private String name = null;
+    private String id;
+    @ForeignKey(onDelete=OnModification.CASCADE)
+    private D d;
+    @ForeignKey(onDelete=OnModification.CASCADE)
+    private List<C> cList;
 
-    @Entry
-    private long id = -1;
-
-    public RemoteEntity() {
+    public B() {
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
+    public B(String id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public List<C> getcList() {
+        return cList;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }    
+    public void setcList(List<C> cList) {
+        this.cList = cList;
+    }
 
+    public D getD() {
+        return d;
+    }
+
+    public void setD(D d) {
+        this.d = d;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

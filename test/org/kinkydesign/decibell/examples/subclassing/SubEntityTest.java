@@ -38,6 +38,7 @@
 package org.kinkydesign.decibell.examples.subclassing;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -65,7 +66,7 @@ public class SubEntityTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/subclassing/tst38039");
+        db.setDbName("decibellTestDB/subclassing/tst7703445");
 
         db.attach(Entity.class);
         db.attach(SubEntity.class);
@@ -89,34 +90,36 @@ public class SubEntityTest {
     }
 
     @Test
-    public void testSomeMethod() throws DuplicateKeyException, ImproperRegistration {
-        db.start();        
-
-
+    public void testRegisterSubClass() throws DuplicateKeyException, ImproperRegistration {
+        lock.lock();
         RemoteEntity rem = new RemoteEntity();
-        rem.setId(5);
-        rem.setName("motsp");
+        rem.setId(new Random().nextLong());
+        rem.setName("value"+Long.toString(new Random().nextLong()));
 
         final SubEntity se = new SubEntity();
-        se.setId(44723);
+        se.setId(new Random().nextLong());
         se.setInfo("info");
         se.setMessage("my msg");
         se.setNumber (102);
         se.setXyz(1433.3    );
         se.setRemote(rem);
-        se.setSubremote(se);
-        lock.lock();
-        //rem.register(db);
-        //se.register(db);
+        se.setSubremote(se);        
+        rem.attemptRegister(db);
+        se.register(db);
         lock.unlock();
+    }
+
+    @Test
+    public void searchForEntity(){
+        lock.lock();
+        ArrayList<Entity> results = new Entity().search(db);
+        System.out.println((results.get(0)));        
+        lock.unlock();
+    }
 
 
+    @Test
+    public void searchForSubEntity(){
         ArrayList<Entity> results = new SubEntity().search(db);
-        System.out.println(((SubEntity) results.get(0)));
-        assertTrue(results.size() >= 1);
-        assertEquals(results.get(0).getMessage(), se.getMessage());
-        assertEquals(results.get(0).getNumber(), se.getNumber());
-        assertTrue(((SubEntity) results.get(0)).getXyz() == se.getXyz());
-
     }
 }

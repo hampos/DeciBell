@@ -1,6 +1,6 @@
-/**
- *  Class : RemoteEntity
- *  Date  : 7 Μαϊ 2010
+/*
+ *  Package : org.kinkydesign.decibell.testcases.db100x
+ *  Date    : May 9, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -36,42 +36,13 @@
  * tel. +30 210 7723236
  */
 
-package org.kinkydesign.decibell.examples.subclassing;
-
-import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
- *
- * @author Charalampos Chomenides
- * @author Pantelis Sopasakis
+ * Test case for testing DeciBell under extreme conditions (without subclassing). The
+ * test includes lists and foreign keys and counts 5 different component classes with
+ * String and integer entries. There exist classes that include both lists (as
+ * foreign keys) and single foreign keys. The effect of CASCADE modifier is also
+ * examined.
  */
-public class RemoteEntity extends Component<SubEntity>{
+package org.kinkydesign.decibell.testcases.db100x;
 
-    @PrimaryKey
-    private String name = null;
-
-    @Entry
-    private long id = -1;
-
-    public RemoteEntity() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }    
-
-}
