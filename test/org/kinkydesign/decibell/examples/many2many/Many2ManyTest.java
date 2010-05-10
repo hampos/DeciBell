@@ -94,7 +94,7 @@ public class Many2ManyTest {
     }
 
     @Test
-    public void testSomeMethod() throws ImproperRegistration {
+    public void testManyToMany() throws ImproperRegistration {
 
         Pet dog = new Pet("Sam", "black");
         Pet cat = new Pet("white", "Sylvester");
@@ -159,14 +159,7 @@ public class Many2ManyTest {
 
         lock.unlock();
     }
-
-    @Test
-    public void doItAgain() throws ImproperRegistration {
-        lock.lock();
-        testSomeMethod();
-        testSomeMethod();
-        lock.unlock();
-    }
+    
 
     @Test
     public void addingNullCollection() throws DuplicateKeyException {
@@ -188,5 +181,46 @@ public class Many2ManyTest {
         }
         lock.unlock();
         fail("SHOULD HAVE FAILED!");
+    }
+
+    @Test
+    public void testSpecialSearch() throws ImproperRegistration{
+        lock.lock();
+        new Pet().delete(db);
+        new Person().delete(db);
+        Pet dog = new Pet("Jack", "black");
+        Pet cat = new Pet("Juan", "white");
+        dog.attemptRegister(db);
+        cat.attemptRegister(db);
+        Pet prototype = new Pet();
+        prototype.setColor("%a%");
+        ArrayList<Pet> searchedPets = prototype.search(db);
+        assertEquals(searchedPets.size(), 1);
+        assertEquals(dog, searchedPets.get(0));
+        assertEquals(dog.getName(), searchedPets.get(0).getName());
+        assertEquals(dog.getColor(), searchedPets.get(0).getColor());
+
+        Collection<Pet> catDog = new ArrayList<Pet>();
+        catDog.add(cat);
+        catDog.add(dog);
+        Person jenny = new Person("xyz", catDog, catDog);
+        jenny.attemptRegister(db);
+
+        catDog.remove(dog);
+        jenny = new Person("abc", catDog, catDog);
+        jenny.attemptRegister(db);
+
+        Person prot = new Person();
+        prot.setPetList(catDog);
+        assertEquals(prot.search(db).get(0).getPetList().size(),2);
+        assertEquals(prot.search(db).get(1).getPetList().size(),1);
+        lock.unlock();
+    }
+
+    @Test
+    public void doItAgain() throws ImproperRegistration {
+        testManyToMany();
+        testManyToMany();
+        testSpecialSearch();
     }
 }

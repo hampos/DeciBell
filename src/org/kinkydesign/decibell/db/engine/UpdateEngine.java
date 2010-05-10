@@ -79,6 +79,7 @@ public class UpdateEngine {
         ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
         Table table = (Table) registry.get(c);
         StatementPool pool = StatementPool.getPool(db.getDbConnector());
+
         try {
             /*
              * Updating contained components first

@@ -102,7 +102,7 @@ public class SelfRefTest {
         lock.unlock();
     }
 
-    //@Test
+    @Test
     public void doItAgain() throws DuplicateKeyException, ImproperRegistration {
         lock.lock();
         testSelfReferencingEntities();

@@ -207,18 +207,19 @@ public class SearchEngine<T> {
                     Field f = col.getReferenceColumn().getField();
                     f.setAccessible(true);
 
-                    if (!col.isTypeNumeric()) {
-                        ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
+                    if (!col.isTypeNumeric()) { // The column is a non-numeric foreign key...
+                        Field remotePKfield = (Field) ((Component) obj).getPrimaryKeyFields().get(0);
+                        if (remotePKfield.get(obj)==null){
+                            Infinity inf = new Infinity(db.getDbConnector());
+                            ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                        }else{
+                            ps.setObject(i, (Object) remotePKfield.get(obj), col.getColumnType().getType());
+                        }                        
                     } else {
-
-                        try {
-                            if (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull()))) {
-                                Infinity inf = new Infinity(db.getDbConnector());
-                                ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                            } else if (col.isTypeNumeric() && !((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull()))) {
-                                ps.setObject(i, obj, col.getColumnType().getType());
-                            }
-                        } catch (NumberFormatException nfex) {
+                        if (col.isTypeNumeric() && ((Double.parseDouble(f.get(obj).toString())) == Double.parseDouble(col.getNumericNull()))) {
+                            Infinity inf = new Infinity(db.getDbConnector());
+                            ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                        } else if (col.isTypeNumeric() && !((Double.parseDouble(f.get(obj).toString())) == Double.parseDouble(col.getNumericNull()))) {
                             ps.setObject(i, f.get(obj), col.getColumnType().getType());
                         }
                     }
@@ -276,7 +277,6 @@ public class SearchEngine<T> {
 
                 if (tempList.size() > 1) {
                     throw new RuntimeException("Single foreign object list has size > 1");
-
                 } else if (tempList.size() == 1) {
                     /*
                      * We discern between 2 cases. Firstly the foreign key points to

@@ -103,7 +103,13 @@ public class ATest {
 
         new A().search(db).get(0).print(System.out);
         new A().search(db).get(1).print(System.out);
+
         
+        B subPrototype = new B();
+        subPrototype.setD(new D(154));
+        A prototype = new A();
+        prototype.setB(subPrototype);
+        System.out.println(prototype.search(db).size());
 
     }
 }
