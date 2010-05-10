@@ -54,7 +54,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Documented
 public @interface TableName {
 

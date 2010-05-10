@@ -53,6 +53,7 @@ import org.kinkydesign.decibell.collections.TypeMap;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.annotations.NumericNull;
+import org.kinkydesign.decibell.annotations.TableName;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.DbConnector;
@@ -205,7 +206,14 @@ public class DerbyTablesGenerator extends TablesGenerator {
             tableCreation((Class<? extends Component>) c.getSuperclass());
         }
         // set the name to the generated table
-        table.setTableName(connector.getUser() + DOT + c.getName().replace(DOT, UNDERSCORE));
+        Annotation declaredTableName = c.getAnnotation(TableName.class);
+        if (declaredTableName==null){
+            table.setTableName(connector.getUser() + DOT + c.getName().replace(DOT, UNDERSCORE));
+        }else {
+            TableName tableName = (TableName) declaredTableName;
+            table.setTableName(connector.getUser() + DOT + tableName.value());
+        }
+        
 
         /*
          * Iterate over every field in the submitted class.
