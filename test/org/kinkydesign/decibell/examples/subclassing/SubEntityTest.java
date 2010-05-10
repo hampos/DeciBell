@@ -66,7 +66,7 @@ public class SubEntityTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/subclassing/tst7703445");
+        db.setDbName("decibellTestDB/subclassing/e4f4ghsll5");
 
         db.attach(Entity.class);
         db.attach(SubEntity.class);

@@ -71,7 +71,7 @@ public class DeciBellTest {
         // Initialize the database...
         lock.lockInterruptibly();
         db = new DeciBell();       
-        db.setDbName("decibellTestDB/dbcreation/my_db_creation");
+        db.setDbName("decibellTestDB/dbcreation42");
         db.attach(Person.class);
         db.attach(Pet.class);
         db.start();
@@ -92,7 +92,7 @@ public class DeciBellTest {
     }
 
     @Test
-    public synchronized void testDataBaseOnOff() {        
+    public synchronized void testDataBaseOnOff() {
         lock.lock();
         db.reset();        
         assertTrue(db.isConnected());
@@ -107,8 +107,6 @@ public class DeciBellTest {
         assertTrue(db.isConnected());
         assertTrue(db.getDbConnector().isServerRunning());
         lock.unlock();
-        assertEquals(db.getDatabaseUrl(),
-                "jdbc:derby://localhost:1527/decibellTestDB/dbcreation/my_db_creation;user=itsme");
     }
 
     @Test

@@ -68,7 +68,7 @@ public class YAQPTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
 
-        db.setDbName("decibellTestDB/yaqp/ad");
+        db.setDbName("decibellTestDB/yaqp/adhsya");
 
         db.attach(ErrorReport.class);
         db.attach(ErrorCode.class);

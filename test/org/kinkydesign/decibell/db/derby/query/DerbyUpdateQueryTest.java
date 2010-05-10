@@ -44,7 +44,7 @@ public class DerbyUpdateQueryTest {
     @Test
     public void testSomeMethod() {
         JTable t3 = new DerbyTable();
-        t3.setTableName("C");
+        t3.setTableName("itsme","C");
         TableColumn c1 = new TableColumn("f");
         c1.setColumnType(SQLType.INTEGER);
         c1.setPrimaryKey(true);
@@ -56,7 +56,7 @@ public class DerbyUpdateQueryTest {
 
 
         JTable t2 = new DerbyTable();
-        t2.setTableName("B");
+        t2.setTableName("itsme","B");
         TableColumn b1 = new TableColumn("i");
         b1.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.NO_ACTION);
         b1.setColumnType(SQLType.INTEGER);
@@ -67,7 +67,7 @@ public class DerbyUpdateQueryTest {
         t2.addColumn(b2);
 
         JTable t = new DerbyTable();
-        t.setTableName("A");
+        t.setTableName("itsme","A");
 
         TableColumn tc1 = new TableColumn("x");
         tc1.setColumnType(SQLType.INTEGER);

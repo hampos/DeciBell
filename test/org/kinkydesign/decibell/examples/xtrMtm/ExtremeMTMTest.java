@@ -70,7 +70,7 @@ public class ExtremeMTMTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/mtm/extreme/15");
+        db.setDbName("decibellTestDB/mtm/extreme/1001");
         db.attach(Master.class);
         db.attach(Slave.class);
         db.attach(Something.class);

@@ -27,7 +27,7 @@ public class DoubleSelfRefTest {
     public static void setUpClass() throws Exception {
         db = new DeciBell();
         db.attach(DoubleSelfRef.class);
-        db.setDbName("decibellTestDB/subclassing/e012");
+        db.setDbName("decibellTestDB/subclassing/e012avav");
         db.start();
     }
 

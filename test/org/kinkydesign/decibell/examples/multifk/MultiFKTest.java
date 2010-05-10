@@ -67,7 +67,7 @@ public class MultiFKTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/multifk/masl");
+        db.setDbName("decibellTestDB/multifk/m3as1lgs9");
         db.attach(Master.class);
         db.attach(Slave.class);
         lock.lock();

@@ -32,7 +32,7 @@ public class KTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("testDB/db101x/yt47d");
+        db.setDbName("testDB/db101x/yt4ddfa7d");
 
         db.attach(K.class);
         db.attach(L.class);

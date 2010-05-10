@@ -65,7 +65,7 @@ public class SimpleTest {
     public static void setUpClass() throws Exception {
 
         // Initialize the database...
-        db.setDbName("decibellTestDB/simple/s91");
+        db.setDbName("decibellTestDB/simple/s94af4s");
         db.attach(Person.class);
         db.attach(Pet.class);
         lock.lock();

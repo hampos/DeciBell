@@ -67,7 +67,7 @@ public class ModelTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("testDB/db103x/h88em881jd3v");
+        db.setDbName("testDB/db103x/yasn8r99asd7");
 
         db.attach(Model.class);
         db.attach(BibTex.class);

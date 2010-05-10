@@ -170,7 +170,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
          * initialize the schema and avoid some exceptions...
          */
         JTable initTable = new DerbyTable();
-        initTable.setTableName("DECIBELL_INIT_TAB");
+        initTable.setTableName(connector.getUser(),"DECIBELL_INIT_TAB");
         JTableColumn initColumn = new TableColumn("AA");
         initColumn.setColumnType(SQLType.SMALLINT);
         initTable.addColumn(initColumn);
@@ -208,10 +208,10 @@ public class DerbyTablesGenerator extends TablesGenerator {
         // set the name to the generated table
         Annotation declaredTableName = c.getAnnotation(TableName.class);
         if (declaredTableName==null){
-            table.setTableName(connector.getUser() + DOT + c.getName().replace(DOT, UNDERSCORE));
+            table.setTableName(connector.getUser() , c.getName().replace(DOT, UNDERSCORE));
         }else {
             TableName tableName = (TableName) declaredTableName;
-            table.setTableName(connector.getUser() + DOT + tableName.value());
+            table.setTableName(connector.getUser() , tableName.value());
         }
         
 
@@ -428,6 +428,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
          */
         registry.put((Class<? extends Component>) c, table);
     }
+    
 
     private void relTableCreation() {
 
@@ -436,8 +437,8 @@ public class DerbyTablesGenerator extends TablesGenerator {
             ParameterizedType pt = (ParameterizedType) f.getGenericType();
             for (Type arg : pt.getActualTypeArguments()) {
                 Class carg = (Class) arg;
-                table.setTableName(connector.getUser() + DOT
-                        + f.getDeclaringClass().getName().replace(DOT, UNDERSCORE)
+                table.setTableName(connector.getUser() ,
+                         f.getDeclaringClass().getName().replace(DOT, UNDERSCORE)
                         + UNDERSCORE + LogicalOperator.AND + UNDERSCORE + carg.getName().replace(DOT, UNDERSCORE) + UNDERSCORE + ON + UNDERSCORE + f.getName());
                 Table master = (Table) registry.get((Class<? extends Component>) f.getDeclaringClass());
                 Table slave = (Table) registry.get((Class<? extends Component>) carg);

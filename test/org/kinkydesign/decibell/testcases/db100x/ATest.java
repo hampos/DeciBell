@@ -31,7 +31,7 @@ public class ATest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("testDB/db100x/x6");
+        db.setDbName("testDB/db100x/x6xfs");
 
         db.attach(A.class);
         db.attach(B.class);

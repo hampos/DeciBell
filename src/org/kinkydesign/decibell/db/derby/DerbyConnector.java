@@ -136,15 +136,15 @@ public class DerbyConnector extends DbConnector {
         Object[] tables = ComponentRegistry.getRegistry(this).getRelationTables().toArray();
         for (int i = tables.length - 1; i >= 0; i--) {
             Table t = (Table) tables[i];
-            execute("DROP TABLE " + t.getTableName());
+            execute("DROP TABLE " + t.getFullTableName());
         }
         tables = ComponentRegistry.getRegistry(this).values().toArray();
         for (int i = tables.length - 1; i >= 0; i--) {
             Table t = (Table) tables[i];
-            execute("DROP TABLE " + t.getTableName());
+            execute("DROP TABLE " + t.getFullTableName());
         }
-        execute("DROP TABLE DECIBELL_INIT_TAB");
-        execute("DROP SCHEMA " + getUser() + " RESTRICT");
+        execute("DROP TABLE "+getUser()+".DECIBELL_INIT_TAB");
+        execute("DROP SCHEMA " + getUser() +" RESTRICT");
     }
 
     private void startDerbyServer() throws IOException {

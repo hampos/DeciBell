@@ -87,6 +87,18 @@ public interface JTable {
     String getTableName();
 
     /**
+     * Get the name of the table.
+     * @return table name.
+     */
+    String getFullTableName();
+
+    /**
+     * Get the name of the table.
+     * @return table name.
+     */
+    String getTableSchema();
+
+    /**
      * Remove a column from the table.
      * @param column column to be removed.
      */
@@ -102,7 +114,7 @@ public interface JTable {
      * Set/update the name of the table.
      * @param tableName the name of the table.
      */
-    void setTableName(String tableName);
+    void setTableName(String schema, String tableName);
 
 
 

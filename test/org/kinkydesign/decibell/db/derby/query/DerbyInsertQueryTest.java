@@ -44,7 +44,7 @@ public class DerbyInsertQueryTest {
     @Test
     public void testGetSQL() {
         JTable t = new DerbyTable();
-        t.setTableName("MY_TABLE");
+        t.setTableName("itsme","MY_TABLE");
 
         TableColumn tc1 = new TableColumn("A");
         tc1.setColumnType(SQLType.INTEGER);

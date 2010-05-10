@@ -45,7 +45,7 @@ public class DerbySelectQueryTest {
     @Test
     public void testSomeMethod() {
                 Table t4 = new DerbyTable();
-        t4.setTableName("D");
+        t4.setTableName("itsme","D");
         TableColumn d1 = new TableColumn("d1");
         d1.setColumnType(SQLType.INTEGER);
         d1.setPrimaryKey(true);
@@ -56,7 +56,7 @@ public class DerbySelectQueryTest {
         t4.addColumn(d2);
 
         Table t3 = new DerbyTable();
-        t3.setTableName("C");
+        t3.setTableName("itsme","C");
         TableColumn c1 = new TableColumn("f");
         c1.setColumnType(SQLType.INTEGER);
         c1.setPrimaryKey(true);
@@ -71,7 +71,7 @@ public class DerbySelectQueryTest {
 
 
         Table t2 = new DerbyTable();
-        t2.setTableName("B");
+        t2.setTableName("itsme","B");
         TableColumn b1 = new TableColumn("i");
         b1.setForeignKey(t3, c1, OnModification.CASCADE, OnModification.NO_ACTION);
         b1.setColumnType(SQLType.INTEGER);
@@ -82,7 +82,7 @@ public class DerbySelectQueryTest {
         t2.addColumn(b2);
 
         Table t = new DerbyTable();
-        t.setTableName("A");
+        t.setTableName("itsme","A");
 
         TableColumn tc1 = new TableColumn("x");
         tc1.setColumnType(SQLType.INTEGER);

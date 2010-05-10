@@ -42,12 +42,14 @@ package org.kinkydesign.decibell.examples.multifk;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.annotations.TableName;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+@TableName("KMASTER")
 public class Master extends Component<Master>{
 
     public Master() {

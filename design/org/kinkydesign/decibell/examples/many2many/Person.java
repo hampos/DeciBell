@@ -48,6 +48,7 @@ import org.kinkydesign.decibell.annotations.Entry;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+@TableName("PERSON")
 public class Person extends Component<Person>{
 
     @PrimaryKey

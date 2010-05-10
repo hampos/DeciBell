@@ -105,6 +105,11 @@ public class DeciBell {
      */
     Set<Class<? extends Component>> components = null;
 
+    public DeciBell() {
+    }
+
+    
+
     /**
      * <p  align="justify" style="width:60%">
      * Attach a new java class to the relational database structure. One or more
@@ -132,7 +137,9 @@ public class DeciBell {
      * </p>
      */
     public void start() throws ImproperDatabaseException {
+        System.err.println("DeciBell >>> Engine Ignition.");
         connector.connect();
+        System.err.println("DeciBell >>> Beware of the flames!");
         if (this.components == null) {
             Reflections reflections = new Reflections("");
             components = reflections.getSubTypesOf(Component.class);
@@ -141,6 +148,8 @@ public class DeciBell {
         TablesGenerator tables = new DerbyTablesGenerator(connector, components);
         tables.construct();
         StatementPool pool = new StatementPool(connector, 10);
+        System.err.println("DeciBell >>> Successfully connected to the database as "+getUser());
+        System.err.println("DeciBell >>> CONNECT \""+getDatabaseUrl()+"\"");
     }
 
     /**

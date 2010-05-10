@@ -42,12 +42,14 @@ package org.kinkydesign.decibell.examples.many2many;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.annotations.TableName;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+@TableName("PET")
 public class Pet extends Component<Pet> {
 
     @PrimaryKey private String name;

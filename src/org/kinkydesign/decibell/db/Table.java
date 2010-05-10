@@ -57,6 +57,7 @@ public abstract class Table implements JTable {
 
     private Set<JTableColumn> listOfColumns = new LinkedHashSet<JTableColumn>();
     private String tableName = null;
+    private String schemaName = null;
     private Set<JRelationalTable> relations = new HashSet<JRelationalTable>();
 
     /**
@@ -70,11 +71,12 @@ public abstract class Table implements JTable {
      * Construct a new Table object, given its name.
      * @param tableName
      */
-    public Table(String tableName) {
+    public Table(String schema, String tableName) {
         this();
         if (tableName == null) {
             throw new NullPointerException("The name of a table cannot be null");
         }
+        this.schemaName = schema;
         this.tableName = tableName;
     }
 
@@ -127,19 +129,34 @@ public abstract class Table implements JTable {
      * Sets the name of the table. The name cannot be null.
      * @param tableName a String name for the table.
      */
-    public void setTableName(String tableName) {
+    public void setTableName(String schema, String tableName) {
         if (tableName == null) {
             throw new NullPointerException("The name of a table cannot be null");
         }
+        this.schemaName = schema;
         this.tableName = tableName;
     }
+
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    public String getFullTableName() {
+        return schemaName+"."+tableName;
+    }
+
+    public String getTableSchema() {
+        return schemaName;
+    }
+
+    
 
     /**
      * Returns the name of the table.
      * @return a String name of the table.
      */
     public String getTableName() {
-        return this.tableName;
+        return schemaName+"."+this.tableName;
     }
 
     /**

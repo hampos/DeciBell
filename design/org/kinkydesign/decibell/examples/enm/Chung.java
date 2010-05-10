@@ -43,12 +43,14 @@ import java.util.ArrayList;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.annotations.TableName;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+@TableName("CHIUNG")
 public class Chung extends Component<Chung>{
 
     public enum STATUS {
