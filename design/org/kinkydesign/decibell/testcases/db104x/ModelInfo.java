@@ -39,11 +39,13 @@
 
 package org.kinkydesign.decibell.testcases.db104x;
 
+import org.kinkydesign.decibell.Component;
+
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class ModelInfo {
+public class ModelInfo extends Component<ModelInfo> {
 
 }

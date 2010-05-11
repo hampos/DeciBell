@@ -34,13 +34,7 @@ public class ChungTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        db = new DeciBell();
-        db.setDbName("decibellTestDB/chung/ab314r59");
-
-        db.attach(Chung.class);
-        lock.lock();
-        db.start();
-        lock.unlock();
+        
     }
 
     @AfterClass

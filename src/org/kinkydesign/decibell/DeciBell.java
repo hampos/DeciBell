@@ -131,6 +131,29 @@ public class DeciBell {
 
     /**
      * <p  align="justify" style="width:60%">
+     * </p>
+     * @param pack
+     *      Package containing Components to be attached
+     */
+    public void attachFromPackage(Package pack){
+        Reflections reflections = new Reflections(pack.getName());
+        components.addAll(reflections.getSubTypesOf(Component.class));
+    }
+
+    /**
+     * <p  align="justify" style="width:60%">
+     * Attaches to the list of components the
+     * </p>
+     * @param packageName
+     *      Name of the package containing Components to be attached
+     */
+    public void attachFromPackage(String packageName){
+        Reflections reflections = new Reflections(packageName);
+        components.addAll(reflections.getSubTypesOf(Component.class));
+    }
+
+    /**
+     * <p  align="justify" style="width:60%">
      * Start the connection to the database and, if the database does not exist,
      * create it using the entity-relation structure perscribed by the attached classes
      * and the annotations therein. Upon startup, some SQL statements are prepared.
@@ -141,15 +164,14 @@ public class DeciBell {
         connector.connect();
         System.err.println("DeciBell >>> Beware of the flames!");
         if (this.components == null) {
-            Reflections reflections = new Reflections("");
-            components = reflections.getSubTypesOf(Component.class);
+            attachFromPackage("");
         }
         checkConsistencybefore();
         TablesGenerator tables = new DerbyTablesGenerator(connector, components);
         tables.construct();
         StatementPool pool = new StatementPool(connector, 10);
         System.err.println("DeciBell >>> Successfully connected to the database as "+getUser());
-        System.err.println("DeciBell >>> CONNECT \""+getDatabaseUrl()+"\"");
+        System.err.println("DeciBell >>> CONNECT '"+getDatabaseUrl()+"';");
     }
 
     /**

@@ -40,12 +40,14 @@ package org.kinkydesign.decibell.examples.xtrMtm;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.annotations.TableName;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+@TableName("SOMETHING")
 public class Something extends Component<Something> {
 
     @PrimaryKey

@@ -32,7 +32,7 @@ public class KTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("testDB/db101x/yt4ddfa7d");
+        db.setDbName("testDB/db101x/abafhs");
 
         db.attach(K.class);
         db.attach(L.class);
@@ -57,51 +57,51 @@ public class KTest {
 
     @Test
     public void testdb101x() throws ImproperRegistration {
-        L b = new L("b");
-        b.attemptRegister(db);
+        L l0 = new L("l_0");
+        l0.attemptRegister(db);
 
-        L b1 = new L("b1");
-        b1.attemptRegister(db);
+        L l1 = new L("l_1");
+        l1.attemptRegister(db);
 
-        L b2 = new L("b2");
-        b2.attemptRegister(db);
+        L l2 = new L("l_2");
+        l2.attemptRegister(db);
 
-        L b3 = new L("b3");
-        b3.attemptRegister(db);
+        L l3 = new L("l_3");
+        l3.attemptRegister(db);
 
-        K a = new K(b,null);
-        a.attemptRegister(db);
+        K k0 = new K(l0,null); // null will be registered as my_entry
+        k0.attemptRegister(db);
 
-        K a1 = new K(b1,"haha");
-        a1.attemptRegister(db);
+        K k1 = new K(l1,"haha");
+        k1.attemptRegister(db);
 
-        K a2 = new K(b2,"haha");
-        a2.attemptRegister(db);
+        K k2 = new K(l2,"haha");
+        k2.attemptRegister(db);
 
-        K a3 = new K(b3,"hehe");
-        a3.attemptRegister(db);
+        K k3 = new K(l3,"hehe");
+        k3.attemptRegister(db);
 
         ArrayList<K> retrievedA = new K().search(db);
-        assertTrue(retrievedA.contains(a1));
-        assertTrue(retrievedA.contains(a2));
-        assertTrue(retrievedA.contains(a3));
+        assertTrue(retrievedA.contains(k1));
+        assertTrue(retrievedA.contains(k2));
+        assertTrue(retrievedA.contains(k3));
 
         ArrayList<L> retrievedB = new L().search(db);
-        assertTrue(retrievedB.contains(b1));
-        assertTrue(retrievedB.contains(b2));
-        assertTrue(retrievedB.contains(b3));
+        assertTrue(retrievedB.contains(l1));
+        assertTrue(retrievedB.contains(l2));
+        assertTrue(retrievedB.contains(l3));
 
-        ArrayList<K> searchSpecific = a3.search(db);
+        ArrayList<K> searchSpecific = k3.search(db);
         assertEquals(searchSpecific.size(), 1);
-        assertEquals(searchSpecific.get(0), a3);
+        assertEquals(searchSpecific.get(0), k3);
 
-        ArrayList<L> searchB = b2.search(db);
+        ArrayList<L> searchB = l2.search(db);
         assertEquals(searchB.size(), 1);
-        assertEquals(searchB.get(0), b2);
+        assertEquals(searchB.get(0), l2);
 
         ArrayList<K> searchOperation = new K(null, "haha").search(db);
-        assertTrue(searchOperation.contains(a1));
-        assertTrue(searchOperation.contains(a2));
+        assertTrue(searchOperation.contains(k1));
+        assertTrue(searchOperation.contains(k2));
         assertEquals(searchOperation.size(),2);
     }
 

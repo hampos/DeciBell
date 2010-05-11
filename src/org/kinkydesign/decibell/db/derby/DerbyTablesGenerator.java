@@ -133,10 +133,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
         public void setSelfRefCol(JTableColumn selfRefCol) {
             this.selfRefCol = selfRefCol;
         }
-
-        
     }
-
     /**
      * <p  align="justify" style="width:60%">
      * It is possible that a column in some table, is a foreign key to the
@@ -170,7 +167,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
          * initialize the schema and avoid some exceptions...
          */
         JTable initTable = new DerbyTable();
-        initTable.setTableName(connector.getUser(),"DECIBELL_INIT_TAB");
+        initTable.setTableName(connector.getUser(), "DECIBELL_INIT_TAB");
         JTableColumn initColumn = new TableColumn("AA");
         initColumn.setColumnType(SQLType.SMALLINT);
         initTable.addColumn(initColumn);
@@ -207,13 +204,13 @@ public class DerbyTablesGenerator extends TablesGenerator {
         }
         // set the name to the generated table
         Annotation declaredTableName = c.getAnnotation(TableName.class);
-        if (declaredTableName==null){
-            table.setTableName(connector.getUser() , c.getName().replace(DOT, UNDERSCORE));
-        }else {
+        if (declaredTableName == null) {
+            table.setTableName(connector.getUser(), c.getName().replace(DOT, UNDERSCORE));
+        } else {
             TableName tableName = (TableName) declaredTableName;
-            table.setTableName(connector.getUser() , tableName.value());
+            table.setTableName(connector.getUser(), tableName.value());
         }
-        
+
 
         /*
          * Iterate over every field in the submitted class.
@@ -376,8 +373,8 @@ public class DerbyTablesGenerator extends TablesGenerator {
              * If the field has the NumericNull annotation the numeric null
              * value is stored in the tablecolumn for later use in queries.
              */
-            if((ann = field.getAnnotation(NumericNull.class)) != null){
-                NumericNull numNull = (NumericNull)ann;
+            if ((ann = field.getAnnotation(NumericNull.class)) != null) {
+                NumericNull numNull = (NumericNull) ann;
                 column.setNumericNull(numNull.numericNullValue());
             }
 
@@ -412,7 +409,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
          */
         if (!selfReferencingCols.isEmpty()) {
             for (SelfReferencingCol src : selfReferencingCols) {
-                if (table.equals(src.getMasterTable())){
+                if (table.equals(src.getMasterTable())) {
                     src.getSelfRefCol().setForeignKey(table, src.getMasterTable().getPrimaryKeyColumns().iterator().next(),
                             src.getOnDelete(), src.getOnUpdate());
                     src.getSelfRefCol().setColumnType(src.getMasterTable().getPrimaryKeyColumns().iterator().next().getColumnType());
@@ -428,7 +425,6 @@ public class DerbyTablesGenerator extends TablesGenerator {
          */
         registry.put((Class<? extends Component>) c, table);
     }
-    
 
     private void relTableCreation() {
 
@@ -437,21 +433,34 @@ public class DerbyTablesGenerator extends TablesGenerator {
             ParameterizedType pt = (ParameterizedType) f.getGenericType();
             for (Type arg : pt.getActualTypeArguments()) {
                 Class carg = (Class) arg;
-                table.setTableName(connector.getUser() ,
-                         f.getDeclaringClass().getName().replace(DOT, UNDERSCORE)
-                        + UNDERSCORE + LogicalOperator.AND + UNDERSCORE + carg.getName().replace(DOT, UNDERSCORE) + UNDERSCORE + ON + UNDERSCORE + f.getName());
+
+                // TODO: Change the following line to create shorter table names if possible!
+
+//          @Old:
+//                table.setTableName(connector.getUser(),
+//                        f.getDeclaringClass().getName().replace(DOT, UNDERSCORE)
+//                        + UNDERSCORE + LogicalOperator.AND + UNDERSCORE + carg.getName().replace(DOT, UNDERSCORE) + UNDERSCORE + ON + UNDERSCORE + f.getName());
+
+                table.setTableName(connector.getUser(),
+                        registry.get(f.getDeclaringClass()).getTableName()
+                        + UNDERSCORE + LogicalOperator.AND + UNDERSCORE + registry.get(carg).getTableName() + UNDERSCORE + ON + UNDERSCORE + f.getName());
+                
                 Table master = (Table) registry.get((Class<? extends Component>) f.getDeclaringClass());
                 Table slave = (Table) registry.get((Class<? extends Component>) carg);
 
                 Set<JTableColumn> masterKeys = master.getPrimaryKeyColumns();
                 Set<JTableColumn> slaveKeys = slave.getPrimaryKeyColumns();
 
-                
+
                 for (JTableColumn col : masterKeys) {
                     TableColumn column = ((TableColumn) col).clone();
                     column.setForeignKey(master, col,
                             OnModification.CASCADE, OnModification.NO_ACTION);
-                    column.setColumnName(master.getTableName().split(DOT_REG, 0)[1] + UNDERSCORE + col.getColumnName());
+                    try {
+                        column.setColumnName(master.getTableName().split(DOT_REG, 0)[1] + UNDERSCORE + col.getColumnName());
+                    } catch (Exception e) {
+                        column.setColumnName(master.getTableName() + UNDERSCORE + col.getColumnName());
+                    }
                     column.setAutoGenerated(false);
                     //      column.setField(f);
                     table.addColumn(column);
@@ -465,7 +474,11 @@ public class DerbyTablesGenerator extends TablesGenerator {
                     TableColumn column = ((TableColumn) col).clone();
                     column.setForeignKey(slave, col,
                             OnModification.CASCADE, OnModification.NO_ACTION);
-                    column.setColumnName(slave.getTableName().split(DOT_REG, 0)[1] + UNDERSCORE + col.getColumnName());
+                    try {
+                        column.setColumnName(slave.getTableName().split(DOT_REG, 0)[1] + UNDERSCORE + col.getColumnName());
+                    } catch (Exception e) {
+                        column.setColumnName(slave.getTableName() + UNDERSCORE + col.getColumnName());
+                    }
                     column.setAutoGenerated(false);
                     /*
                      * If the collection is of type 'Set', then the primary key
@@ -490,7 +503,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
             JTableColumn metaCol = new TableColumn("METACOLUMN");
             metaCol.setColumnType(SQLType.VARCHAR);
             table.addColumn(metaCol);
-            
+
             registry.setRelationTable(table);
         }
     }

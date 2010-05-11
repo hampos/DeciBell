@@ -156,7 +156,7 @@ public abstract class Table implements JTable {
      * @return a String name of the table.
      */
     public String getTableName() {
-        return schemaName+"."+this.tableName;
+        return this.tableName;
     }
 
     /**
@@ -302,7 +302,7 @@ public abstract class Table implements JTable {
             return false;
         }
         Table other = (Table) obj;
-        return getTableName().equals(other.getTableName());
+        return (getTableName().equals(other.getTableName()) || getFullTableName().equals(other.getFullTableName()));
     }
 
     @Override

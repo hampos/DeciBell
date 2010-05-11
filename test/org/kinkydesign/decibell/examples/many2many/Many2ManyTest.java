@@ -71,7 +71,7 @@ public class Many2ManyTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/manytomany/nh4");
+        db.setDbName("decibellTestDB/manytomany/haha");
 
         db.attach(Person.class);
         db.attach(Pet.class);
@@ -192,6 +192,7 @@ public class Many2ManyTest {
         Pet cat = new Pet("Juan", "white");
         dog.attemptRegister(db);
         cat.attemptRegister(db);
+
         Pet prototype = new Pet();
         prototype.setColor("%a%");
         ArrayList<Pet> searchedPets = prototype.search(db);
@@ -217,7 +218,7 @@ public class Many2ManyTest {
         lock.unlock();
     }
 
-    @Test
+    //@Test
     public void doItAgain() throws ImproperRegistration {
         testManyToMany();
         testManyToMany();

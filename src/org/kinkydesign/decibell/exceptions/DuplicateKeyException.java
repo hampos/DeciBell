@@ -103,7 +103,7 @@ public class DuplicateKeyException extends DeciBellException {
                             obj.getClass().getDeclaredField(uniqueField.getName());
                     f.setAccessible(true);
                     Object valueForField = f.get(obj);
-                    uniques += " = " + valueForField.toString();
+                    uniques += " = " + valueForField;
                 } catch (final Exception ex1) {
                     throw new RuntimeException(ex1);
                 }

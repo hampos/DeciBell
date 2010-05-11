@@ -1,6 +1,6 @@
 /**
- *  Class : ResourceInfo
- *  Date  : May 10, 2010
+ *  Class : NullCase
+ *  Date  : May 11, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,19 +35,49 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
-package org.kinkydesign.decibell.testcases.db104x;
+package org.kinkydesign.decibell.testcases.db105x;
 
 import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class ResourceInfo extends Component<ResourceInfo> {
+public class NullCase extends Component<NullCase> {
+
+    @PrimaryKey
+    @Entry(defaultValue = "__NULL__", notNull = true)
+    private String uid;
+
+    @Entry(defaultValue = "__NULL__", notNull = true)
+    private String myEntry;
+
+    public NullCase() {
+    }
+
+    public NullCase(String uid, String myEntry) {
+        this.uid = uid;
+        this.myEntry = myEntry;
+    }
+
+    public String getMyEntry() {
+        return myEntry;
+    }
+
+    public void setMyEntry(String myEntry) {
+        this.myEntry = myEntry;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     
-
 }

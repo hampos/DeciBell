@@ -70,7 +70,7 @@ public class ExtremeMTMTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/mtm/extreme/1001");
+        db.setDbName("decibellTestDB/mtm/xtr4");
         db.attach(Master.class);
         db.attach(Slave.class);
         db.attach(Something.class);
@@ -133,7 +133,7 @@ public class ExtremeMTMTest {
         assertNotNull(retrievedMaster.getFirstList());
         assertNotNull(retrievedMaster.getSecondList());
         assertEquals(retrievedMaster.getSecondList().iterator().next().
-                getSomeCollection().iterator().next().getName(),sth2.getName());
+                getSomeCollection().iterator().next().getName(),sth2.getName()  );
         
 
     }

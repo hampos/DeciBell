@@ -187,6 +187,7 @@ public class SearchEngine<T> {
                 }
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new RuntimeException(ex);
         }
         return resultList;

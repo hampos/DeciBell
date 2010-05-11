@@ -139,7 +139,8 @@ public abstract class Component<T extends Component> implements Cloneable {
      *      The decibell object which identifies a database connection.
      * @return
      *      An integer identifier of whether the component was registered or not. Returns <code>0</code>
-     *      if it was registered and <code>1</code> otherwise.
+     *      if the given component was registered and <code>1</code> if it was not registered due to a
+     *      duplicate key exception thrown (which was masked).
      * @throws ImproperRegistration
      *      In case the component cannot be registered in the database. This is the
      *      case when the candidate object posseses a null Collection-type field.
