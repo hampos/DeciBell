@@ -34,7 +34,7 @@ public class ChungTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        
+        db.setDbName("decibellTestDB/chung/chungtest01b");
     }
 
     @AfterClass
