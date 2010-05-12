@@ -101,27 +101,27 @@ public class ModelTest {
         ArrayList<BibTex> retrievedBibTex = new BibTex().search(db);
         assertEquals(retrievedBibTex.size(), 3);
 
-        ArrayList<BibTex> searchForIsland = new BibTex(null, "%island").search(db);
+        ArrayList<BibTex> searchForIsland = new BibTex(null, "%island").find(db);
         assertEquals(searchForIsland.size(),1);
         assertEquals(searchForIsland.get(0).getAuthor(),"Jules Vern");
 
-        ArrayList<BibTex> searchArkas = new BibTex("Arkas", null).search(db);
+        ArrayList<BibTex> searchArkas = new BibTex("Arkas", null).find(db);
         assertEquals(searchArkas.get(0).getBook(),"The life prisoner");
 
         new BibTex("Arkas", null).delete(db);
-        searchArkas = new BibTex("Arkas", null).search(db);
+        searchArkas = new BibTex("Arkas", null).find(db);
         assertEquals(searchArkas.size(),0);
 
         
         // Here is the way to update the book of Shackesphere:
         // 1. Retrieve the book from the database to get the Id (which we dont know yet)
-        BibTex searchHamlet= new BibTex("Shake%", "Ha%").search(db).get(0);
+        BibTex searchHamlet= new BibTex("Shake%", "Ha%").find(db).get(0);
         // 2. Make modifications
         searchHamlet.setBook("The Hamlet, volume 1");
         // 3. Update the book...
         searchHamlet.update(db);
         // 4. Check if is was done correctly:
-        searchHamlet= new BibTex("Shake%", null).search(db).get(0);
+        searchHamlet= new BibTex("Shake%", null).find(db).get(0);
         assertEquals(searchHamlet.getBook(),"The Hamlet, volume 1");
         assertEquals(searchHamlet.getAuthor(),"Shakesphere");
         lock.unlock();
@@ -130,31 +130,32 @@ public class ModelTest {
     @Test
     public void testModel() throws ImproperRegistration{
         lock.lock();
-        BibTex anyBibTex = new BibTex().search(db).get(0);
+        BibTex anyBibTex = new BibTex().find(db).get(0);
         Model model = new Model(1542, "dataset1");
         model.setBibTex(anyBibTex);
         model.attemptRegister(db);
 
-        anyBibTex = new BibTex().search(db).get(1);
+        anyBibTex = new BibTex().find(db).get(1);
         model = new Model(6341, "dataset2");
         model.setBibTex(anyBibTex);
         model.attemptRegister(db);
 
-        assertEquals(new Model().search(db).size(),2);
+        assertEquals(new Model().find(db).size(),2);
         anyBibTex.delete(db); // deleting the bibtex should delete the model pointing to it
-        assertEquals(new Model().search(db).size(),1);
+        assertEquals(new Model().find(db).size(),1);
 
         anyBibTex.attemptRegister(db);
         model.attemptRegister(db);
-        assertEquals(new Model().search(db).size(),2);
+        assertEquals(new Model().find(db).size(),2);
 
         Model prot = new Model();
         prot.setBibTex(anyBibTex);
-        prot.search(db).get(0).print(System.out);
+        prot.find(db).get(0).print(System.out);
 
         Model mod = new Model();
         mod.setBibTex(new BibTex("J%", null));
-        mod.search(db).get(0).print(System.out);
+        assertEquals(1, mod.find(db).size());
+        mod.find(db).get(0).print(System.out);
 
         lock.unlock();
     }

@@ -129,7 +129,7 @@ public class KTest {
 //            k.print(System.out);
 //        }
 
-        assertEquals(1,kSearch.search(db).size());
+        assertEquals(1,kSearch.find(db).size());  // Here 'find' has proven to solve some previoud issues
     }
 
     //@Test

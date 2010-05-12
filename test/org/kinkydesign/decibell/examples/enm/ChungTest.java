@@ -101,8 +101,8 @@ public class ChungTest {
         chung.setXmlization(list);
         chung.register(db);
 
-        assertTrue(new Chung(null, Chung.STATUS.MEDIUM).search(db).size() == 0);
-        assertNotNull(new Chung().search(db).get(0).getStatus());
+        assertTrue(new Chung(null, Chung.STATUS.MEDIUM).find(db).size() == 0);
+        assertNotNull(new Chung().find(db).get(0).getStatus());
         lock.unlock();
     }
 

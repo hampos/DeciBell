@@ -218,7 +218,7 @@ public class Many2ManyTest {
         lock.unlock();
     }
 
-    //@Test
+    @Test
     public void doItAgain() throws ImproperRegistration {
         testManyToMany();
         testManyToMany();
