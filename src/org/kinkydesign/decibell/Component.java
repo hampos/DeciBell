@@ -196,10 +196,10 @@ public abstract class Component<T extends Component> implements Cloneable {
      * @see SearchEngine
      * @see NumericNull
      */
-    public Set<T> search(DeciBell db) {
+    public ArrayList<T> search(DeciBell db) {
         if (Component.class.equals(this.getClass().getSuperclass())) { // Direct subclass of Component
             SearchEngine<T> engine = new SearchEngine<T>(db);
-            return engine.find(this);
+            return engine.search(this);
         } else {// Indirect subclass of component
             XSearchEngine<T> engine = new XSearchEngine<T>(db);
             return null;

@@ -35,7 +35,7 @@ public class KTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("testDB/db101x/akfjsee");
+        db.setDbName("testDB/db101x/akfjee");
 
         db.attach(K.class);
         db.attach(L.class);
@@ -100,25 +100,25 @@ public class KTest {
         K k3 = new K(l3,"hehe");
         k3.attemptRegister(db);
 
-        Set<K> retrievedA = new K().search(db);
+        ArrayList<K> retrievedA = new K().search(db);
         assertTrue(retrievedA.contains(k1));
         assertTrue(retrievedA.contains(k2));
         assertTrue(retrievedA.contains(k3));
 
-        Set<L> retrievedB = new L().search(db);
+        ArrayList<L> retrievedB = new L().search(db);
         assertTrue(retrievedB.contains(l1));
         assertTrue(retrievedB.contains(l2));
         assertTrue(retrievedB.contains(l3));
 
-        Set<K> searchSpecific = k3.search(db);
+        ArrayList<K> searchSpecific = k3.search(db);
         assertEquals(searchSpecific.size(), 1);
         assertEquals(searchSpecific.iterator().next(), k3);
 
-        Set<L> searchB = l2.search(db);
+        ArrayList<L> searchB = l2.search(db);
         assertEquals(searchB.size(), 1);
         assertEquals(searchB.iterator().next(), l2);
 
-        Set<K> searchOperation = new K(null, "haha").search(db);
+        ArrayList<K> searchOperation = new K(null, "haha").search(db);
         assertTrue(searchOperation.contains(k1));
         assertTrue(searchOperation.contains(k2));
         assertEquals(searchOperation.size(),2);

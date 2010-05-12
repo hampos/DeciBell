@@ -69,7 +69,7 @@ public class SelfRefTest {
         sr.register(db);
         sr2.register(db);
 
-        Set<SelfRef> retrievedSelfRefs = new SelfRef().search(db);
+        ArrayList<SelfRef> retrievedSelfRefs = new SelfRef().search(db);
         assertEquals(retrievedSelfRefs.size(), 2);
         assertTrue(retrievedSelfRefs.contains(sr));
         assertTrue(retrievedSelfRefs.contains(sr2));

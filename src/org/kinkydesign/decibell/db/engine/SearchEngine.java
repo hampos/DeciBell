@@ -40,11 +40,13 @@ package org.kinkydesign.decibell.db.engine;
 import com.thoughtworks.xstream.XStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -60,7 +62,6 @@ import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.SQLQuery;
-import org.kinkydesign.decibell.db.util.DeciBellReflectUtils;
 import org.kinkydesign.decibell.db.util.Infinity;
 import org.kinkydesign.decibell.db.util.Pair;
 
@@ -127,44 +128,6 @@ public class SearchEngine<T> {
         registry = ComponentRegistry.getRegistry(db.getDbConnector());
     }
 
-    public Set<T> find(Component prototype) {
-        Set<T> resultList = new HashSet<T>();
-        if (!prototype.hasForeignKey()) {
-            resultList.addAll(search(prototype));
-        } else {
-            ArrayList<Field> foreignKeyFields = prototype.getForeignKeyFields();
-            for (Field fkField : foreignKeyFields) {
-                fkField.setAccessible(true);
-                try {
-                    if (!Collection.class.isAssignableFrom(fkField.getType()) && (Component) fkField.get(prototype) != null) {
-                        Set<Component> foundIn = (Set<Component>) search((Component) fkField.get(prototype));
-                        Component newComponent = new Component() {
-                        };
-                        newComponent = prototype;
-                        for (Component fi : foundIn) {
-                            if (!Collection.class.isAssignableFrom(fkField.getType())) {
-                                fkField.set(newComponent, fi);
-                                for (Field fkField_collection : foreignKeyFields) {
-                                    if (Collection.class.isAssignableFrom(fkField_collection.getType())) {
-                                        fkField_collection.set(newComponent,  fkField_collection.get(prototype));
-                                    }
-                                }
-                            }
-                            resultList.addAll(search(newComponent));
-                        }
-                    } else {                        
-                        resultList.addAll(search(prototype));
-                    }
-                } catch (IllegalArgumentException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IllegalAccessException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
-        return resultList;
-    }
-
     /**
      *
      * @param whatToSearch
@@ -172,14 +135,14 @@ public class SearchEngine<T> {
      * @return
      *      List of objects found in the database
      */
-    public Set<T> search(Component whatToSearch) {
+    public ArrayList<T> search(Component whatToSearch) {
         return search(whatToSearch, new Component[PENETRATION]);
     }
 
     // TODO: Some refactoring is still needed here...
     // TODO: Support search for hierarchical data.
-    private Set<T> search(Component whatToSearch, Component[] tempComponent) {
-        Set<T> resultList = new HashSet<T>();
+    private ArrayList<T> search(Component whatToSearch, Component[] tempComponent) {
+        ArrayList<T> resultList = new ArrayList<T>();
         Class c = whatToSearch.getClass();
 
         Table table = (Table) registry.get(c);
@@ -216,17 +179,9 @@ public class SearchEngine<T> {
 
                 handleForeignKeys(table, rs, whatToSearch, tempComponent, newObj);
                 handleRelationalTables(table, newObj);
-                T toBeadded = (T) fixSelfReferences((Component) newObj);
-                /*
-                 * This check stands only for increased secutiry
-                 * TODO: remove the following check in beta version!
-                 */
-                if (!resultList.contains(toBeadded)) {
-                    resultList.add(toBeadded);
-                }
+                resultList.add((T) fixSelfReferences((Component) newObj));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw new RuntimeException(ex);
         }
         return resultList;
@@ -242,30 +197,10 @@ public class SearchEngine<T> {
 
             try {
                 obj = field.get(whatToSearch);
-
                 if (col.isForeignKey()) {
                     Field f = col.getReferenceColumn().getField();
                     f.setAccessible(true);
-
-                    if (!col.isTypeNumeric()) { // The column is a non-numeric foreign key...
-                        Field remotePKfield = (Field) ((Component) obj).getPrimaryKeyFields().get(0);
-
-                        if (remotePKfield.get(obj) == null) {
-                            Infinity inf = new Infinity(db.getDbConnector());
-                            ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                            System.out.println("C1");
-                        } else {
-                            System.out.println("C2 for " + remotePKfield.get(obj));
-                            ps.setObject(i, (Object) remotePKfield.get(obj), col.getColumnType().getType());
-                        }
-                    } else {
-                        if (col.isTypeNumeric() && ((Double.parseDouble(f.get(obj).toString())) == Double.parseDouble(col.getNumericNull()))) {
-                            Infinity inf = new Infinity(db.getDbConnector());
-                            ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                        } else if (col.isTypeNumeric() && !((Double.parseDouble(f.get(obj).toString())) == Double.parseDouble(col.getNumericNull()))) {
-                            ps.setObject(i, f.get(obj), col.getColumnType().getType());
-                        }
-                    }
+                    ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
                 } else if (obj == null
                         || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull())))) {
                     Infinity inf = new Infinity(db.getDbConnector());
@@ -292,7 +227,6 @@ public class SearchEngine<T> {
             Component whatToSearch,
             Component[] tempComponent,
             Object newObj) throws Exception {
-
         for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
             /*
              * Retrieve the object of the SAME type which is referenced by a
@@ -315,10 +249,11 @@ public class SearchEngine<T> {
              */
             if ((component.getClass().equals(whatToSearch.getClass()) && !component.equals(whatToSearch))
                     || !component.getClass().equals(whatToSearch.getClass())) {
-                Set tempList = component.search(db);
+                ArrayList tempList = component.search(db);
 
                 if (tempList.size() > 1) {
                     throw new RuntimeException("Single foreign object list has size > 1");
+
                 } else if (tempList.size() == 1) {
                     /*
                      * We discern between 2 cases. Firstly the foreign key points to
@@ -329,17 +264,16 @@ public class SearchEngine<T> {
                      */
                     Field f = group.iterator().next().getField();
                     f.setAccessible(true);
-                    //@Old:  ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
-                    Set<Field> newObjFields = DeciBellReflectUtils.getAllFields(newObj.getClass(), true);
+                    ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
                     if (newObjFields.contains(f)) {
-                        //System.out.println("Setting " + f.getName());//////
-                        f.set(newObj, tempList.iterator().next());
+                        System.out.println("Setting "+f.getName());//////
+                        f.set(newObj, tempList.get(0));
                     } else {
-                        //System.out.println("**Setting " + f.getName());
-                        for (JTableColumn superCol : registry.get(tempList.iterator().next().getClass()).getTableColumns()) {
+                        System.out.println("**Setting "+f.getName());
+                        for ( JTableColumn superCol : registry.get(tempList.get(0).getClass()).getTableColumns()) {
                             Field superField = superCol.getField();
                             superField.setAccessible(true);
-                            superField.set(newObj, superField.get(tempList.iterator().next()));
+                            superField.set(newObj, superField.get(tempList.get(0)));
                         }
                     }
                 }
@@ -392,14 +326,14 @@ public class SearchEngine<T> {
                 tempComponent[k] = tempComponent[k + 1];
             }
             tempComponent[PENETRATION - 1] = component;
-            Set tempList = search(whatToSearch, tempComponent);
+            ArrayList tempList = search(whatToSearch, tempComponent);
 
             if (tempList.size() > 1) {
                 throw new RuntimeException("Single foreign object list has size > 1");
             } else if (tempList.size() == 1) {
                 Field f = group.iterator().next().getField();
                 f.setAccessible(true);
-                f.set(newObj, tempList.iterator().next());
+                f.set(newObj, tempList.get(0));
             }
         }
         /*
@@ -465,7 +399,7 @@ public class SearchEngine<T> {
                     ffield.set(fobj, relRs.getObject(col.getColumnName()));
                 }
                 Component component = (Component) fobj;
-                Set tempList = component.search(db);
+                ArrayList tempList = component.search(db);
                 if (tempList.isEmpty()) {
                     throw new RuntimeException("Empty list on search for foreign objects");
                 } else if (tempList.size() > 1) {

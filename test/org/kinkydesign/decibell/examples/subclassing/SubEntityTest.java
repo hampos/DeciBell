@@ -113,7 +113,7 @@ public class SubEntityTest {
     @Test
     public void searchForEntity() {
         lock.lock();
-        Set<Entity> results = new Entity().search(db);
+        ArrayList<Entity> results = new Entity().search(db);
         System.out.println((results.iterator().next()));
         lock.unlock();
     }
@@ -121,7 +121,7 @@ public class SubEntityTest {
     @Test
     public void searchForSubEntity() {
         try {
-            Set<Entity> results = new SubEntity().search(db);
+            ArrayList<Entity> results = new SubEntity().search(db);
         } catch (UnsupportedOperationException ex) {
             System.err.println("!!!!!SUBCLASSING SUPPORT IS DUE FOR BETA VERSION!!!!!");
         }

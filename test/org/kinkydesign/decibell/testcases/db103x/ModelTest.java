@@ -50,6 +50,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.db.engine.SearchEngine;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
@@ -100,14 +101,14 @@ public class ModelTest {
         new BibTex("Jules Vern", "The mysterious island").register(db);
         new BibTex("Shakesphere", "Hamlet").register(db);
         new BibTex("Arkas", "The life prisoner").register(db);
-        Set<BibTex> retrievedBibTex = new BibTex().search(db);
+        ArrayList<BibTex> retrievedBibTex = new BibTex().search(db);
         assertEquals(retrievedBibTex.size(), 3);
 
-        Set<BibTex> searchForIsland = new BibTex(null, "%island").search(db);
+        ArrayList<BibTex> searchForIsland = new BibTex(null, "%island").search(db);
         assertEquals(searchForIsland.size(),1);
         assertEquals(searchForIsland.iterator().next().getAuthor(),"Jules Vern");
 
-        Set<BibTex> searchArkas = new BibTex("Arkas", null).search(db);
+        ArrayList<BibTex> searchArkas = new BibTex("Arkas", null).search(db);
         assertEquals(searchArkas.iterator().next().getBook(),"The life prisoner");
 
         new BibTex("Arkas", null).delete(db);

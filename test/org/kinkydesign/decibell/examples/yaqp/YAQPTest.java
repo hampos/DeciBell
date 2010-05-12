@@ -134,7 +134,7 @@ public class YAQPTest {
                     + "report object!?");
         }
 
-        Set<ErrorReport> retrievedReports = new ErrorReport().search(db);
+        ArrayList<ErrorReport> retrievedReports = new ErrorReport().search(db);
         assertNotNull("[FAIL] Failed to resolve self-references",
                 retrievedReports.iterator().next().getTrace().getTrace().getTrace());
         assertEquals(retrievedReports.iterator().next().getTrace().getTrace().getTrace().getErrorCode().getMessage(), ec.getMessage());

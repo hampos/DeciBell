@@ -5,6 +5,7 @@
 package org.kinkydesign.decibell.testcases.db100x;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -13,6 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.db.engine.SearchEngine;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 
@@ -31,7 +33,7 @@ public class ATest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("testDB/db100x/x6xfs");
+        db.setDbName("testDB/db100x/xhfhdfs");
 
         db.attach(A.class);
         db.attach(B.class);
@@ -80,7 +82,7 @@ public class ATest {
         a1.setB(b);
         a1.seteList(eList);
 
-       A a2 = new A("a my a");
+        A a2 = new A("a my a");
         a2.setB(b);
         eList.remove(e1);
         a2.seteList(eList);
@@ -101,15 +103,17 @@ public class ATest {
             fail("IMPROPER REGISTRATION!");
         }
 
-        new A().search(db).iterator().next().print(System.out);
-        new A().search(db).iterator().next().print(System.out);
+        Iterator<A> aFoundInDatabase = new A().search(db).iterator();
+        aFoundInDatabase.next().print(System.out);
+        aFoundInDatabase.next().print(System.out);
 
         
         B subPrototype = new B();
         subPrototype.setD(new D(154));
         A prototype = new A();
         prototype.setB(subPrototype);
-        System.out.println(prototype.search(db).size());
+
+        System.out.println(new SearchEngine<A>(db).search(prototype).size());
 
     }
 }

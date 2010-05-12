@@ -131,7 +131,7 @@ public class Many2ManyTest {
             fail("No person or pet should be in the database!");
         }
 
-        Set<Person> retrievedPersons = new Person().search(db);
+        ArrayList<Person> retrievedPersons = new Person().search(db);
         assertEquals(retrievedPersons.size(), 2);
 
         Iterator<Person> personsIterator = retrievedPersons.iterator();
@@ -198,7 +198,7 @@ public class Many2ManyTest {
 
         Pet prototype = new Pet();
         prototype.setColor("%a%");
-        Set<Pet> searchedPets = prototype.search(db);
+        ArrayList<Pet> searchedPets = prototype.search(db);
         assertEquals(searchedPets.size(), 1);
         assertEquals(dog, searchedPets.iterator().next());
         assertEquals(dog.getName(), searchedPets.iterator().next().getName());

@@ -105,7 +105,7 @@ public class MultiFKTest {
             fail("Database should be empty!");
         }
 
-        Set<Master> retrievedMasters = new Master().search(db);
+        ArrayList<Master> retrievedMasters = new Master().search(db);
         lock.unlock();
 
         assertEquals(retrievedMasters.size(), 1);

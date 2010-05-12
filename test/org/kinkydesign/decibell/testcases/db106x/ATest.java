@@ -99,6 +99,7 @@ public class ATest {
         a4.b = b4;
         a4.attemptRegister(db);
 
+        // Search for all those a's having some B which has a given c... (WOW!!!)
         A a = new A();
         B b = new B();
         b.c = c2;

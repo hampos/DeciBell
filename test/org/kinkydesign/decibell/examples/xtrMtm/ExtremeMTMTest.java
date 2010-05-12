@@ -126,7 +126,7 @@ public class ExtremeMTMTest {
         m.register(db);
 
 
-        Set<Master> retrievedMasters = new Master().search(db);
+        ArrayList<Master> retrievedMasters = new Master().search(db);
         assertEquals(retrievedMasters.size(), 1);
 
         Master retrievedMaster = retrievedMasters.iterator().next();

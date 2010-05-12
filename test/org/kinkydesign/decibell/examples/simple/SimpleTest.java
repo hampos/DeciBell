@@ -130,7 +130,7 @@ public class SimpleTest {
          * Check if the above mentioned data are registered in the database
          * and if these can be successfully retrieved.
          */
-        Set<Person> userList = new Person().search(db);
+        ArrayList<Person> userList = new Person().search(db);
         assertEquals(userList.size(), 1);
         Person retrievedUser = userList.iterator().next();
         assertEquals(retrievedUser, u);
