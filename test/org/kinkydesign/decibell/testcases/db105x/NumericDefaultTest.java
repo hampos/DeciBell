@@ -76,7 +76,7 @@ public class NumericDefaultTest {
     @Test
     public void testSomeMethod() throws DeciBellException {
         DeciBell db = new DeciBell();
-        db.setDbName("decibellTestDB/numericDefault");
+        db.setDbName("decibellTestDB/numericDefault2");
         db.attach(NumericDefault.class);
         db.start();
 
@@ -90,14 +90,15 @@ public class NumericDefaultTest {
         nd.attemptRegister(db);
         nd = new NumericDefault("s", 1, 1);
         nd.register(db);
-        ArrayList<NumericDefault> retrievedObjs = new NumericDefault().search(db);
+        ArrayList<NumericDefault> retrievedObjs = new NumericDefault().find(db);
         assertEquals(retrievedObjs.size(), 2);
-        assertEquals(retrievedObjs.get(0).getId(),"XYZ");
-        assertTrue(retrievedObjs.get(0).getNumDouble()==14.25);
-        assertTrue(retrievedObjs.get(0).getNumInteger()==512);
-        assertEquals(retrievedObjs.get(1).getId(),"s");
-        assertTrue(retrievedObjs.get(1).getNumDouble()==1);
-        assertTrue(retrievedObjs.get(1).getNumInteger()==1);
+        assertEquals(retrievedObjs.get(0).getId(),"s");
+        assertTrue(retrievedObjs.get(0).getNumDouble()==1);
+        assertTrue(retrievedObjs.get(0).getNumInteger()==1);
+        assertEquals(retrievedObjs.get(1).getId(),"XYZ");
+        assertTrue(retrievedObjs.get(1).getNumDouble()==14.25);
+        assertTrue(retrievedObjs.get(1).getNumInteger()==512);
+        
     }
 
 }

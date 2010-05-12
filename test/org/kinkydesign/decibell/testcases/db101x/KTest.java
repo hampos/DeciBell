@@ -97,25 +97,25 @@ public class KTest {
         K k3 = new K(l3,"hehe");
         k3.attemptRegister(db);
 
-        ArrayList<K> retrievedA = new K().search(db);
+        ArrayList<K> retrievedA = new K().find(db);
         assertTrue(retrievedA.contains(k1));
         assertTrue(retrievedA.contains(k2));
         assertTrue(retrievedA.contains(k3));
 
-        ArrayList<L> retrievedB = new L().search(db);
+        ArrayList<L> retrievedB = new L().find(db);
         assertTrue(retrievedB.contains(l1));
         assertTrue(retrievedB.contains(l2));
         assertTrue(retrievedB.contains(l3));
 
-        ArrayList<K> searchSpecific = k3.search(db);
+        ArrayList<K> searchSpecific = k3.find(db);
         assertEquals(searchSpecific.size(), 1);
         assertEquals(searchSpecific.get(0), k3);
 
-        ArrayList<L> searchB = l2.search(db);
+        ArrayList<L> searchB = l2.find(db);
         assertEquals(searchB.size(), 1);
         assertEquals(searchB.get(0), l2);
 
-        ArrayList<K> searchOperation = new K(null, "haha").search(db);
+        ArrayList<K> searchOperation = new K(null, "haha").find(db);
         assertTrue(searchOperation.contains(k1));
         assertTrue(searchOperation.contains(k2));
         assertEquals(searchOperation.size(),2);

@@ -129,7 +129,7 @@ public class SimpleTest {
          * Check if the above mentioned data are registered in the database
          * and if these can be successfully retrieved.
          */
-        ArrayList<Person> userList = new Person().search(db);
+        ArrayList<Person> userList = new Person().find(db);
         assertEquals(userList.size(), 1);
         Person retrievedUser = userList.get(0);
         assertEquals(retrievedUser, u);
@@ -145,7 +145,7 @@ public class SimpleTest {
         /**
          * Check if the update is successfully performed
          */
-        userList = new Person().search(db);
+        userList = new Person().find(db);
         assertEquals(userList.size(), 1);
         retrievedUser = userList.get(0);
         assertEquals(retrievedUser.getFirstName(), u.getFirstName());
@@ -159,7 +159,7 @@ public class SimpleTest {
         /**
          * Verify that everything is now deleted
          */
-        userList = new Person().search(db);
+        userList = new Person().find(db);
         assertEquals(userList.size(), 0);
 
 
@@ -172,7 +172,7 @@ public class SimpleTest {
 
     }
 
-   // @Test
+    @Test
     public void doItAgain() throws
             NoUniqueFieldException,
             DuplicateKeyException,

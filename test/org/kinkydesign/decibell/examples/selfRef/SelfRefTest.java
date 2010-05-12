@@ -32,10 +32,9 @@ public class SelfRefTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        db.setDbName("decibellTestDB/selfref/elf09as4");
+        db.setDbName("decibellTestDB/selfref/elf09as5");
         db.attach(SelfRef.class);
         db.start();
-        System.out.println("[SUCCESS] Database creation/initialization is successful!");
     }
 
     @AfterClass
@@ -67,7 +66,7 @@ public class SelfRefTest {
         sr.register(db);
         sr2.register(db);
 
-        ArrayList<SelfRef> retrievedSelfRefs = new SelfRef().search(db);
+        ArrayList<SelfRef> retrievedSelfRefs = new SelfRef().find(db);
         assertEquals(retrievedSelfRefs.size(), 2);
         assertTrue(retrievedSelfRefs.contains(sr));
         assertTrue(retrievedSelfRefs.contains(sr2));

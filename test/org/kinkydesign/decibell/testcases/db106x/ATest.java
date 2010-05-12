@@ -47,7 +47,7 @@ public class ATest {
         db.attach(A.class);
         db.attach(B.class);
         db.attach(C.class);
-        db.setDbName("testDB/test/a123");
+        db.setDbName("testDB/test/a124");
         db.start();
 
         C c1 = new C();
@@ -104,7 +104,7 @@ public class ATest {
         b.c = c2;
         a.b = b;
 
-        assertEquals(2,a.search(db));
+        assertEquals(2,a.find(db).size());
     }
 
 }

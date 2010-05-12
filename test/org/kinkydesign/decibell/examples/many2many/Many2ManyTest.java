@@ -129,11 +129,12 @@ public class Many2ManyTest {
             fail("No person or pet should be in the database!");
         }
 
-        ArrayList<Person> retrievedPersons = new Person().search(db);
+        ArrayList<Person> retrievedPersons = new Person().find(db);
         assertEquals(retrievedPersons.size(), 2);
 
-        Person p1 = retrievedPersons.get(0);
-        Person p2 = retrievedPersons.get(1);
+        Person p1 = retrievedPersons.get(1);
+        Person p2 = retrievedPersons.get(0);
+        
 
         assertEquals(p1, me);
         assertEquals(p1.getPetList(), me.getPetList());
@@ -148,7 +149,8 @@ public class Many2ManyTest {
         p1.getPetList().add(dog);
         try {
             p1.update(db);
-            retrievedPersons = new Person().search(db);
+            retrievedPersons = p1.find(db);
+            assertEquals(1, retrievedPersons.size());
             p1 = retrievedPersons.get(0);
             assertTrue(p1.getPetList().contains(dog));
         } catch (NoUniqueFieldException ex) {
@@ -195,7 +197,7 @@ public class Many2ManyTest {
 
         Pet prototype = new Pet();
         prototype.setColor("%a%");
-        ArrayList<Pet> searchedPets = prototype.search(db);
+        ArrayList<Pet> searchedPets = prototype.find(db);
         assertEquals(searchedPets.size(), 1);
         assertEquals(dog, searchedPets.get(0));
         assertEquals(dog.getName(), searchedPets.get(0).getName());
@@ -213,8 +215,8 @@ public class Many2ManyTest {
 
         Person prot = new Person();
         prot.setPetList(catDog);
-        assertEquals(prot.search(db).get(0).getPetList().size(),2);
-        assertEquals(prot.search(db).get(1).getPetList().size(),1);
+        assertEquals(prot.find(db).get(1).getPetList().size(),2);
+        assertEquals(prot.find(db).get(0).getPetList().size(),1);
         lock.unlock();
     }
 

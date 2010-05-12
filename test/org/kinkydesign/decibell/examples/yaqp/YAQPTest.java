@@ -112,9 +112,9 @@ public class YAQPTest {
          * Verify that there is nothing in the database
          */
         assertEquals(
-                new ErrorCode().search(db).size()
-                + new ErrorReport().search(db).size()
-                + new Task().search(db).size(), 0);
+                new ErrorCode().find(db).size()
+                + new ErrorReport().find(db).size()
+                + new Task().find(db).size(), 0);
 
 
         try {
@@ -133,7 +133,7 @@ public class YAQPTest {
                     + "report object!?");
         }
 
-        ArrayList<ErrorReport> retrievedReports = new ErrorReport().search(db);
+        ArrayList<ErrorReport> retrievedReports = new ErrorReport().find(db);
         assertNotNull("[FAIL] Failed to resolve self-references",
                 retrievedReports.get(0).getTrace().getTrace().getTrace());
         assertEquals(retrievedReports.get(0).getTrace().getTrace().getTrace().getErrorCode().getMessage(), ec.getMessage());
@@ -151,7 +151,7 @@ public class YAQPTest {
          * Delete all tasks from the database...
          */
         new Task().delete(db);
-        assertEquals(new Task().search(db).size(), 0); // there should now be no tasks in the database
+        assertEquals(new Task().find(db).size(), 0); // there should now be no tasks in the database
 
         Task task = new Task();
         task.setEr(er);
@@ -164,10 +164,10 @@ public class YAQPTest {
 
         lock.lock();
             task.register(db);
-            Task retrievedTask = task.search(db).get(0);
+            Task retrievedTask = task.find(db).get(0);
             assertNotNull(retrievedTask.getEr().getTrace().getTrace().getErrorCode());
             assertEquals(retrievedTask.getEr().getErrorCode().getHttpStatus(), 500);
-            task.search(db).get(0).print(System.out);
+            task.find(db).get(0).print(System.out);
         lock.unlock();
     }
 
