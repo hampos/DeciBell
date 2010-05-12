@@ -6,7 +6,6 @@
 package org.kinkydesign.decibell.testcases.db101x;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -14,9 +13,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
-import org.kinkydesign.decibell.db.engine.SearchEngine;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 
@@ -35,7 +32,7 @@ public class KTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("testDB/db101x/akfjee");
+        db.setDbName("testDB/db101x/akfjsee");
 
         db.attach(K.class);
         db.attach(L.class);
@@ -60,7 +57,7 @@ public class KTest {
     }
 
     @Test
-    public void testdb101x() throws ImproperRegistration, IllegalArgumentException, IllegalAccessException {
+    public void testdb101x() throws ImproperRegistration {
         R remote1 = new R();
         remote1.id = "xyz";
         remote1.xxx = "message1";
@@ -112,11 +109,11 @@ public class KTest {
 
         ArrayList<K> searchSpecific = k3.search(db);
         assertEquals(searchSpecific.size(), 1);
-        assertEquals(searchSpecific.iterator().next(), k3);
+        assertEquals(searchSpecific.get(0), k3);
 
         ArrayList<L> searchB = l2.search(db);
         assertEquals(searchB.size(), 1);
-        assertEquals(searchB.iterator().next(), l2);
+        assertEquals(searchB.get(0), l2);
 
         ArrayList<K> searchOperation = new K(null, "haha").search(db);
         assertTrue(searchOperation.contains(k1));
@@ -128,17 +125,15 @@ public class KTest {
         lSearch.remote = remote2;
         kSearch.setL(lSearch);
 
-        SearchEngine<K> se = new SearchEngine<K>(db);
-
-        for (K k : se.find(kSearch)){
-            k.print(System.out);
-        }
+//        for (K k : kSearch.search(db)){
+//            k.print(System.out);
+//        }
 
         assertEquals(1,kSearch.search(db).size());
     }
 
-    @Test
-    public void repeatTest() throws ImproperRegistration, IllegalArgumentException, IllegalAccessException {
+    //@Test
+    public void repeatTest() throws ImproperRegistration {
         testdb101x();
     }
 

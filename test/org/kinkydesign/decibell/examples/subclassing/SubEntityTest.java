@@ -39,7 +39,6 @@ package org.kinkydesign.decibell.examples.subclassing;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -114,7 +113,7 @@ public class SubEntityTest {
     public void searchForEntity() {
         lock.lock();
         ArrayList<Entity> results = new Entity().search(db);
-        System.out.println((results.iterator().next()));
+        System.out.println((results.get(0)));
         lock.unlock();
     }
 

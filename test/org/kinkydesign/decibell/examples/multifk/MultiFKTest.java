@@ -40,7 +40,6 @@ package org.kinkydesign.decibell.examples.multifk;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -109,10 +108,10 @@ public class MultiFKTest {
         lock.unlock();
 
         assertEquals(retrievedMasters.size(), 1);
-        assertNotNull(retrievedMasters.iterator().next());
-        assertEquals(retrievedMasters.iterator().next().getSlave(), slave);
-        assertEquals(retrievedMasters.iterator().next().getSlave().getFirstName(), "John");
-        assertTrue(retrievedMasters.iterator().next().getSlave().getDate().before(new Date(System.currentTimeMillis())));
+        assertNotNull(retrievedMasters.get(0));
+        assertEquals(retrievedMasters.get(0).getSlave(), slave);
+        assertEquals(retrievedMasters.get(0).getSlave().getFirstName(), "John");
+        assertTrue(retrievedMasters.get(0).getSlave().getDate().before(new Date(System.currentTimeMillis())));
         
     }
 

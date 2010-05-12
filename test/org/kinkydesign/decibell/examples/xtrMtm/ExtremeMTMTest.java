@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -52,7 +51,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
-import org.kinkydesign.decibell.exceptions.DeciBellException;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
@@ -72,11 +70,7 @@ public class ExtremeMTMTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-<<<<<<< Updated upstream:test/org/kinkydesign/decibell/examples/xtrMtm/ExtremeMTMTest.java
         db.setDbName("decibellTestDB/mtm/xtr4");
-=======
-        db.setDbName("decibellTestDB/xxtr/mtm666");
->>>>>>> Stashed changes:test/org/kinkydesign/decibell/examples/xtrMtm/ExtremeMTMTest.java
         db.attach(Master.class);
         db.attach(Slave.class);
         db.attach(Something.class);
@@ -133,7 +127,7 @@ public class ExtremeMTMTest {
         ArrayList<Master> retrievedMasters = new Master().search(db);
         assertEquals(retrievedMasters.size(), 1);
 
-        Master retrievedMaster = retrievedMasters.iterator().next();
+        Master retrievedMaster = retrievedMasters.get(0);
 
         assertEquals(retrievedMaster, m);
         assertNotNull(retrievedMaster.getFirstList());
@@ -142,11 +136,6 @@ public class ExtremeMTMTest {
                 getSomeCollection().iterator().next().getName(),sth2.getName()  );
         
 
-    }
-
-    @Test
-    public void again() throws DeciBellException{
-        testSomeMethod();
     }
 
 }

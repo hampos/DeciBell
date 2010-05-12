@@ -41,7 +41,6 @@ package org.kinkydesign.decibell.examples.yaqp;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -69,7 +68,7 @@ public class YAQPTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
 
-        db.setDbName("decibellTestDB/yaqp/adhsyf");
+        db.setDbName("decibellTestDB/yaqp/adhsya");
 
         db.attach(ErrorReport.class);
         db.attach(ErrorCode.class);
@@ -136,8 +135,8 @@ public class YAQPTest {
 
         ArrayList<ErrorReport> retrievedReports = new ErrorReport().search(db);
         assertNotNull("[FAIL] Failed to resolve self-references",
-                retrievedReports.iterator().next().getTrace().getTrace().getTrace());
-        assertEquals(retrievedReports.iterator().next().getTrace().getTrace().getTrace().getErrorCode().getMessage(), ec.getMessage());
+                retrievedReports.get(0).getTrace().getTrace().getTrace());
+        assertEquals(retrievedReports.get(0).getTrace().getTrace().getTrace().getErrorCode().getMessage(), ec.getMessage());
 
         lock.unlock();
     }
@@ -165,10 +164,10 @@ public class YAQPTest {
 
         lock.lock();
             task.register(db);
-            Task retrievedTask = task.search(db).iterator().next();
+            Task retrievedTask = task.search(db).get(0);
             assertNotNull(retrievedTask.getEr().getTrace().getTrace().getErrorCode());
             assertEquals(retrievedTask.getEr().getErrorCode().getHttpStatus(), 500);
-            task.search(db).iterator().next().print(System.out);
+            task.search(db).get(0).print(System.out);
         lock.unlock();
     }
 

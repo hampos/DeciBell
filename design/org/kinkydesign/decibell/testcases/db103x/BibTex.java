@@ -43,14 +43,12 @@ import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
-import org.kinkydesign.decibell.annotations.TableName;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-@TableName("BIBTEX")
 public class BibTex extends Component<BibTex> {
 
     @PrimaryKey

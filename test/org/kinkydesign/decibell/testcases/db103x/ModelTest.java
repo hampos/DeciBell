@@ -40,8 +40,6 @@
 package org.kinkydesign.decibell.testcases.db103x;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -50,7 +48,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
-import org.kinkydesign.decibell.db.engine.SearchEngine;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
@@ -106,10 +103,10 @@ public class ModelTest {
 
         ArrayList<BibTex> searchForIsland = new BibTex(null, "%island").search(db);
         assertEquals(searchForIsland.size(),1);
-        assertEquals(searchForIsland.iterator().next().getAuthor(),"Jules Vern");
+        assertEquals(searchForIsland.get(0).getAuthor(),"Jules Vern");
 
         ArrayList<BibTex> searchArkas = new BibTex("Arkas", null).search(db);
-        assertEquals(searchArkas.iterator().next().getBook(),"The life prisoner");
+        assertEquals(searchArkas.get(0).getBook(),"The life prisoner");
 
         new BibTex("Arkas", null).delete(db);
         searchArkas = new BibTex("Arkas", null).search(db);
@@ -118,13 +115,13 @@ public class ModelTest {
         
         // Here is the way to update the book of Shackesphere:
         // 1. Retrieve the book from the database to get the Id (which we dont know yet)
-        BibTex searchHamlet= new BibTex("Shake%", "Ha%").search(db).iterator().next();
+        BibTex searchHamlet= new BibTex("Shake%", "Ha%").search(db).get(0);
         // 2. Make modifications
         searchHamlet.setBook("The Hamlet, volume 1");
         // 3. Update the book...
         searchHamlet.update(db);
         // 4. Check if is was done correctly:
-        searchHamlet= new BibTex("Shake%", null).search(db).iterator().next();
+        searchHamlet= new BibTex("Shake%", null).search(db).get(0);
         assertEquals(searchHamlet.getBook(),"The Hamlet, volume 1");
         assertEquals(searchHamlet.getAuthor(),"Shakesphere");
         lock.unlock();
@@ -133,14 +130,12 @@ public class ModelTest {
     @Test
     public void testModel() throws ImproperRegistration{
         lock.lock();
-        BibTex anyBibTex = new BibTex().search(db).iterator().next();
+        BibTex anyBibTex = new BibTex().search(db).get(0);
         Model model = new Model(1542, "dataset1");
         model.setBibTex(anyBibTex);
         model.attemptRegister(db);
 
-        Iterator<BibTex> it = new BibTex().search(db).iterator();
-        it.next();
-        anyBibTex = it.next();
+        anyBibTex = new BibTex().search(db).get(1);
         model = new Model(6341, "dataset2");
         model.setBibTex(anyBibTex);
         model.attemptRegister(db);
@@ -155,11 +150,11 @@ public class ModelTest {
 
         Model prot = new Model();
         prot.setBibTex(anyBibTex);
-        prot.search(db).iterator().next().print(System.out);
+        prot.search(db).get(0).print(System.out);
 
         Model mod = new Model();
         mod.setBibTex(new BibTex("J%", null));
-        mod.search(db).iterator().next().print(System.out);
+        mod.search(db).get(0).print(System.out);
 
         lock.unlock();
     }

@@ -38,8 +38,6 @@
 package org.kinkydesign.decibell.testcases.db105x;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -92,16 +90,14 @@ public class NumericDefaultTest {
         nd.attemptRegister(db);
         nd = new NumericDefault("s", 1, 1);
         nd.register(db);
-        Iterator<NumericDefault> retrievedObjs = new NumericDefault().search(db).iterator();
-        assertEquals(new NumericDefault().search(db).size(), 2);
-        NumericDefault first = retrievedObjs.next();
-        NumericDefault second = retrievedObjs.next();
-        assertEquals(first.getId(),"XYZ");
-        assertTrue(first.getNumDouble()==14.25);
-        assertTrue(first.getNumInteger()==512);
-        assertEquals(second.getId(),"s");
-        assertTrue(second.getNumDouble()==1);
-        assertTrue(second.getNumInteger()==1);
+        ArrayList<NumericDefault> retrievedObjs = new NumericDefault().search(db);
+        assertEquals(retrievedObjs.size(), 2);
+        assertEquals(retrievedObjs.get(0).getId(),"XYZ");
+        assertTrue(retrievedObjs.get(0).getNumDouble()==14.25);
+        assertTrue(retrievedObjs.get(0).getNumInteger()==512);
+        assertEquals(retrievedObjs.get(1).getId(),"s");
+        assertTrue(retrievedObjs.get(1).getNumDouble()==1);
+        assertTrue(retrievedObjs.get(1).getNumInteger()==1);
     }
 
 }

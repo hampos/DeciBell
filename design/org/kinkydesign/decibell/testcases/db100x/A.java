@@ -41,7 +41,6 @@ import java.util.List;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
-import org.kinkydesign.decibell.annotations.TableName;
 import org.kinkydesign.decibell.collections.OnModification;
 
 /**
@@ -49,13 +48,14 @@ import org.kinkydesign.decibell.collections.OnModification;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-@TableName("A")
 public class A extends Component<A> {
 
     @PrimaryKey
     private String a;
+
     @ForeignKey(onDelete=OnModification.CASCADE)
     private B b;
+
     @ForeignKey(onDelete=OnModification.CASCADE)
     private List<E> eList;
 

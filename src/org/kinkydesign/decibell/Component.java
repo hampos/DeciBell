@@ -40,7 +40,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.kinkydesign.decibell.annotations.ForeignKey;
@@ -202,10 +201,11 @@ public abstract class Component<T extends Component> implements Cloneable {
             return engine.search(this);
         } else {// Indirect subclass of component
             XSearchEngine<T> engine = new XSearchEngine<T>(db);
-            return null;
+            return engine.search(this);
         }
-    }
 
+
+    }
 
     /**
      * <p  align="justify" style="width:60%">

@@ -41,14 +41,12 @@ package org.kinkydesign.decibell.testcases.db100x;
 
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
-import org.kinkydesign.decibell.annotations.TableName;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-@TableName("C")
 public class C extends Component<C>{
 
     @PrimaryKey

@@ -44,7 +44,6 @@ import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
-import org.kinkydesign.decibell.annotations.TableName;
 import org.kinkydesign.decibell.collections.OnModification;
 
 /**
@@ -52,7 +51,6 @@ import org.kinkydesign.decibell.collections.OnModification;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-@TableName("MODEL")
 public class Model extends Component<Model> {
 
     @PrimaryKey
