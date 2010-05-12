@@ -102,7 +102,7 @@ public class ChungTest {
         chung.register(db);
 
         assertTrue(new Chung(null, Chung.STATUS.MEDIUM).search(db).size() == 0);
-        assertNotNull(new Chung().search(db).get(0).getStatus());
+        assertNotNull(new Chung().search(db).iterator().next().getStatus());
         lock.unlock();
     }
 

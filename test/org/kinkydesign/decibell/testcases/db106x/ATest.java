@@ -104,7 +104,7 @@ public class ATest {
         b.c = c2;
         a.b = b;
 
-        assertEquals(2,a.search(db));
+        assertEquals(2, a.search(db).size());
     }
 
 }

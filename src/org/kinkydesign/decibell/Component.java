@@ -40,6 +40,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.kinkydesign.decibell.annotations.ForeignKey;
@@ -195,17 +196,16 @@ public abstract class Component<T extends Component> implements Cloneable {
      * @see SearchEngine
      * @see NumericNull
      */
-    public ArrayList<T> search(DeciBell db) {
+    public Set<T> search(DeciBell db) {
         if (Component.class.equals(this.getClass().getSuperclass())) { // Direct subclass of Component
             SearchEngine<T> engine = new SearchEngine<T>(db);
-            return engine.search(this);
+            return engine.find(this);
         } else {// Indirect subclass of component
             XSearchEngine<T> engine = new XSearchEngine<T>(db);
-            return engine.search(this);
+            return null;
         }
-
-
     }
+
 
     /**
      * <p  align="justify" style="width:60%">

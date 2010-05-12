@@ -5,6 +5,8 @@
 package org.kinkydesign.decibell.examples.selfRef;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -67,12 +69,12 @@ public class SelfRefTest {
         sr.register(db);
         sr2.register(db);
 
-        ArrayList<SelfRef> retrievedSelfRefs = new SelfRef().search(db);
+        Set<SelfRef> retrievedSelfRefs = new SelfRef().search(db);
         assertEquals(retrievedSelfRefs.size(), 2);
         assertTrue(retrievedSelfRefs.contains(sr));
         assertTrue(retrievedSelfRefs.contains(sr2));
 
-        SelfRef retrSR = retrievedSelfRefs.get(0);
+        SelfRef retrSR = retrievedSelfRefs.iterator().next();
         assertNotNull(retrSR);
         assertNotNull(retrSR.getFriend().getFriend());
         assertEquals(retrSR.getFriend().getFriend().getFriend().getFriend(), sr);
@@ -84,7 +86,9 @@ public class SelfRefTest {
             fail();
         }
 
-        retrSR = retrievedSelfRefs.get(1);
+        Iterator<SelfRef> it = retrievedSelfRefs.iterator();
+        it.next();
+        retrSR = it.next();
         assertNotNull(retrSR);
         assertNotNull(retrSR.getFriend().getFriend());
         assertEquals(retrSR.getFriend().getFriend().getFriend().getFriend(), sr);

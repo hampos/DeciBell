@@ -44,6 +44,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -126,6 +127,44 @@ public class SearchEngine<T> {
         registry = ComponentRegistry.getRegistry(db.getDbConnector());
     }
 
+    public Set<T> find(Component prototype) {
+        Set<T> resultList = new HashSet<T>();
+        if (!prototype.hasForeignKey()) {
+            resultList.addAll(search(prototype));
+        } else {
+            ArrayList<Field> foreignKeyFields = prototype.getForeignKeyFields();
+            for (Field fkField : foreignKeyFields) {
+                fkField.setAccessible(true);
+                try {
+                    if (!Collection.class.isAssignableFrom(fkField.getType()) && (Component) fkField.get(prototype) != null) {
+                        Set<Component> foundIn = (Set<Component>) search((Component) fkField.get(prototype));
+                        Component newComponent = new Component() {
+                        };
+                        newComponent = prototype;
+                        for (Component fi : foundIn) {
+                            if (!Collection.class.isAssignableFrom(fkField.getType())) {
+                                fkField.set(newComponent, fi);
+                                for (Field fkField_collection : foreignKeyFields) {
+                                    if (Collection.class.isAssignableFrom(fkField_collection.getType())) {
+                                        fkField_collection.set(newComponent,  fkField_collection.get(prototype));
+                                    }
+                                }
+                            }
+                            resultList.addAll(search(newComponent));
+                        }
+                    } else {                        
+                        resultList.addAll(search(prototype));
+                    }
+                } catch (IllegalArgumentException ex) {
+                    throw new RuntimeException(ex);
+                } catch (IllegalAccessException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        return resultList;
+    }
+
     /**
      *
      * @param whatToSearch
@@ -133,21 +172,21 @@ public class SearchEngine<T> {
      * @return
      *      List of objects found in the database
      */
-    public ArrayList<T> search(Component whatToSearch) {
+    public Set<T> search(Component whatToSearch) {
         return search(whatToSearch, new Component[PENETRATION]);
     }
 
     // TODO: Some refactoring is still needed here...
     // TODO: Support search for hierarchical data.
-    private ArrayList<T> search(Component whatToSearch, Component[] tempComponent) {
-        ArrayList<T> resultList = new ArrayList<T>();
+    private Set<T> search(Component whatToSearch, Component[] tempComponent) {
+        Set<T> resultList = new HashSet<T>();
         Class c = whatToSearch.getClass();
 
         Table table = (Table) registry.get(c);
         Pair<PreparedStatement, SQLQuery> entry = pool.getSearch(table);
         PreparedStatement ps = entry.getKey();
         SQLQuery query = entry.getValue();
-        
+
         //TODO: Add comments inside the method content to tell what every line does...
         try {
             ResultSet rs = acquireResults(query, ps, whatToSearch);
@@ -209,16 +248,16 @@ public class SearchEngine<T> {
                     f.setAccessible(true);
 
                     if (!col.isTypeNumeric()) { // The column is a non-numeric foreign key...
-                        System.out.println("asd*********************asda,fnndf*(*(&^#@(*Q*WE");
                         Field remotePKfield = (Field) ((Component) obj).getPrimaryKeyFields().get(0);
-                        if (remotePKfield.get(obj)==null){
+
+                        if (remotePKfield.get(obj) == null) {
                             Infinity inf = new Infinity(db.getDbConnector());
                             ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
                             System.out.println("C1");
-                        }else{
-                            System.out.println("C2 for "+remotePKfield.get(obj));
+                        } else {
+                            System.out.println("C2 for " + remotePKfield.get(obj));
                             ps.setObject(i, (Object) remotePKfield.get(obj), col.getColumnType().getType());
-                        }                        
+                        }
                     } else {
                         if (col.isTypeNumeric() && ((Double.parseDouble(f.get(obj).toString())) == Double.parseDouble(col.getNumericNull()))) {
                             Infinity inf = new Infinity(db.getDbConnector());
@@ -247,68 +286,68 @@ public class SearchEngine<T> {
         return ps.executeQuery();
     }
 
-        void handleForeignKeys(
-                Table table,
-                ResultSet rs,
-                Component whatToSearch,
-                Component[] tempComponent,
-                Object newObj) throws Exception {
+    void handleForeignKeys(
+            Table table,
+            ResultSet rs,
+            Component whatToSearch,
+            Component[] tempComponent,
+            Object newObj) throws Exception {
 
-            for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
-                /*
-                 * Retrieve the object of the SAME type which is referenced by a
-                 * self-referencing foreign column.
-                 */
-                Class refClass = group.iterator().next().getReferencesClass();
-                Constructor refConstructor = refClass.getDeclaredConstructor();
-                refConstructor.setAccessible(true);
-                Object refObj = refConstructor.newInstance();
+        for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
+            /*
+             * Retrieve the object of the SAME type which is referenced by a
+             * self-referencing foreign column.
+             */
+            Class refClass = group.iterator().next().getReferencesClass();
+            Constructor refConstructor = refClass.getDeclaredConstructor();
+            refConstructor.setAccessible(true);
+            Object refObj = refConstructor.newInstance();
 
-                for (JTableColumn col : group) {
-                    Field f = col.getReferenceColumn().getField();
+            for (JTableColumn col : group) {
+                Field f = col.getReferenceColumn().getField();
+                f.setAccessible(true);
+                f.set(refObj, rs.getObject(col.getColumnName()));
+            }
+            Component component = (Component) refObj;
+
+            /*
+             * Foreign Key but NOT a self-reference!
+             */
+            if ((component.getClass().equals(whatToSearch.getClass()) && !component.equals(whatToSearch))
+                    || !component.getClass().equals(whatToSearch.getClass())) {
+                Set tempList = component.search(db);
+
+                if (tempList.size() > 1) {
+                    throw new RuntimeException("Single foreign object list has size > 1");
+                } else if (tempList.size() == 1) {
+                    /*
+                     * We discern between 2 cases. Firstly the foreign key points to
+                     * a foreign table which does not correspond to a superclass of
+                     * newObj(whatToSearch), and secondly a foreign table that really
+                     * is a superclass of the searched object. In the second case
+                     * all superfields of newObj have to be set.
+                     */
+                    Field f = group.iterator().next().getField();
                     f.setAccessible(true);
-                    f.set(refObj, rs.getObject(col.getColumnName()));
-                }
-                Component component = (Component) refObj;
-
-                /*
-                 * Foreign Key but NOT a self-reference!
-                 */
-                if ((component.getClass().equals(whatToSearch.getClass()) && !component.equals(whatToSearch))
-                        || !component.getClass().equals(whatToSearch.getClass())) {
-                    ArrayList tempList = component.search(db);
-
-                    if (tempList.size() > 1) {
-                        throw new RuntimeException("Single foreign object list has size > 1");
-                    } else if (tempList.size() == 1) {
-                        /*
-                         * We discern between 2 cases. Firstly the foreign key points to
-                         * a foreign table which does not correspond to a superclass of
-                         * newObj(whatToSearch), and secondly a foreign table that really
-                         * is a superclass of the searched object. In the second case
-                         * all superfields of newObj have to be set.
-                         */
-                        Field f = group.iterator().next().getField();
-                        f.setAccessible(true);
-                        //@Old:  ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
-                        Set<Field> newObjFields = DeciBellReflectUtils.getAllFields(newObj.getClass(), true);
-                        if (newObjFields.contains(f)) {
-                            //System.out.println("Setting " + f.getName());//////
-                            f.set(newObj, tempList.get(0));
-                        } else {
-                            //System.out.println("**Setting " + f.getName());
-                            for (JTableColumn superCol : registry.get(tempList.get(0).getClass()).getTableColumns()) {
-                                Field superField = superCol.getField();
-                                superField.setAccessible(true);
-                                superField.set(newObj, superField.get(tempList.get(0)));
-                            }
+                    //@Old:  ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
+                    Set<Field> newObjFields = DeciBellReflectUtils.getAllFields(newObj.getClass(), true);
+                    if (newObjFields.contains(f)) {
+                        //System.out.println("Setting " + f.getName());//////
+                        f.set(newObj, tempList.iterator().next());
+                    } else {
+                        //System.out.println("**Setting " + f.getName());
+                        for (JTableColumn superCol : registry.get(tempList.iterator().next().getClass()).getTableColumns()) {
+                            Field superField = superCol.getField();
+                            superField.setAccessible(true);
+                            superField.set(newObj, superField.get(tempList.iterator().next()));
                         }
                     }
-                } else if (component.getClass().equals(whatToSearch.getClass()) && component.equals(whatToSearch)) {
-                    handleSelfRefTables(tempComponent, whatToSearch, group, component, newObj);
                 }
+            } else if (component.getClass().equals(whatToSearch.getClass()) && component.equals(whatToSearch)) {
+                handleSelfRefTables(tempComponent, whatToSearch, group, component, newObj);
             }
         }
+    }
 
     /**
      *
@@ -353,14 +392,14 @@ public class SearchEngine<T> {
                 tempComponent[k] = tempComponent[k + 1];
             }
             tempComponent[PENETRATION - 1] = component;
-            ArrayList tempList = search(whatToSearch, tempComponent);
+            Set tempList = search(whatToSearch, tempComponent);
 
             if (tempList.size() > 1) {
                 throw new RuntimeException("Single foreign object list has size > 1");
             } else if (tempList.size() == 1) {
                 Field f = group.iterator().next().getField();
                 f.setAccessible(true);
-                f.set(newObj, tempList.get(0));
+                f.set(newObj, tempList.iterator().next());
             }
         }
         /*
@@ -426,7 +465,7 @@ public class SearchEngine<T> {
                     ffield.set(fobj, relRs.getObject(col.getColumnName()));
                 }
                 Component component = (Component) fobj;
-                ArrayList tempList = component.search(db);
+                Set tempList = component.search(db);
                 if (tempList.isEmpty()) {
                     throw new RuntimeException("Empty list on search for foreign objects");
                 } else if (tempList.size() > 1) {

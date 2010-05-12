@@ -39,6 +39,7 @@ package org.kinkydesign.decibell.examples.subclassing;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -112,15 +113,15 @@ public class SubEntityTest {
     @Test
     public void searchForEntity() {
         lock.lock();
-        ArrayList<Entity> results = new Entity().search(db);
-        System.out.println((results.get(0)));
+        Set<Entity> results = new Entity().search(db);
+        System.out.println((results.iterator().next()));
         lock.unlock();
     }
 
     @Test
     public void searchForSubEntity() {
         try {
-            ArrayList<Entity> results = new SubEntity().search(db);
+            Set<Entity> results = new SubEntity().search(db);
         } catch (UnsupportedOperationException ex) {
             System.err.println("!!!!!SUBCLASSING SUPPORT IS DUE FOR BETA VERSION!!!!!");
         }

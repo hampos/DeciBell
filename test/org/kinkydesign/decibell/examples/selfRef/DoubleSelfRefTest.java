@@ -61,8 +61,8 @@ public class DoubleSelfRefTest {
             fail();
         }
 
-        assertEquals(new DoubleSelfRef().search(db).get(0).getMe(), dsr);
-        assertEquals(new DoubleSelfRef().search(db).get(0).getMy(), dsr);
+        assertEquals(new DoubleSelfRef().search(db).iterator().next().getMe(), dsr);
+        assertEquals(new DoubleSelfRef().search(db).iterator().next().getMy(), dsr);
 
     }
 }

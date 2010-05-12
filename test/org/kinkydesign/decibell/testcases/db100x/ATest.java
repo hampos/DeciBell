@@ -101,8 +101,8 @@ public class ATest {
             fail("IMPROPER REGISTRATION!");
         }
 
-        new A().search(db).get(0).print(System.out);
-        new A().search(db).get(1).print(System.out);
+        new A().search(db).iterator().next().print(System.out);
+        new A().search(db).iterator().next().print(System.out);
 
         
         B subPrototype = new B();

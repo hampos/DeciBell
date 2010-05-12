@@ -39,8 +39,10 @@ package org.kinkydesign.decibell.examples.many2many;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -129,11 +131,12 @@ public class Many2ManyTest {
             fail("No person or pet should be in the database!");
         }
 
-        ArrayList<Person> retrievedPersons = new Person().search(db);
+        Set<Person> retrievedPersons = new Person().search(db);
         assertEquals(retrievedPersons.size(), 2);
 
-        Person p1 = retrievedPersons.get(0);
-        Person p2 = retrievedPersons.get(1);
+        Iterator<Person> personsIterator = retrievedPersons.iterator();
+        Person p1 = personsIterator.next();
+        Person p2 = personsIterator.next();
 
         assertEquals(p1, me);
         assertEquals(p1.getPetList(), me.getPetList());
@@ -149,7 +152,7 @@ public class Many2ManyTest {
         try {
             p1.update(db);
             retrievedPersons = new Person().search(db);
-            p1 = retrievedPersons.get(0);
+            p1 = retrievedPersons.iterator().next();
             assertTrue(p1.getPetList().contains(dog));
         } catch (NoUniqueFieldException ex) {
             Logger.getLogger(Many2ManyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -195,11 +198,11 @@ public class Many2ManyTest {
 
         Pet prototype = new Pet();
         prototype.setColor("%a%");
-        ArrayList<Pet> searchedPets = prototype.search(db);
+        Set<Pet> searchedPets = prototype.search(db);
         assertEquals(searchedPets.size(), 1);
-        assertEquals(dog, searchedPets.get(0));
-        assertEquals(dog.getName(), searchedPets.get(0).getName());
-        assertEquals(dog.getColor(), searchedPets.get(0).getColor());
+        assertEquals(dog, searchedPets.iterator().next());
+        assertEquals(dog.getName(), searchedPets.iterator().next().getName());
+        assertEquals(dog.getColor(), searchedPets.iterator().next().getColor());
 
         Collection<Pet> catDog = new ArrayList<Pet>();
         catDog.add(cat);
@@ -213,8 +216,9 @@ public class Many2ManyTest {
 
         Person prot = new Person();
         prot.setPetList(catDog);
-        assertEquals(prot.search(db).get(0).getPetList().size(),2);
-        assertEquals(prot.search(db).get(1).getPetList().size(),1);
+        Iterator<Person> foundPersons = prot.search(db).iterator();
+        assertEquals(foundPersons.next().getPetList().size(),2);
+        assertEquals(foundPersons.next().getPetList().size(),1);
         lock.unlock();
     }
 

@@ -36,6 +36,7 @@
 package org.kinkydesign.decibell.examples.simple;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -129,9 +130,9 @@ public class SimpleTest {
          * Check if the above mentioned data are registered in the database
          * and if these can be successfully retrieved.
          */
-        ArrayList<Person> userList = new Person().search(db);
+        Set<Person> userList = new Person().search(db);
         assertEquals(userList.size(), 1);
-        Person retrievedUser = userList.get(0);
+        Person retrievedUser = userList.iterator().next();
         assertEquals(retrievedUser, u);
         assertEquals(retrievedUser.getFirstName(), u.getFirstName());
         assertEquals(retrievedUser.getLastName(), u.getLastName());
@@ -147,7 +148,7 @@ public class SimpleTest {
          */
         userList = new Person().search(db);
         assertEquals(userList.size(), 1);
-        retrievedUser = userList.get(0);
+        retrievedUser = userList.iterator().next();
         assertEquals(retrievedUser.getFirstName(), u.getFirstName());
 
         /**

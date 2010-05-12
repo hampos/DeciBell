@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -51,6 +52,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.exceptions.DeciBellException;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
@@ -124,10 +126,10 @@ public class ExtremeMTMTest {
         m.register(db);
 
 
-        ArrayList<Master> retrievedMasters = new Master().search(db);
+        Set<Master> retrievedMasters = new Master().search(db);
         assertEquals(retrievedMasters.size(), 1);
 
-        Master retrievedMaster = retrievedMasters.get(0);
+        Master retrievedMaster = retrievedMasters.iterator().next();
 
         assertEquals(retrievedMaster, m);
         assertNotNull(retrievedMaster.getFirstList());
@@ -136,6 +138,11 @@ public class ExtremeMTMTest {
                 getSomeCollection().iterator().next().getName(),sth2.getName()  );
         
 
+    }
+
+    @Test
+    public void again() throws DeciBellException{
+        testSomeMethod();
     }
 
 }

@@ -6,6 +6,7 @@
 package org.kinkydesign.decibell.testcases.db101x;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
@@ -13,7 +14,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.db.engine.SearchEngine;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 
@@ -57,7 +60,7 @@ public class KTest {
     }
 
     @Test
-    public void testdb101x() throws ImproperRegistration {
+    public void testdb101x() throws ImproperRegistration, IllegalArgumentException, IllegalAccessException {
         R remote1 = new R();
         remote1.id = "xyz";
         remote1.xxx = "message1";
@@ -97,25 +100,25 @@ public class KTest {
         K k3 = new K(l3,"hehe");
         k3.attemptRegister(db);
 
-        ArrayList<K> retrievedA = new K().search(db);
+        Set<K> retrievedA = new K().search(db);
         assertTrue(retrievedA.contains(k1));
         assertTrue(retrievedA.contains(k2));
         assertTrue(retrievedA.contains(k3));
 
-        ArrayList<L> retrievedB = new L().search(db);
+        Set<L> retrievedB = new L().search(db);
         assertTrue(retrievedB.contains(l1));
         assertTrue(retrievedB.contains(l2));
         assertTrue(retrievedB.contains(l3));
 
-        ArrayList<K> searchSpecific = k3.search(db);
+        Set<K> searchSpecific = k3.search(db);
         assertEquals(searchSpecific.size(), 1);
-        assertEquals(searchSpecific.get(0), k3);
+        assertEquals(searchSpecific.iterator().next(), k3);
 
-        ArrayList<L> searchB = l2.search(db);
+        Set<L> searchB = l2.search(db);
         assertEquals(searchB.size(), 1);
-        assertEquals(searchB.get(0), l2);
+        assertEquals(searchB.iterator().next(), l2);
 
-        ArrayList<K> searchOperation = new K(null, "haha").search(db);
+        Set<K> searchOperation = new K(null, "haha").search(db);
         assertTrue(searchOperation.contains(k1));
         assertTrue(searchOperation.contains(k2));
         assertEquals(searchOperation.size(),2);
@@ -125,15 +128,17 @@ public class KTest {
         lSearch.remote = remote2;
         kSearch.setL(lSearch);
 
-//        for (K k : kSearch.search(db)){
-//            k.print(System.out);
-//        }
+        SearchEngine<K> se = new SearchEngine<K>(db);
+
+        for (K k : se.find(kSearch)){
+            k.print(System.out);
+        }
 
         assertEquals(1,kSearch.search(db).size());
     }
 
-    //@Test
-    public void repeatTest() throws ImproperRegistration {
+    @Test
+    public void repeatTest() throws ImproperRegistration, IllegalArgumentException, IllegalAccessException {
         testdb101x();
     }
 

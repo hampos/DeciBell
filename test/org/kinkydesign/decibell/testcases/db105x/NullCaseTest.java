@@ -89,7 +89,7 @@ public class NullCaseTest {
 
         nc.attemptRegister(db);
         assertEquals(nc.attemptRegister(db), 1);
-        NullCase retrievedCase = nc.search(db).get(0);
+        NullCase retrievedCase = nc.search(db).iterator().next();
         assertNotNull(retrievedCase);
         assertEquals(retrievedCase.getMyEntry(),"__NULL__");
         assertEquals(retrievedCase.getUid(),"__NULL__");
@@ -100,7 +100,7 @@ public class NullCaseTest {
         nc = new NullCase("__NULL__", "message");
         nc.update(db);
 
-        retrievedCase = nc.search(db).get(0);
+        retrievedCase = nc.search(db).iterator().next();
         assertNotNull(retrievedCase);
         assertEquals(retrievedCase.getMyEntry(), nc.getMyEntry());
         assertEquals(retrievedCase.getUid(), nc.getUid());
