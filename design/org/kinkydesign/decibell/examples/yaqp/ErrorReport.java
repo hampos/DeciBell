@@ -44,12 +44,14 @@ import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.annotations.TableName;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+@TableName("ER")
 public class ErrorReport extends Component<ErrorReport> {
 
     

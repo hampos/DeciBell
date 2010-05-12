@@ -51,7 +51,11 @@ import org.kinkydesign.decibell.annotations.TableName;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+<<<<<<< Updated upstream:design/org/kinkydesign/decibell/examples/selfRef/SelfRef.java
 @TableName("MYSELF")
+=======
+@TableName("SR")
+>>>>>>> Stashed changes:design/org/kinkydesign/decibell/examples/selfRef/SelfRef.java
 public class SelfRef extends Component<SelfRef>{
 
     @PrimaryKey

@@ -49,7 +49,11 @@ import org.kinkydesign.decibell.annotations.TableName;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+<<<<<<< Updated upstream:design/org/kinkydesign/decibell/examples/multifk/Master.java
 @TableName("KMASTER")
+=======
+@TableName("MST")
+>>>>>>> Stashed changes:design/org/kinkydesign/decibell/examples/multifk/Master.java
 public class Master extends Component<Master>{
 
     public Master() {

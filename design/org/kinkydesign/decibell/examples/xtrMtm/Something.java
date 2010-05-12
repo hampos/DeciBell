@@ -47,7 +47,11 @@ import org.kinkydesign.decibell.annotations.TableName;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+<<<<<<< Updated upstream:design/org/kinkydesign/decibell/examples/xtrMtm/Something.java
 @TableName("SOMETHING")
+=======
+@TableName("STH")
+>>>>>>> Stashed changes:design/org/kinkydesign/decibell/examples/xtrMtm/Something.java
 public class Something extends Component<Something> {
 
     @PrimaryKey

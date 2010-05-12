@@ -50,7 +50,11 @@ import org.kinkydesign.decibell.annotations.TableName;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+<<<<<<< Updated upstream:design/org/kinkydesign/decibell/examples/enm/Chung.java
 @TableName("CHIUNG")
+=======
+@TableName("CHVNG")
+>>>>>>> Stashed changes:design/org/kinkydesign/decibell/examples/enm/Chung.java
 public class Chung extends Component<Chung>{
 
     public enum STATUS {

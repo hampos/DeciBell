@@ -51,7 +51,11 @@ import org.kinkydesign.decibell.annotations.TableName;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+<<<<<<< Updated upstream:design/org/kinkydesign/decibell/examples/multifk/Slave.java
 @TableName("KSLAVE")
+=======
+@TableName("SLV")
+>>>>>>> Stashed changes:design/org/kinkydesign/decibell/examples/multifk/Slave.java
 public class Slave extends Component<Slave>{    
     
     @PrimaryKey

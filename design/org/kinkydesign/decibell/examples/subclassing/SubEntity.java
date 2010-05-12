@@ -40,6 +40,7 @@ package org.kinkydesign.decibell.examples.subclassing;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.ForeignKey;
 import org.kinkydesign.decibell.annotations.NumericNull;
+import org.kinkydesign.decibell.annotations.TableName;
 import org.kinkydesign.decibell.collections.OnModification;
 
 /**
@@ -47,6 +48,7 @@ import org.kinkydesign.decibell.collections.OnModification;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
+@TableName("SUB")
 public class SubEntity extends Entity {
 
     // TODO: Registration of non-direct subclasses of Component!

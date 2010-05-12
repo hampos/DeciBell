@@ -192,6 +192,7 @@ public class RegistrationEngine {
         PreparedStatement ps = entry.getKey();
         SQLQuery sqlQuery = entry.getValue();
 
+        System.out.println(sqlQuery.getSQL());
         try {
             int i = 1;
             /*
@@ -222,6 +223,7 @@ public class RegistrationEngine {
                         }
 
                     } else if (field.get(whatToWrite) == null) {
+<<<<<<< Updated upstream:src/org/kinkydesign/decibell/db/engine/RegistrationEngine.java
                         if (col.getDefaultValue()!=null){
                             ps.setObject(i, (Object) col.getDefaultValue(), col.getColumnType().getType());
                         }else{
@@ -236,6 +238,12 @@ public class RegistrationEngine {
                         }else{
                             ps.setObject(i, valueToBeWritten, col.getColumnType().getType());
                         }
+=======
+                        ps.setObject(i, (Object) col.getDefaultValue(), col.getColumnType().getType());
+                    } else {
+                        System.out.println("setting "+col.getColumnName()+" to "+field.get(whatToWrite));
+                        ps.setObject(i, (Object) field.get(whatToWrite), col.getColumnType().getType());
+>>>>>>> Stashed changes:src/org/kinkydesign/decibell/db/engine/RegistrationEngine.java
                     }
                 } else {
                     XStream xstream = new XStream();
@@ -297,7 +305,7 @@ public class RegistrationEngine {
                     }
                     ps.addBatch();
                 }
-                ps.executeBatch();
+                ps.execute();
                 pool.recycleRegister(entry, relTable);
             }
         } catch (IllegalArgumentException ex) {

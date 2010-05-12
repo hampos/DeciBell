@@ -41,12 +41,14 @@ package org.kinkydesign.decibell.examples.subclassing;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.annotations.TableName;
 
 /**
  *
  * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
  */
+@TableName("REMOTEENTITY")
 public class RemoteEntity extends Component<SubEntity>{
 
     @PrimaryKey

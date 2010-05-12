@@ -72,7 +72,11 @@ public class ExtremeMTMTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
+<<<<<<< Updated upstream:test/org/kinkydesign/decibell/examples/xtrMtm/ExtremeMTMTest.java
         db.setDbName("decibellTestDB/mtm/xtr4");
+=======
+        db.setDbName("decibellTestDB/xxtr/mtm666");
+>>>>>>> Stashed changes:test/org/kinkydesign/decibell/examples/xtrMtm/ExtremeMTMTest.java
         db.attach(Master.class);
         db.attach(Slave.class);
         db.attach(Something.class);
