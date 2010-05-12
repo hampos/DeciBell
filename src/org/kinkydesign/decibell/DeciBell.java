@@ -53,9 +53,16 @@ import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.db.derby.DerbyConnector;
 import org.kinkydesign.decibell.db.derby.DerbyTablesGenerator;
+import org.kinkydesign.decibell.examples.enm.Chung;
+import org.kinkydesign.decibell.exceptions.DeciBellException;
 import org.kinkydesign.decibell.exceptions.ImproperDatabaseException;
 import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 /**
  *
@@ -108,8 +115,6 @@ public class DeciBell {
     public DeciBell() {
     }
 
-    
-
     /**
      * <p  align="justify" style="width:60%">
      * Attach a new java class to the relational database structure. One or more
@@ -131,25 +136,35 @@ public class DeciBell {
 
     /**
      * <p  align="justify" style="width:60%">
+     * Attaches to the list of components the classes contained in the specified
+     * packages. Provide the package name without any regual expressions at the end
+     * like <code>.*</code> or the beggining like <code>*.util</code>.
      * </p>
-     * @param pack
-     *      Package containing Components to be attached
+     * @param packageNames
+     *      List of packages. The components found therein will be used to create
+     *      the database.
      */
-    public void attachFromPackage(Package pack){
-        Reflections reflections = new Reflections(pack.getName());
-        components.addAll(reflections.getSubTypesOf(Component.class));
-    }
+    public void attachFromPackages(String... packageNames) {
 
-    /**
-     * <p  align="justify" style="width:60%">
-     * Attaches to the list of components the
-     * </p>
-     * @param packageName
-     *      Name of the package containing Components to be attached
-     */
-    public void attachFromPackage(String packageName){
-        Reflections reflections = new Reflections(packageName);
+        if (components == null) {
+            components = new HashSet<Class<? extends Component>>();
+        }
+        String packagesToAdd = "";
+
+        for (int i = 0; i < packageNames.length; i++) {
+            packagesToAdd += "+" + packageNames[i]+".*";
+            if (i<packageNames.length-1){
+                packagesToAdd += ",";
+            }
+        }
+        
+        Reflections reflections = new Reflections(
+                new ConfigurationBuilder().filterInputsBy(FilterBuilder.parse(packagesToAdd)).
+                setUrls(ClasspathHelper.getUrlsForCurrentClasspath()).
+                setScanners(new SubTypesScanner()));
+
         components.addAll(reflections.getSubTypesOf(Component.class));
+        System.out.println(components.iterator().next());
     }
 
     /**
@@ -164,14 +179,15 @@ public class DeciBell {
         connector.connect();
         System.err.println("DeciBell >>> Beware of the flames!");
         if (this.components == null) {
-            attachFromPackage("");
+            Reflections reflections = new Reflections("");
+            components = reflections.getSubTypesOf(Component.class);
         }
         checkConsistencybefore();
         TablesGenerator tables = new DerbyTablesGenerator(connector, components);
         tables.construct();
         StatementPool pool = new StatementPool(connector, 10);
-        System.err.println("DeciBell >>> Successfully connected to the database as "+getUser());
-        System.err.println("DeciBell >>> CONNECT '"+getDatabaseUrl()+"';");
+        System.err.println("DeciBell >>> Successfully connected to the database as " + getUser());
+        System.err.println("DeciBell >>> CONNECT '" + getDatabaseUrl() + "';");
     }
 
     /**
@@ -235,7 +251,6 @@ public class DeciBell {
 
         }
     }// </editor-fold>
-    
 
     /**
      * <p  align="justify" style="width:60%">
@@ -407,5 +422,9 @@ public class DeciBell {
 
     public String getDatabaseDriver() {
         return connector.getDatabaseDriver();
+    }
+
+    public void disconnect() {
+        connector.disconnect();
     }
 }

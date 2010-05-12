@@ -83,6 +83,9 @@ import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
  */
 public abstract class Component<T extends Component> implements Cloneable {
 
+    /**
+     * Empty constructor for the class Component.
+     */
     public Component() {
     }
 
@@ -108,7 +111,21 @@ public abstract class Component<T extends Component> implements Cloneable {
     /**
      *
      * <p  align="justify" style="width:60%">
-     * Registers the component in the specified database.
+     * Registers the component in the specified database. Note that if some field
+     * in the component posseses a declaration of a <code>DEFAULT</code> value and
+     * you provide a <code>null</code> value for registration, the default value
+     * is used instead. Also if a numeric field (e.g. int, double, float etc) has a
+     * declared null value using the annotation @{@link NumericNull }, this value
+     * stands for <code>null</code>, that is if you attempt to register this value,
+     * and you have declared a <code>DEFAULT</code> value, the default value will
+     * be registered.
+     * </p>
+     * <p  align="justify" style="width:60%">
+     * We prompt the users of DeciBell to always excplicitly denote the value of @{@link NumericNull }
+     * for every numeric field and also provide a default value
+     * for both numeric and String fields as in the current version of DeciBell there
+     * is no support for registering <code>null</code> values in the database; instead
+     * some default values are stored.
      * </p>
      * @param db
      *      The decibell object which identifies a database connection.
@@ -120,6 +137,7 @@ public abstract class Component<T extends Component> implements Cloneable {
      * @throws ImproperRegistration
      *      In case the component cannot be registered in the database. This is the
      *      case when the candidate object posseses a null Collection-type field.
+     * @see Component#attemptRegister(org.kinkydesign.decibell.DeciBell) attemptRegister
      * @see RegistrationEngine
      */
     public void register(DeciBell db) throws DuplicateKeyException, ImproperRegistration {
@@ -144,6 +162,8 @@ public abstract class Component<T extends Component> implements Cloneable {
      * @throws ImproperRegistration
      *      In case the component cannot be registered in the database. This is the
      *      case when the candidate object posseses a null Collection-type field.
+     * @see Component#register(org.kinkydesign.decibell.DeciBell) register
+     * @see RegistrationEngine
      */
     public int attemptRegister(DeciBell db) throws ImproperRegistration {
         RegistrationEngine engine = new RegistrationEngine(db);
@@ -375,15 +395,15 @@ public abstract class Component<T extends Component> implements Cloneable {
         return primaryKeyFields;
     }
 
-    public List<Field> getForeignKeyFields() {
-        List<Field> foreignKey = new LinkedList<Field>();
+    public ArrayList<Field> getForeignKeyFields() {
+        ArrayList<Field> foreignKeys = new ArrayList<Field>();
         for (Field fieldOfThis : getClass().getDeclaredFields()) {
             fieldOfThis.setAccessible(true);
             if (fieldOfThis.getAnnotation(ForeignKey.class) != null) {
-                foreignKey.add(fieldOfThis);
+                foreignKeys.add(fieldOfThis);
             }
         }
-        return foreignKey;
+        return (ArrayList<Field>)foreignKeys;
     }
 
     public List<Field> getSelfReferencingFields() {

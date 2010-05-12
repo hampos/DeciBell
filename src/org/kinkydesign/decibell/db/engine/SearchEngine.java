@@ -147,7 +147,7 @@ public class SearchEngine<T> {
         Pair<PreparedStatement, SQLQuery> entry = pool.getSearch(table);
         PreparedStatement ps = entry.getKey();
         SQLQuery query = entry.getValue();
-
+        
         //TODO: Add comments inside the method content to tell what every line does...
         try {
             ResultSet rs = acquireResults(query, ps, whatToSearch);
@@ -209,11 +209,14 @@ public class SearchEngine<T> {
                     f.setAccessible(true);
 
                     if (!col.isTypeNumeric()) { // The column is a non-numeric foreign key...
+                        System.out.println("asd*********************asda,fnndf*(*(&^#@(*Q*WE");
                         Field remotePKfield = (Field) ((Component) obj).getPrimaryKeyFields().get(0);
                         if (remotePKfield.get(obj)==null){
                             Infinity inf = new Infinity(db.getDbConnector());
                             ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                            System.out.println("C1");
                         }else{
+                            System.out.println("C2 for "+remotePKfield.get(obj));
                             ps.setObject(i, (Object) remotePKfield.get(obj), col.getColumnType().getType());
                         }                        
                     } else {
@@ -224,7 +227,6 @@ public class SearchEngine<T> {
                             ps.setObject(i, f.get(obj), col.getColumnType().getType());
                         }
                     }
-
                 } else if (obj == null
                         || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull())))) {
                     Infinity inf = new Infinity(db.getDbConnector());
@@ -245,68 +247,68 @@ public class SearchEngine<T> {
         return ps.executeQuery();
     }
 
-    void handleForeignKeys(
-            Table table,
-            ResultSet rs,
-            Component whatToSearch,
-            Component[] tempComponent,
-            Object newObj) throws Exception {
+        void handleForeignKeys(
+                Table table,
+                ResultSet rs,
+                Component whatToSearch,
+                Component[] tempComponent,
+                Object newObj) throws Exception {
 
-        for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
-            /*
-             * Retrieve the object of the SAME type which is referenced by a
-             * self-referencing foreign column.
-             */
-            Class refClass = group.iterator().next().getReferencesClass();
-            Constructor refConstructor = refClass.getDeclaredConstructor();
-            refConstructor.setAccessible(true);
-            Object refObj = refConstructor.newInstance();
+            for (Set<JTableColumn> group : table.getForeignColumnsByGroup()) {
+                /*
+                 * Retrieve the object of the SAME type which is referenced by a
+                 * self-referencing foreign column.
+                 */
+                Class refClass = group.iterator().next().getReferencesClass();
+                Constructor refConstructor = refClass.getDeclaredConstructor();
+                refConstructor.setAccessible(true);
+                Object refObj = refConstructor.newInstance();
 
-            for (JTableColumn col : group) {
-                Field f = col.getReferenceColumn().getField();
-                f.setAccessible(true);
-                f.set(refObj, rs.getObject(col.getColumnName()));
-            }
-            Component component = (Component) refObj;
-
-            /*
-             * Foreign Key but NOT a self-reference!
-             */
-            if ((component.getClass().equals(whatToSearch.getClass()) && !component.equals(whatToSearch))
-                    || !component.getClass().equals(whatToSearch.getClass())) {
-                ArrayList tempList = component.search(db);
-
-                if (tempList.size() > 1) {
-                    throw new RuntimeException("Single foreign object list has size > 1");
-                } else if (tempList.size() == 1) {
-                    /*
-                     * We discern between 2 cases. Firstly the foreign key points to
-                     * a foreign table which does not correspond to a superclass of
-                     * newObj(whatToSearch), and secondly a foreign table that really
-                     * is a superclass of the searched object. In the second case
-                     * all superfields of newObj have to be set.
-                     */
-                    Field f = group.iterator().next().getField();
+                for (JTableColumn col : group) {
+                    Field f = col.getReferenceColumn().getField();
                     f.setAccessible(true);
-                    //@Old:  ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
-                    Set<Field> newObjFields = DeciBellReflectUtils.getAllFields(newObj.getClass(), true);
-                    if (newObjFields.contains(f)) {
-                        //System.out.println("Setting " + f.getName());//////
-                        f.set(newObj, tempList.get(0));
-                    } else {
-                        //System.out.println("**Setting " + f.getName());
-                        for (JTableColumn superCol : registry.get(tempList.get(0).getClass()).getTableColumns()) {
-                            Field superField = superCol.getField();
-                            superField.setAccessible(true);
-                            superField.set(newObj, superField.get(tempList.get(0)));
+                    f.set(refObj, rs.getObject(col.getColumnName()));
+                }
+                Component component = (Component) refObj;
+
+                /*
+                 * Foreign Key but NOT a self-reference!
+                 */
+                if ((component.getClass().equals(whatToSearch.getClass()) && !component.equals(whatToSearch))
+                        || !component.getClass().equals(whatToSearch.getClass())) {
+                    ArrayList tempList = component.search(db);
+
+                    if (tempList.size() > 1) {
+                        throw new RuntimeException("Single foreign object list has size > 1");
+                    } else if (tempList.size() == 1) {
+                        /*
+                         * We discern between 2 cases. Firstly the foreign key points to
+                         * a foreign table which does not correspond to a superclass of
+                         * newObj(whatToSearch), and secondly a foreign table that really
+                         * is a superclass of the searched object. In the second case
+                         * all superfields of newObj have to be set.
+                         */
+                        Field f = group.iterator().next().getField();
+                        f.setAccessible(true);
+                        //@Old:  ArrayList newObjFields = new ArrayList(Arrays.asList(newObj.getClass().getDeclaredFields()));
+                        Set<Field> newObjFields = DeciBellReflectUtils.getAllFields(newObj.getClass(), true);
+                        if (newObjFields.contains(f)) {
+                            //System.out.println("Setting " + f.getName());//////
+                            f.set(newObj, tempList.get(0));
+                        } else {
+                            //System.out.println("**Setting " + f.getName());
+                            for (JTableColumn superCol : registry.get(tempList.get(0).getClass()).getTableColumns()) {
+                                Field superField = superCol.getField();
+                                superField.setAccessible(true);
+                                superField.set(newObj, superField.get(tempList.get(0)));
+                            }
                         }
                     }
+                } else if (component.getClass().equals(whatToSearch.getClass()) && component.equals(whatToSearch)) {
+                    handleSelfRefTables(tempComponent, whatToSearch, group, component, newObj);
                 }
-            } else if (component.getClass().equals(whatToSearch.getClass()) && component.equals(whatToSearch)) {
-                handleSelfRefTables(tempComponent, whatToSearch, group, component, newObj);
             }
         }
-    }
 
     /**
      *

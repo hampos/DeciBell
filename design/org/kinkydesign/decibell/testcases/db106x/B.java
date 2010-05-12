@@ -1,6 +1,6 @@
 /**
- *  Class : L
- *  Date  : May 9, 2010
+ *  Class : B
+ *  Date  : May 12, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,7 +35,9 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.testcases.db101x;
+
+
+package org.kinkydesign.decibell.testcases.db106x;
 
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.ForeignKey;
@@ -46,26 +48,12 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class L extends Component<L> {
+public class B extends Component<B>{
 
     @PrimaryKey
-    protected String l;
+    public String b;
 
     @ForeignKey
-    public R remote;
+    public C c;
 
-    public L() {
-    }
-
-    public L(String b) {
-        this.l = b;
-    }
-
-    public String getL() {
-        return l;
-    }
-
-    public void setL(String b) {
-        this.l = b;
-    }
 }

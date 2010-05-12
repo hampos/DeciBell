@@ -498,6 +498,7 @@ final public class TableColumn implements Cloneable, JTableColumn {
     }
 
     public String getNumericNull() {
+        if (numericNull==null) return "-1";
         return numericNull;
     }
 

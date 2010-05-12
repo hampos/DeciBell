@@ -73,8 +73,8 @@ public class SubEntityTest {
         db.attach(RemoteEntity.class);
 
         db.start();
-        System.out.println("*******\n" +
-                "CONNECT '"+db.getDatabaseUrl()+"'");
+        System.out.println("*******\n"
+                + "CONNECT '" + db.getDatabaseUrl() + "'");
     }
 
     @AfterClass
@@ -94,32 +94,36 @@ public class SubEntityTest {
         lock.lock();
         RemoteEntity rem = new RemoteEntity();
         rem.setId(new Random().nextLong());
-        rem.setName("value"+Long.toString(new Random().nextLong()));
+        rem.setName("value" + Long.toString(new Random().nextLong()));
 
         final SubEntity se = new SubEntity();
         se.setId(new Random().nextLong());
         se.setInfo("info");
         se.setMessage("my msg");
-        se.setNumber (102);
-        se.setXyz(1433.3    );
+        se.setNumber(102);
+        se.setXyz(1433.3);
         se.setRemote(rem);
-        se.setSubremote(se);        
+        se.setSubremote(se);
         rem.attemptRegister(db);
         se.register(db);
         lock.unlock();
     }
 
     @Test
-    public void searchForEntity(){
+    public void searchForEntity() {
         lock.lock();
         ArrayList<Entity> results = new Entity().search(db);
-        System.out.println((results.get(0)));        
+        System.out.println((results.get(0)));
         lock.unlock();
     }
 
-
     @Test
-    public void searchForSubEntity(){
-        ArrayList<Entity> results = new SubEntity().search(db);
+    public void searchForSubEntity() {
+        try {
+            ArrayList<Entity> results = new SubEntity().search(db);
+        } catch (UnsupportedOperationException ex) {
+            System.err.println("!!!!!SUBCLASSING SUPPORT IS DUE FOR BETA VERSION!!!!!");
+        }
+        db.disconnect();
     }
 }

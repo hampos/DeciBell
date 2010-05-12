@@ -1,6 +1,6 @@
 /**
- *  Class : L
- *  Date  : May 9, 2010
+ *  Class : NumericDefault
+ *  Date  : May 11, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -35,37 +35,63 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.testcases.db101x;
+package org.kinkydesign.decibell.testcases.db105x;
 
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.ForeignKey;
+import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
- *
+ * When a default value is provided for a numeric field, it should be used in table
+ * creation and object registration.
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class L extends Component<L> {
+public class NumericDefault extends Component<NumericDefault> {
 
     @PrimaryKey
-    protected String l;
+    @Entry(defaultValue = "XYZ", notNull=true)
+    private String id;
 
-    @ForeignKey
-    public R remote;
+    @Entry(defaultValue = "14.25", notNull=true)
+    @NumericNull(numericNullValue = "0.0")
+    private double numDouble;
+    
+    @Entry(defaultValue = "512",notNull=true)
+    @NumericNull(numericNullValue = "0.000")
+    private int numInteger;
 
-    public L() {
+    public NumericDefault() {
     }
 
-    public L(String b) {
-        this.l = b;
+    public NumericDefault(String id, double numDouble, int numInteger) {
+        this.id = id;
+        this.numDouble = numDouble;
+        this.numInteger = numInteger;
     }
 
-    public String getL() {
-        return l;
+    public String getId() {
+        return id;
     }
 
-    public void setL(String b) {
-        this.l = b;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public double getNumDouble() {
+        return numDouble;
+    }
+
+    public void setNumDouble(double numDouble) {
+        this.numDouble = numDouble;
+    }
+
+    public int getNumInteger() {
+        return numInteger;
+    }
+
+    public void setNumInteger(int numInteger) {
+        this.numInteger = numInteger;
     }
 }

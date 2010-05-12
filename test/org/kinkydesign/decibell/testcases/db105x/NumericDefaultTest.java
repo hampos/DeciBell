@@ -1,4 +1,6 @@
 /**
+ *  Class : NumericDefaultTest
+ *  Date  : May 11, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -33,42 +35,30 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-package org.kinkydesign.decibell.examples.enm;
+package org.kinkydesign.decibell.testcases.db105x;
 
 import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.exceptions.DeciBellException;
 import static org.junit.Assert.*;
-import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
-import org.kinkydesign.decibell.exceptions.ImproperRegistration;
+import org.kinkydesign.decibell.exceptions.ImproperDatabaseException;
 
 /**
  *
  * @author chung
  */
-public class ChungTest {
+public class NumericDefaultTest {
 
-    private static DeciBell db;
-    private static final Lock lock = new ReentrantLock();
-
-    public ChungTest() {
+    public NumericDefaultTest() {
     }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        db = new DeciBell();
-        db.attachFromPackages(
-                "org.kinkydesign.decibell.examples.enm",
-                "org.kinkydesign.decibell.examples.yaqp");
-        db.setDbName("decibellTestDB/chung/chungtest01g");
-        db.start();
     }
 
     @AfterClass
@@ -83,36 +73,31 @@ public class ChungTest {
     public void tearDown() {
     }
 
-     @Test
-    public void testEnumeration() throws DuplicateKeyException, ImproperRegistration {
-        lock.lock();
-        new Chung().delete(db);
+    @Test
+    public void testSomeMethod() throws DeciBellException {
+        DeciBell db = new DeciBell();
+        db.setDbName("decibellTestDB/numericDefault");
+        db.attach(NumericDefault.class);
+        db.start();
 
-        Chung chung = new Chung(UUID.randomUUID().toString(), Chung.STATUS.HIGH);
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("abc");
-        list.add("def");
-        chung.setXmlization(list);
-        chung.register(db);
-        chung = new Chung(UUID.randomUUID().toString(), Chung.STATUS.LOW);
-        chung.setXmlization(list);
-        chung.register(db);
-        chung = new Chung(UUID.randomUUID().toString(), Chung.STATUS.LOW);
-        chung.setXmlization(list);
-        chung.register(db);
-
-        assertTrue(new Chung(null, Chung.STATUS.MEDIUM).search(db).size() == 0);
-        assertNotNull(new Chung().search(db).get(0).getStatus());
-        lock.unlock();
+        /*
+         * Setting a numeric field to its numeric-null value, is like setting it
+         * to NULL. This will be translated into DEFAULT in the database INSERT
+         * operation.
+         */
+        new NumericDefault().delete(db);
+        NumericDefault nd = new NumericDefault(null, 0, 0);
+        nd.attemptRegister(db);
+        nd = new NumericDefault("s", 1, 1);
+        nd.register(db);
+        ArrayList<NumericDefault> retrievedObjs = new NumericDefault().search(db);
+        assertEquals(retrievedObjs.size(), 2);
+        assertEquals(retrievedObjs.get(0).getId(),"XYZ");
+        assertTrue(retrievedObjs.get(0).getNumDouble()==14.25);
+        assertTrue(retrievedObjs.get(0).getNumInteger()==512);
+        assertEquals(retrievedObjs.get(1).getId(),"s");
+        assertTrue(retrievedObjs.get(1).getNumDouble()==1);
+        assertTrue(retrievedObjs.get(1).getNumInteger()==1);
     }
 
-     @Test
-     public void doItAgain() throws DuplicateKeyException, ImproperRegistration{
-         lock.lock();
-         testEnumeration();
-         lock.unlock();
-     }
-
-
-    
 }

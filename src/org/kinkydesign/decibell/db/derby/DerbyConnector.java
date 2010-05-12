@@ -65,10 +65,10 @@ public class DerbyConnector extends DbConnector {
         setJavacmd("java");
         setJavaOptions("-Djava.net.preferIPv4Stack=true");
         // setDriverHome("/usr/local/sges-v3/javadb");
-        if(System.getProperty("os.name").contains("Mac")){
+        if (System.getProperty("os.name").contains("Mac")) {
             setDriverHome(System.getenv("DERBY_HOME"));
-        }else{
-            setDriverHome(System.getProperty("user.home")+"/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
+        } else {
+            setDriverHome(System.getProperty("user.home") + "/JLib/10.6.0.0alpha_2010-02-15T19-30-14_SVN910262");
         }
         setHost("localhost");
         setPort(1527);
@@ -87,7 +87,7 @@ public class DerbyConnector extends DbConnector {
                 throw new RuntimeException(ex);
             }
         }
-        
+
     }
 
     public void killServer() {
@@ -99,10 +99,10 @@ public class DerbyConnector extends DbConnector {
         try {
             Process killing = Runtime.getRuntime().exec(derby_kill_command);
             killing.waitFor();
-            int N_TRIES = 5, i=0;
-            while (killing.exitValue()!=0 && i<N_TRIES){
-             Thread.sleep(1000);
-             i++;
+            int N_TRIES = 5, i = 0;
+            while (killing.exitValue() != 0 && i < N_TRIES) {
+                Thread.sleep(1000);
+                i++;
             }
             Thread.sleep(1500);
         } catch (InterruptedException ex) {
@@ -143,8 +143,8 @@ public class DerbyConnector extends DbConnector {
             Table t = (Table) tables[i];
             execute("DROP TABLE " + t.getFullTableName());
         }
-        execute("DROP TABLE "+getUser()+".DECIBELL_INIT_TAB");
-        execute("DROP SCHEMA " + getUser() +" RESTRICT");
+        execute("DROP TABLE " + getUser() + ".DECIBELL_INIT_TAB");
+        execute("DROP SCHEMA " + getUser() + " RESTRICT");
     }
 
     private void startDerbyServer() throws IOException {
@@ -160,7 +160,7 @@ public class DerbyConnector extends DbConnector {
             "-p", Integer.toString(getPort()),};
         boolean derby_alive = isServerRunning();
         while (!derby_alive) {
-            getRuntime().exec(derby_start_command);            
+            getRuntime().exec(derby_start_command);
             try {
                 Thread.sleep(400);
             } catch (InterruptedException ex) {
@@ -193,6 +193,8 @@ public class DerbyConnector extends DbConnector {
      * if the specified is not found.
      */
     private void establishConnection() {
+        int NUMBER_TRIES = 10;
+        int i = 0;
         Properties databaseConnectionProps = new Properties();
         databaseConnectionProps.setProperty("user", getUser());
         databaseConnectionProps.setProperty("password", getPassword());
@@ -202,6 +204,19 @@ public class DerbyConnector extends DbConnector {
         } catch (SQLException ex) {
             if (ex.getErrorCode() == 40000) {
                 createDataBase();
+            } else if (ex.getSQLState().equals("XJ040") && ex.getErrorCode() == -1 && i < NUMBER_TRIES) {
+                /*
+                 * Waiting for other users to log off so that you can
+                 * manage to log in.
+                 */
+                try {
+                    System.out.println("[INFO] Waiting for another instance of Derby to log out. Please wait...");
+                    Thread.sleep(1000);
+                    i++;
+                    establishConnection();
+                } catch (InterruptedException ex1) {
+                    Logger.getLogger(DerbyConnector.class.getName()).log(Level.SEVERE, null, ex1);
+                }
             } else {
                 throw new RuntimeException(ex);
             }

@@ -32,10 +32,11 @@ public class KTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("testDB/db101x/abafhs");
+        db.setDbName("testDB/db101x/akfjsee");
 
         db.attach(K.class);
         db.attach(L.class);
+        db.attach(R.class);
 
         lock.lock();
         db.start();
@@ -57,16 +58,31 @@ public class KTest {
 
     @Test
     public void testdb101x() throws ImproperRegistration {
+        R remote1 = new R();
+        remote1.id = "xyz";
+        remote1.xxx = "message1";
+        remote1.attemptRegister(db);
+
+        R remote2 = new R();
+        remote2.id = "aaa";
+        remote2.xxx = "message....2";
+        remote2.attemptRegister(db);
+
         L l0 = new L("l_0");
+        l0.remote = remote1;
         l0.attemptRegister(db);
 
+
         L l1 = new L("l_1");
+        l1.remote = remote1;
         l1.attemptRegister(db);
 
         L l2 = new L("l_2");
+        l2.remote = remote1;
         l2.attemptRegister(db);
 
         L l3 = new L("l_3");
+        l3.remote = remote2;
         l3.attemptRegister(db);
 
         K k0 = new K(l0,null); // null will be registered as my_entry
@@ -103,9 +119,20 @@ public class KTest {
         assertTrue(searchOperation.contains(k1));
         assertTrue(searchOperation.contains(k2));
         assertEquals(searchOperation.size(),2);
+
+        K kSearch = new K();
+        L lSearch = new L();
+        lSearch.remote = remote2;
+        kSearch.setL(lSearch);
+
+//        for (K k : kSearch.search(db)){
+//            k.print(System.out);
+//        }
+
+        assertEquals(1,kSearch.search(db).size());
     }
 
-    @Test
+    //@Test
     public void repeatTest() throws ImproperRegistration {
         testdb101x();
     }

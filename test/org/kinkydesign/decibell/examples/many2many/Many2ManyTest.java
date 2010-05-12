@@ -71,7 +71,7 @@ public class Many2ManyTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         db = new DeciBell();
-        db.setDbName("decibellTestDB/manytomany/haha");
+        db.setDbName("decibellTestDB/manytomany/haha2");
 
         db.attach(Person.class);
         db.attach(Pet.class);
