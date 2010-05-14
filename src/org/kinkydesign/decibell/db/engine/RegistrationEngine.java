@@ -32,11 +32,14 @@ public class RegistrationEngine {
         pool = StatementPool.getPool(db.getDbConnector());
     }
 
+    // TODO: Better exception handling. DuplicateKeyExc is not thrown
     public void register(Component toBeWritten)
             throws DuplicateKeyException, ImproperRegistration, SQLException {
-        registerPart(toBeWritten);
+         registerPart(toBeWritten);
     }
 
+    // TODO: rename this into register (Merge into one).
+    // TODO: Register values in relational tables.
     private void registerPart( /* what to write:     */Component whatToWrite)
             throws DuplicateKeyException, ImproperRegistration, SQLException {
 

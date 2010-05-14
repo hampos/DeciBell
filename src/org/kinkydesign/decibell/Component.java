@@ -37,6 +37,7 @@ package org.kinkydesign.decibell;
 
 import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -142,7 +143,11 @@ public abstract class Component<T extends Component> implements Cloneable {
      */
     public void register(DeciBell db) throws DuplicateKeyException, ImproperRegistration {
         RegistrationEngine engine = new RegistrationEngine(db);
-        engine.register(this);
+        try {
+            engine.register(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -168,7 +173,11 @@ public abstract class Component<T extends Component> implements Cloneable {
     public int attemptRegister(DeciBell db) throws ImproperRegistration {
         RegistrationEngine engine = new RegistrationEngine(db);
         try {
-            engine.register(this);
+            try {
+                engine.register(this);
+            } catch (SQLException ex) {
+                Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
+            }
             return 0;
         } catch (DuplicateKeyException ex) {
             return 1;

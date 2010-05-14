@@ -53,7 +53,6 @@ import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.TablesGenerator;
 import org.kinkydesign.decibell.db.derby.DerbyConnector;
 import org.kinkydesign.decibell.db.derby.DerbyTablesGenerator;
-import org.kinkydesign.decibell.examples.enm.Chung;
 import org.kinkydesign.decibell.exceptions.DeciBellException;
 import org.kinkydesign.decibell.exceptions.ImproperDatabaseException;
 import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;
