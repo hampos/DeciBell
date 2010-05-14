@@ -66,6 +66,9 @@ public class RegistrationEngine {
             } else if (column.isForeignKey() // FOREIGN KEY
                     && !Collection.class.isAssignableFrom(columnField.getType())) { // but NOT COLLECTION
                 handleForeignKey(whatToWrite, ps, column, columnField, ps_INDEX);
+            }else if (column.isForeignKey()
+                    && Collection.class.isAssignableFrom(columnField.getType())) {
+                handleCollections(whatToWrite, ps, column, columnField, ps_INDEX);
             }
             ps_INDEX++;
         }
@@ -164,10 +167,9 @@ public class RegistrationEngine {
         } catch (IllegalAccessException ex) {
             throw new RuntimeException(ex);
         }
+    }
 
-
-
-
-
+    private void handleCollections(Component whatTowrite, PreparedStatement ps, JTableColumn column, Field columnField, int ps_INDEX)
+        throws ImproperRegistration, SQLException {
     }
 }
