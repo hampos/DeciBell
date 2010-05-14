@@ -51,16 +51,16 @@ public class RegistrationEngine {
             Field columnField = column.getField();
             columnField.setAccessible(true);
 
-            if (!column.isForeignKey()           // NOT FOREIGN KEY
+            if (!column.isForeignKey() // NOT FOREIGN KEY
                     && column.isTypeNumeric()) { // Numeric Type Entries (NOT FOREIGN)
                 handleSimpleNumerics(whatToWrite, ps, column, columnField, ps_INDEX);
-            } else if (!column.isForeignKey()                            // NOT FOREIGN KEY
+            } else if (!column.isForeignKey() // NOT FOREIGN KEY
                     && column.getColumnType().equals(SQLType.VARCHAR)) { // String Type Entries (NOT FOREIGN)
                 handleSimpleStrings(whatToWrite, ps, column, columnField, ps_INDEX);
-            } else if (!column.isForeignKey()                                   // NOT FOREIGN KEY
+            } else if (!column.isForeignKey() // NOT FOREIGN KEY
                     && column.getColumnType().equals(SQLType.LONG_VARCHAR)) {   // XStream (NOT FOREIGN)
                 handleSimpleXStream(whatToWrite, ps, column, columnField, ps_INDEX);
-            } else if (column.isForeignKey()                                        // FOREIGN KEY
+            } else if (column.isForeignKey() // FOREIGN KEY
                     && !Collection.class.isAssignableFrom(columnField.getType())) { // but NOT COLLECTION
                 handleForeignKey(whatToWrite, ps, column, columnField, ps_INDEX);
             }
@@ -115,8 +115,8 @@ public class RegistrationEngine {
             throws ImproperRegistration, SQLException {
         try {
             Object valueToBeWritten = columnField.get(whatTowrite);
-            if (valueToBeWritten == null){
-              ps.setObject(ps_INDEX, __NULL__, column.getColumnType().getType());
+            if (valueToBeWritten == null) {
+                ps.setObject(ps_INDEX, __NULL__, column.getColumnType().getType());
             } else {
                 XStream xstream = new XStream();
                 String serializedObject_XML = xstream.toXML(valueToBeWritten);
@@ -130,5 +130,43 @@ public class RegistrationEngine {
 
     private void handleForeignKey(Component whatTowrite, PreparedStatement ps, JTableColumn column, Field columnField, int ps_INDEX)
             throws ImproperRegistration, SQLException {
+        try {
+            columnField.setAccessible(true);
+            Object valueToBeWritten = columnField.get(whatTowrite);
+            if (valueToBeWritten == null) {
+                throw new ImproperRegistration("The current version of DeciBell does not support "
+                        + "registration of NULL values in foreign key fields. The field " + columnField.getName() + " in class "
+                        + whatTowrite.getClass().getName() + " is NULL!");
+            } else {
+                Object foreignKeyValue = getForeignKeyValue(whatTowrite, column, columnField);
+                ps.setObject(ps_INDEX, foreignKeyValue, column.getColumnType().getType());
+            }
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private Object getForeignKeyValue(Component component, JTableColumn column, Field columnField) {
+        columnField.setAccessible(true);
+        try {
+            if (column.isForeignKey()) {
+                JTableColumn remoteColumn = column.getReferenceColumn();
+                Field remoteField = remoteColumn.getField();
+                remoteField.setAccessible(true);
+                Object remoteComponent = columnField.get(component);
+                return getForeignKeyValue((Component) remoteComponent, remoteColumn, remoteField);
+            } else {
+                return columnField.get(component);
+            }
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+
+
+
+
+
     }
 }
