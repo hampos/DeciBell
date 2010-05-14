@@ -55,11 +55,11 @@ public class NumericDefault extends Component<NumericDefault> {
     private String id;
 
     @Entry(defaultValue = "14.25", notNull=true)
-    @NumericNull(numericNullValue = "0.0")
+    @NumericNull(value = "0.0")
     private double numDouble;
     
     @Entry(defaultValue = "512",notNull=true)
-    @NumericNull(numericNullValue = "0.000")
+    @NumericNull(value = "0.000")
     private int numInteger;
 
     public NumericDefault() {

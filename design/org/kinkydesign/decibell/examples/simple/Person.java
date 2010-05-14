@@ -53,7 +53,7 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
 public class Person extends Component<Person>{
 
     @PrimaryKey
-    @NumericNull(numericNullValue="-1")
+    @NumericNull(value="-1")
     private int id = -1;
 
     @Entry

@@ -54,7 +54,7 @@ public class Pet extends Component<Pet> {
     @Entry
     private String color = null;
     @Entry
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     private int numberOfFeet = -1;
 
     public Pet() {

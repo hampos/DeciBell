@@ -53,7 +53,7 @@ import org.kinkydesign.decibell.annotations.TableName;
 public class D extends Component<D>{
 
     @PrimaryKey
-    @NumericNull(numericNullValue="-1")
+    @NumericNull(value="-1")
     private int d = -1;
 
     public D() {

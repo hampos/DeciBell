@@ -50,12 +50,12 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
 public class Entity extends Component<Entity> {
 
     @PrimaryKey
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     private long id = -1;
     @Entry
     private String message = null;
     @Entry
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     private int number = -1;
 
     public Entity() {

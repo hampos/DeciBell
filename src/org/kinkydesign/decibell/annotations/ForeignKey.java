@@ -81,7 +81,7 @@ import org.kinkydesign.decibell.Component;
  * </p>
  * 
  * <p align="justify" style="width:60%">
- * The you can use the annotation <code>@{@link ForeignKey }</code> to declare that 
+ * Then you can use the annotation <code>@{@link ForeignKey }</code> to declare that
  * the field <code>public UserGroup group;</code> points to the entity <code>UserGroup</code>.
  * We note again here that every entity must be endowed with a <code>@{@link PrimaryKey }</code>.
  * So modifying slightly the above code, yields:

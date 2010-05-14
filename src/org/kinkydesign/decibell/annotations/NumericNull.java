@@ -72,6 +72,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface NumericNull {
 
-    public String numericNullValue() default "-1";
+    public String value() default "-1";
 
 }

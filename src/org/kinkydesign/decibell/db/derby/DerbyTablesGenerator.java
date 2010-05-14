@@ -375,7 +375,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
              */
             if ((ann = field.getAnnotation(NumericNull.class)) != null) {
                 NumericNull numNull = (NumericNull) ann;
-                column.setNumericNull(numNull.numericNullValue());
+                column.setNumericNull(numNull.value());
             }
 
             if (flag) {

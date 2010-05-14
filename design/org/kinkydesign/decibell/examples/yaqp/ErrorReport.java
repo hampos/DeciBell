@@ -54,7 +54,7 @@ public class ErrorReport extends Component<ErrorReport> {
 
     
     @PrimaryKey
-    @NumericNull(numericNullValue="-1")
+    @NumericNull(value="-1")
     private int uid=-1;
 
     @ForeignKey

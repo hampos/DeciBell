@@ -56,7 +56,7 @@ public class ErrorCode extends Component<ErrorCode> {
         this.code = code;
     }
     @PrimaryKey
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     private int code = -1;
     @Entry
     private int httpStatus = -1;

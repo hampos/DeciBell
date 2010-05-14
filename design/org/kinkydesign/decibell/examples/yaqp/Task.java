@@ -52,23 +52,23 @@ import org.kinkydesign.decibell.annotations.PrimaryKey;
 public class Task extends Component<Task> {
 
     @PrimaryKey
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     private int uid = -1;
     @Entry
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     private int taskStatus = -1;
     @Entry
     private URI resultURI;
     @ForeignKey
     private ErrorReport er;
     @Entry
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     private long timeStart = -1L;
     @Entry
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     private long timeFinish = -1L;
     @Entry
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     private long durationMS = -1L;
 
     public Task() {

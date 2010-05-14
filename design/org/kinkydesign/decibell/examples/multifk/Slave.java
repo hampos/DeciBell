@@ -61,7 +61,7 @@ public class Slave extends Component<Slave>{
     private String surName;
 
     @Entry
-    @NumericNull(numericNullValue="-1")
+    @NumericNull(value="-1")
     private int x = -1;
 
     @Entry

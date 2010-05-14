@@ -55,7 +55,7 @@ import org.kinkydesign.decibell.annotations.TableName;
 public class SelfRef extends Component<SelfRef>{
 
     @PrimaryKey
-    @NumericNull(numericNullValue="-1")
+    @NumericNull(value="-1")
     private int x = -1;
 
     @ForeignKey

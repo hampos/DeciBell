@@ -53,7 +53,7 @@ public class SubEntity extends Entity {
     @Entry
     private String info = null;
 
-    @NumericNull(numericNullValue = "-1")
+    @NumericNull(value = "-1")
     @Entry
     private double xyz = -1;
 
