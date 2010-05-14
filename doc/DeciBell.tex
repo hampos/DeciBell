@@ -1,0 +1,354 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage{hyperref}
+\pagestyle{plain} 
+\title{DeciBell: A novel approach to the O.R.M. software for Java\texttrademark}
+\author{\href{mailto:hampos@me.com}{Chomenides Ch.}, \href{mailto:chvng@mail.ntua.gr}{Sopasakis P.}, \href{mailto:hsarimv@central.ntua.gr}{Sarimveis H.}}
+\date{May 2010}
+\begin{document}
+ \maketitle
+
+\section*{Minimalist Architecture}\label{minimal}
+DeciBell is an \emph{open source} and \emph{free} tool developed 
+to tackle in a uniform and structured way the problem of 
+Java and SQL cooperation (available at \href{http://github.com/hampos/DeciBell}{\texttt{http://github.com/hampos/DeciBell}}). In DeciBell, Java 
+classes are related to relational database entities automatically and in a 
+transparent way as far as the background operations are concerned. So, on the 
+one hand, non-expert users can work on Java code exclusively while 
+expert ones are able to focus on more algorithmic aspects of the problem they 
+try to solve rather than be wasted with trivial database management issues. In contrast 
+to the existing O.R.M. programs, DeciBell does not require any configuration files 
+or composite query structures, but only a proper annotation of certain fields 
+of the classes. This annotation is carried out by means of the \emph{Java Annotations}
+which is a modern trend in Java programming. Among its supported facilities, 
+DeciBell supports primary keys (single and multiple), foreign keys, 
+constraints, one-to-one, one-to-many, and many-to-many relations and all these using
+pure Java predicates and no SQL or other Query Languages.
+
+DeciBell is developed to be easy to use for all Java developers as it assumes no 
+expert knowledge. It is also meant to be efficient and secure as it makes use of
+solely \emph{Prepared Statements}. In many cases it would be more efficient
+to develop a database management system which is application oriented and tailored to 
+the needs of a specific software. However, the implementation and maintenance of such a 
+system would be time consuming for the developer distracting him/her from the 
+scope of the application itself. So DeciBell is more a convenient tool for DB management rather
+than an optimum solution.
+
+DeciBell's main goal is to strike a balance between configurability, efficiency and complexity,
+putting the most of its effort to suppress the last one. DeciBell struggles to resemble more to 
+an one-button washing machine rather to a state-ot-the-art Boing 747 cockpit.
+
+\section*{Everything is a Component}\label{components}
+In DeciBell every class one needs to map to a relational entity, is called a \emph{Component}. 
+Any class that needs to be persistent in the database using DeciBell has to subclass (directly or indirectly) 
+the class \href{http://github.com/hampos/DeciBell/blob/master/src/org/kinkydesign/decibell/Component.java}{\texttt{Component}}. 
+This is an abstract class that contains methods which 
+enable the user to directly read from and write to the database, 
+as well as delete and update one or more database entries. 
+The user does not need to interact directly or by any means with the database itself 
+or be aware of anything about the database structure, SQL queries and Java-to-db-to-Java data 
+transactions whatsoever. The class \texttt{Component} contains the following four
+method implementations:
+
+\begin{itemize}
+
+	\item \label{register}\texttt{public void} \textbf{register}\texttt{(DeciBell db) throws DuplicateKeyException, ImproperRegistration}: 
+		Register the object into the database. There is no need to specify the table(s) in 
+		which the data are stored or the way this registration is carried out.
+	\item \label{delete}\texttt{public void} \textbf{delete}\texttt{(DeciBell db) throws NoUniqueFieldException}:
+		Delete the specified object or an object that is uniquely identified by the object on which 
+		the method is applied. A primary key value or a unique field has to be provided 
+		thus pointing to some specific target object (entry).
+	\item \label{search}\texttt{public ArrayList<T>} \textbf{search}\texttt{(DeciBell db)}:
+		Apply this method to some object to search for \textit{objects} in the database that resemble to the given one.
+		Fields that you wish to be ignored during the search should be set to \texttt{null}. No additional parameters
+		need to be specified such as the SQL query. The search is based on one or more prepared statements.
+	\item \label{update}\texttt{public void} \textbf{update}\texttt{(DeciBell db) throws NoUniqueFieldException, DuplicateKeyException}:
+		Update an object in the database with the given object. The object on which the method is applied uniquely
+		idenifies some object in the database (using the given value for its primary key(s) or some unique field
+		value). Then all other entries are updated with the corresponding data in the given component.		
+\end{itemize}
+
+For increased security and performance, \texttt{SELECT}, \texttt{INSERT},
+\texttt{UPDATE} and \texttt{DELETE} queries are prepared on startup. The prepared
+statements are supplied with parameters using the Java reflection API (\texttt{java.lang.reflect}) and
+the Java library Reflections (see \href{http://code.google.com/p/reflections}{\texttt{http://code.google.com/p/reflections}} ). However all reflective 
+elements (Classes and Fields) are collected \emph{on startup}, so no reflective lookups take place during runtime.
+
+\section*{DeciBell Annotations}\label{annotations}
+\subsection*{@PrimaryKey}\label{primarykey}
+A Primary Key, in ER-terms, is a characteristic \textit{attribute} (entry) of an
+entity which is unique and not nullable. The primary key value of a table entry is an 
+identifier for this entry. Every component in DeciBell should possess a primary key. One or more
+fields of the component (a Java class) must be annotated with the \texttt{@PrimaryKey} annotation.
+
+\subsection*{@Entry}\label{entry}
+A simple annotation to declare that the underlying field should be mapped to a table column (or a set of
+table columns) in some table. No need to worry about the table structure when using this annotation.
+Database creation takes into account all fields annotated with the \texttt{@Entry}
+annotation to create a proper structure that allows this information to be registered
+in and/or be read from the database. No knowledge of the database structure is needed,
+since you understand the relations between the classes you have defined, which is the
+normal Java (possibly hierarchical) structure. The following methods are contained in this 
+annotation, allowing the user to specify certain meta-information
+about the annotated field. These are:
+
+
+\begin{enumerate}\label{unique}
+	\item \texttt{boolean unique() default false}: 
+	The entry is unique among all entities. Every field annotated with the \texttt{@Entry}
+        annotation with the extra characterization \texttt{unique=true} should have
+        unique values over all instances of that class, at least when database registration
+        operations are performed.
+	\item \texttt{boolean notNull() default false}: The entry cannot accept \texttt{null} values.
+	\item \texttt{String defaultValue() default ""}: Default value to be used when one attempts
+	to register a \texttt{null} value.
+	\item \texttt{boolean autoGenerated() default false}: Applies only to \texttt{integer} or \texttt{long} fields. 
+	Auto-generated fields acquire a value automatically upon registration. Note that at most
+	one field can be auto-generated in every class.
+\end{enumerate}
+
+\subsection*{@ForeignKey}\label{foreignkey}
+In DeciBell, entities are allowed to point one another. So a \texttt{User} may point(have) to a \texttt{UserGroup}, or
+a \texttt{Product} may point to its \texttt{TechnicalSpecifications}. So, an attribute or a set of attributes in some entity
+\emph{references} an attribute or a set of attributes in another entity by a \texttt{foreign
+key} constraint. The purpose of the foreign key is to ensure referential integrity
+of the data i.e. only values that are supposed to appear in an attribute of some other
+entity are permitted. Foreign keys are defined in the ANSI SQL Standard. Let us now give
+an example of how you can use \texttt{@ForeignKey} in your source code. Suppose you have
+two classes, namely \texttt{User} and \texttt{UserGroup} as follows:
+\texttt{\\\\class UserGroup \{\\\label{usergroup1}
+\hspace*{6}      public String groupName;\\
+\hspace*{6}      public String authorizationLevel;\\
+\}\\\\\\
+class User \{\\\label{user1}
+\hspace*{6}   public String userName;\\
+\hspace*{6}   public String password;\\
+\hspace*{6}   public UserGroup group;\\ 
+\}\\
+}\\
+\noindent
+Then you can use the annotation \texttt{@ForeignKey} to declare that 
+the field \texttt{public UserGroup group} points to the entity \texttt{UserGroup}.
+We note again here that every entity must be endowed with a \texttt{@PrimaryKey}.
+So modifying slightly the above code, yields:
+\texttt{\\\\class UserGroup extends Component\{\\\label{usergroup}
+\hspace*{6}      @PrimaryKey public String groupName;\\
+\hspace*{6}      @Entry public String authorizationLevel;\\
+\}\\\\\\
+class User extends Component\{\\\label{user}
+\hspace*{6}   @PrimaryKey public String userName;\\
+\hspace*{6}   @Entry public String password;\\
+\hspace*{6}   @ForeignKey public UserGroup group;\\ 
+\}\\
+}\\
+The following methods of the annotation enable the user to configure some 
+properties of the foreign key such as its behavior \texttt{on delete} and \texttt{on update}.
+These methods are:
+
+\begin{enumerate}
+	\item \texttt{OnModification onDelete() default OnModification.NO\_ACTION}.
+	\item \texttt{OnModification onUpdate() default OnModification.NO\_ACTION}.
+\end{enumerate}
+
+\subsection*{@Constraint}\label{constraint}
+In order to enhance data integrity in your database, you may add a constraint on an attribute. If
+the attribute is numeric (\texttt{int, long, short, double, float}) the constraint consists of a 
+lower and a higher bound (numeric constraints), that is $x_{low}\le x \le x_{max}$. On the other hand, constraints on String
+attributes impose a finite range of values (nominal constraints), i.e. $x \in \{x_1,x_2,\ldots,x_n \}$. This 
+Java Annotation Type defines the necessary methods for establishing such constraints on 
+attributes (fields) of components. These are:
+
+\begin{enumerate}
+	\item \texttt{String low() default ""}: Lower bound imposed on an attribute as a constraint.
+	\item \texttt{String high() default ""}: Upper bound imposed on an attribute as a constraint.
+	\item \texttt{String[] domain() default \{""\}}: Nominal constraint imposed on String fields.
+\end{enumerate}
+
+\subsection*{@NumericNull}\label{numericnull}
+This DeciBell annotation is used to provide a \emph{numeric null} value for database
+searching as the JVM does not allow for \texttt{null} values in numeric variables. The number
+provided using this interface, stands for the \texttt{null} value of the annotated variable.
+
+The idea is simple: When a search command is executed on a DeciBell
+Component DeciBell checks that component's Fields and when a Field has a \texttt{null}
+value it gets replaced by an infinite value. (A value used to inform the database
+that this specific field is to be ignored in the search, in the sense to perform
+the search operation irrespective of the value of this field)
+In that way DeciBell keeps using the same PreparedStatements and
+greatly increasing performance even though some of the statements values have
+to be ignored.
+
+The problem comes in when Java automatically initializes all primitive numerics
+with a $0$ value (There is no meaning of \texttt{null} for primitives).
+This makes us unable to see if the field was initialized by
+the user or by the compiler. A new annotation then became clear.
+NumericNull is used to define the value on which a numeric primitive is
+considered null. The default value is $-1$. One can set a numeric null value
+other than that on each DeciBell Entry. If one is to use this annotation, they must provide
+a numeric value that they will not (or at least not expect to) use ever in their
+database for that field; otherwise this will lead to a considerable comfusion and
+wrong results.
+
+\subsection*{@TableName}\label{tablename}
+This annotation should concern only those users who need to directly access the automatically 
+created database to inspect the data in it and/or understand how DeciBell works. So it 
+accomplishes mainly educational purposes. Using \texttt{@TableName}, users can specify some
+arbitrary name for the generated table themselves, overriding the standard naming
+procedure of DeciBell. In general DeciBell creates too long table names which would
+be a considerable burden for someone who would need to directly access the database. This is a short 
+example of use:\\\\
+\texttt{
+@TableName("YSER") class User extends Component\{\\
+\hspace*{6}   @PrimaryKey public String userName;\\
+\hspace*{6}   @Entry public String password;\\
+\hspace*{6}   @ForeignKey public UserGroup group;\\ 
+\}\\
+}\\\label{user_table_name}
+\\\noindent
+This tells DeciBell that the table produced to host the attributes of the class \texttt{User}
+should be called "YSER".
+
+\section*{Database creation}\label{dbcreation}
+Users of DeciBell find it very easy to generate and maintain a database structure. 
+The class \texttt{org.kinkydesign.decibell.DeciBell} is a user friendly database manager.
+It takes just a couple of steps (at most) to configure the manager. First, you have to specify which 
+components will be used by DeciBell. You can either provide a target package which contains your
+components, i.e.
+\texttt{\\\\ DeciBell db = new DeciBell();\\db.attachFromPackages("com.my.components");\\ }
+\\Or you can specify your components one by one, i.e.
+\texttt{\\\\ DeciBell db = new DeciBell();\\db.attach(User.class);\\db.attach(UserGroup.class);\\etc...\\ }
+\\However this step is optional since if you skip it, DeciBell will search in all packages 
+in your classpath and will attach every component therein. 
+
+Second, you have to set some database name of your choice and trigger the database 
+creation engine. Here is an example of use:
+\texttt{\\\\db.setDbName("myDataBase");\\db.start();\\ }
+
+This will start the database server (DeciBell currently works only with Derby but we plan to 
+add support for other database servers as well, such as MySQL) and creates the tables 
+needed to store your data. Some statements are prepared and cached in a \emph{pool}. If the 
+database already exists and contains all necessary tables, no modification of its structure 
+will take place. Once all transactions are over, call it a day using the following statement:
+\texttt{\\\\db.stop();\\ }\\
+\noindent
+This will disconnect you from the database server and also send a stop signal to Derby.
+
+\section*{Quering}
+Complex queries can be carried out using DeciBell. Let us give an example including three entities, namely 
+\texttt{Master}, \texttt{Slave} and \texttt{Other}, having the following structure described by 
+their Java classes:\\\\
+\texttt{class Master \{\\
+\hspace*{6} @Primarykey @NumericNull("-20") long uid;\\
+\hspace*{6} @ForeignKey Other other;\\
+\}\\
+\\
+class Other \{\\
+\hspace*{6} @PrimaryKey String uid;\\
+\hspace*{6} @ForeignKey Slave slave;\\
+\}\\
+\\
+class Slave \{\\
+@PrimaryKey URI uri;\\
+@Entry String x;\\
+\}\\\\
+}
+DeciBell provides a way to get all \texttt{Master} objects having an \texttt{Other} which has
+some \texttt{Slave} with a value for \texttt{x} that contains the letter \texttt{d}. This is
+as simple as the following piece of code. First we construct a \emph{prototype} for our 
+search operation:\\\\
+\texttt{
+Slave slave = new Slave();\\
+slave.x = "\%k\%";\\
+\\
+Other other = new Other();\\
+other.slave = slave;\\
+\\
+Master prototype = new Master();\\
+prototype.uid = -20;
+prototype.other = other;\\\\
+}
+\noindent
+Then we can search for all \texttt{Master} objects which reseble the given prototype. This is:\\\\
+\texttt{
+ArrayList<Master> componentsFound = prototype.search(db);\\
+}
+
+\section*{Component Relations}
+We encounter the problem of one-to-many and many-to-many component 
+relations when a component contains some \texttt{Collection<? extends Component>} 
+of other components. In many cases, the user denote that this collections 
+is a \texttt{Set} or a \texttt{List}. 
+This generates extra relational tables in the database used to store these data. 
+Registration and Search are performed as mentioned before. The information contained
+in a Java Collection are stored in the database and can be also retrieved. We need
+to note that the retrieval of a Collection, brings back Java the Collection cast 
+as the same datatype it was used when the data where registered. Here is an example 
+of use. 
+
+Suppose we have two entities, namely \texttt{Master} and \texttt{Slave}, and there is 
+a many-to-many relation between Masters and Slaves which is reflected in the Java code
+by means of a Collection-type field. Here is the structure of the two classes:\\\\
+\texttt{class Master \{\\
+\hspace*{6} @Primarykey @NumericNull("-20") long uid;\\
+\hspace*{6} @ForeignKey Collection<Slave> collection;\\
+\}\\
+}\\
+\noindent
+And here is an example of registration and search operations using DeciBell:\\\\
+\texttt{
+ Collection<Slave> coll\_1 = new HashSet<Slave>();\\
+ coll\_1.add(slave1);\\
+ coll\_1.add(slave2);\\\\
+ Master master = new Master();\\
+ master.uid = 100;\\
+ master.collection = coll\_1;\\
+ master.register(db);\\\\
+ Master prototype = new Master();\\
+ prototype.uid = -20;\\
+ ArrayList<Master> masters = prototype.search(db);\\
+ Master foundMaster = masters.get(0);\\\\
+}
+Then \texttt{foundMaster.collection} is a \texttt{HashSet}. That is,
+DeciBell also stores the collection implementation used when storing the 
+data.
+
+\section*{Dependencies}
+DeciBell makes use of the following open source, free Java libraries:
+\begin{enumerate}
+	\item \textbf{Reflections:} Reflections  is an  opensource/free java metadata  analysis software  distributed under
+   	the GNU Lesser GPL license. Project web page @ \href{http://code.google.com/p/reflections}{\texttt{http://code.google.com/p/reflections}}.
+	Reflections offers some advanced metadata analysis facilities and mainly configurable reflective lookup
+	in packages.
+	\item \textbf{Derby JDBC server:}
+	The  Derby JDBC server is freely distributed  under the Apache license. DeciBell  makes
+	use of the transitional alpha release of Derby 10.6.0. but will soon upgrade to the latest 
+	release 10.6.1 ( see \href{http://wiki.apache.org/db-derby/DerbyTenSixOneRelease}{\texttt{http://wiki.apache.org/db-derby/DerbyTenSixOneRelease}} )
+	\item \textbf{XStream:}
+        Library for the (de)serialization of objects  in Java to and from  XML. It is  used in
+   	DeciBell for registering in the database non-Component objects of unknown structure.It
+   	is an open source software distributed under a BSD license. XStream is available for
+   	download at \href{http://xstream.codehaus.org}{\texttt{http://xstream.codehaus.org}}.
+
+
+\end{enumerate}
+
+\section*{Contribute!}
+The quintessence of an open source project is that other developers can study the source code and contribute
+their ideas and proposals or even fork the project thus adjusting it to their specific needs. This is the
+reason why DeciBell is open source and needs the contribution of the open source community. One can either 
+contribute in terms of optimizing the source code, adding new features or fixing existing bugs or write
+documentation for the existing code. Being in its infancy, DeciBell also needs lots of tests. Contact one of the 
+developers
+
+\section*{Does it make coffee?}\label{cofee}
+Well, that's a tough one! It doesn't! But this is still it's alpha/testing version (0.1.1.0). All JUnit tests
+carried out till today are quite encouraging and we'll do our best so that it will make 
+coffee (due for the beta version).
+
+\section*{Found a Bug?}\label{bug}
+Did you find a bug? 
+Please report it at \href{issues http://github.com/hampos/DeciBell/issues}{\texttt{github.com/hampos/DeciBell/issues}} (issue
+tracker) or send us an email. 
+
+\end{document}
+
