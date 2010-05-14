@@ -1,6 +1,6 @@
 /**
- *  Class : XSearchEngine
- *  Date  : May 9, 2010
+ *  Class : UserInfo
+ *  Date  : May 14, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
  * (_](/,(_.|[_)(/,||
@@ -37,27 +37,23 @@
  */
 
 
-package org.kinkydesign.decibell.db.engine;
+package org.kinkydesign.decibell.xcases.case1;
 
-import java.util.ArrayList;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.annotations.Entry;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class XSearchEngine<T> {
+public class UserInfo extends Component<UserInfo> {
 
-    private DeciBell db;
+    @PrimaryKey
+    public String uname;
 
-    public XSearchEngine(DeciBell db) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public ArrayList<T> search(Component whatToSearch) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    @Entry
+    public String email;
 
 }

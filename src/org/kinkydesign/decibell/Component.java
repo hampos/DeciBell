@@ -49,7 +49,7 @@ import org.kinkydesign.decibell.db.engine.DeletionEngine;
 import org.kinkydesign.decibell.db.engine.RegistrationEngine;
 import org.kinkydesign.decibell.db.engine.SearchEngine;
 import org.kinkydesign.decibell.db.engine.UpdateEngine;
-import org.kinkydesign.decibell.db.engine.XSearchEngine;
+//import org.kinkydesign.decibell.db.engine.XSearchEngine;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
@@ -200,8 +200,8 @@ public abstract class Component<T extends Component> implements Cloneable {
             SearchEngine<T> engine = new SearchEngine<T>(db);
             return engine.search(this);
         } else {// Indirect subclass of component
-            XSearchEngine<T> engine = new XSearchEngine<T>(db);
-            return engine.search(this);
+            //XSearchEngine<T> engine = new XSearchEngine<T>(db);
+            return null;
         }
     }
 
