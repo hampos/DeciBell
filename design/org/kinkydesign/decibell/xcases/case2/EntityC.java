@@ -8,13 +8,13 @@ public class EntityC extends Component<EntityC>{
 
     @PrimaryKey
     @ForeignKey
-    public EntityD entityD;
+    private EntityD entityD;
 
     @PrimaryKey
-    public String myValue;
+    private String myValue;
 
     @Entry
-    public String value;
+    private String value;
 
     public EntityC() {
     }

@@ -7,10 +7,10 @@ import org.kinkydesign.decibell.annotations.*;
 public class EntityB extends Component<EntityB>{
 
     @PrimaryKey
-    public String id;
+    private String id;
 
     @Entry
-    public String myEntry;
+    private String myEntry;
 
     public EntityB() {
     }

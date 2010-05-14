@@ -7,15 +7,15 @@ import org.kinkydesign.decibell.annotations.*;
 public class EntityD extends Component<EntityD> {
 
     @PrimaryKey
-    public String id;
+    private String id;
 
     @Entry(defaultValue = "10.1")
     @NumericNull("-1")
-    public double doubleValue;
+    private double doubleValue;
 
     @Entry(defaultValue = "14")
     @NumericNull("-1")
-    public long longValue;
+    private long longValue;
 
     public EntityD() {
     }

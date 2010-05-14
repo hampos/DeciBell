@@ -158,8 +158,6 @@ public class RegistrationEngine {
             } else {
                 return columnField.get(component);
             }
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
             throw new RuntimeException(ex);
         }
