@@ -143,11 +143,7 @@ public abstract class Component<T extends Component> implements Cloneable {
      */
     public void register(DeciBell db) throws DuplicateKeyException, ImproperRegistration {
         RegistrationEngine engine = new RegistrationEngine(db);
-        try {
-            engine.register(this);
-        } catch (SQLException ex) {
-            Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        engine.register(this);
     }
 
     /**
@@ -173,11 +169,7 @@ public abstract class Component<T extends Component> implements Cloneable {
     public int attemptRegister(DeciBell db) throws ImproperRegistration {
         RegistrationEngine engine = new RegistrationEngine(db);
         try {
-            try {
-                engine.register(this);
-            } catch (SQLException ex) {
-                Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            engine.register(this);
             return 0;
         } catch (DuplicateKeyException ex) {
             return 1;
@@ -215,8 +207,8 @@ public abstract class Component<T extends Component> implements Cloneable {
     }
 
     public ArrayList<T> find(DeciBell db) {
-            SearchEngine<T> engine = new SearchEngine<T>(db);
-            return new ArrayList<T>(engine.find(this));
+        SearchEngine<T> engine = new SearchEngine<T>(db);
+        return new ArrayList<T>(engine.find(this));
     }
 
     /**
@@ -415,7 +407,7 @@ public abstract class Component<T extends Component> implements Cloneable {
                 foreignKeys.add(fieldOfThis);
             }
         }
-        return (ArrayList<Field>)foreignKeys;
+        return (ArrayList<Field>) foreignKeys;
     }
 
     public List<Field> getSelfReferencingFields() {

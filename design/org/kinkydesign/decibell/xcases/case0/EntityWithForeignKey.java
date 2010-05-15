@@ -26,8 +26,8 @@ public class EntityWithForeignKey extends Component<EntityWithForeignKey>{
         db.start();
 
         Remote remote = new Remote();
-        remote.id = UUID.randomUUID().toString();
-        remote.myEntry = 15423;
+        remote.setId(UUID.randomUUID().toString());
+        remote.setMyEntry(15423);
         remote.attemptRegister(db);
 
         EntityWithForeignKey ent = new EntityWithForeignKey();

@@ -61,18 +61,32 @@ import org.kinkydesign.decibell.db.util.StatementFactory;
  */
 public class StatementPool {
 
+    /**
+     * The size of each pool. DeciBell totals 5
+     * pools of equal capacity.
+     */
     public static final int poolSize = 30;
+    /**
+     * Size of the queue for requests for Prepared Statements.
+     */
     public static final int queueSize = 50;
+
     private DbConnector con = null;
+
     private static Map<DbConnector, StatementPool> pools = new HashMap<DbConnector, StatementPool>();
+
     private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> search =
             new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+
     private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> searchpk =
             new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+
     private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> update =
             new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+
     private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> register =
             new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+
     private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> delete =
             new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
 

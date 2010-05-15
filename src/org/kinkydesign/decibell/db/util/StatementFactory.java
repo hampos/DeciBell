@@ -95,7 +95,7 @@ public class StatementFactory {
             Pair pair = new Pair(ps, query);
             return pair;
         } catch (SQLException ex) {
-            System.out.println("buggy SQL statement: "+query.getSQL(true));
+            System.out.println("DeciBell >>> Buggy SQL statement: "+query.getSQL(true));
             throw new RuntimeException(ex);
         }
     }
@@ -116,7 +116,7 @@ public class StatementFactory {
             Pair pair = new Pair(ps, query);
             return pair;
         } catch (SQLException ex) {
-            System.out.println("buggy SQL statement: "+query.getSQL());
+            System.out.println("DeciBell >>> Buggy SQL statement: "+query.getSQL());
             throw new RuntimeException(ex);
         }
     }
@@ -137,7 +137,7 @@ public class StatementFactory {
             Pair pair = new Pair(ps, query);
             return pair;
         } catch (SQLException ex) {
-            System.out.println("buggy SQL statement: "+query.getSQL());
+            System.out.println("DeciBell >>> Buggy SQL statement: "+query.getSQL());
             throw new RuntimeException(ex);
         }
     }
@@ -160,7 +160,7 @@ public class StatementFactory {
             Pair pair = new Pair(ps, query);
             return pair;
         } catch (SQLException ex) {
-            System.out.println("buggy SQL statement: "+query.getSQL());
+            System.out.println("DeciBell >>> Buggy SQL statement: "+query.getSQL());
             throw new RuntimeException(ex);
         }
     }
