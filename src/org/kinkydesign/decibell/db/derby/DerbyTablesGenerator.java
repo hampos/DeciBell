@@ -63,7 +63,6 @@ import org.kinkydesign.decibell.db.TableColumn;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTable;
 import org.kinkydesign.decibell.db.interfaces.JTableColumn;
-import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;
 
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
@@ -434,16 +433,10 @@ public class DerbyTablesGenerator extends TablesGenerator {
             for (Type arg : pt.getActualTypeArguments()) {
                 Class carg = (Class) arg;
 
-                // TODO: Change the following line to create shorter table names if possible!
-
-//          @Old:
-//                table.setTableName(connector.getUser(),
-//                        f.getDeclaringClass().getName().replace(DOT, UNDERSCORE)
-//                        + UNDERSCORE + LogicalOperator.AND + UNDERSCORE + carg.getName().replace(DOT, UNDERSCORE) + UNDERSCORE + ON + UNDERSCORE + f.getName());
-
                 table.setTableName(connector.getUser(),
                         registry.get(f.getDeclaringClass()).getTableName()
-                        + UNDERSCORE + LogicalOperator.AND + UNDERSCORE + registry.get(carg).getTableName() + UNDERSCORE + ON + UNDERSCORE + f.getName());
+                        + UNDERSCORE + LogicalOperator.AND + UNDERSCORE
+                        + registry.get(carg).getTableName() + UNDERSCORE + ON + UNDERSCORE + f.getName());
                 
                 Table master = (Table) registry.get((Class<? extends Component>) f.getDeclaringClass());
                 Table slave = (Table) registry.get((Class<? extends Component>) carg);
