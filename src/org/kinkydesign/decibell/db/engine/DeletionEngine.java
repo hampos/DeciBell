@@ -35,8 +35,6 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
 package org.kinkydesign.decibell.db.engine;
 
 import com.thoughtworks.xstream.XStream;
@@ -54,6 +52,7 @@ import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.SQLQuery;
 import org.kinkydesign.decibell.db.util.Infinity;
+import org.kinkydesign.decibell.db.util.Pair;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
 /**
@@ -66,8 +65,9 @@ import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
  */
 public class DeletionEngine {
 
-
     private final DeciBell db;
+    private final ComponentRegistry registry;
+    private final StatementPool pool;
 
     /**
      * Initialize a new Deletion Engine.
@@ -75,16 +75,19 @@ public class DeletionEngine {
      */
     public DeletionEngine(final DeciBell db) {
         this.db = db;
+        registry = ComponentRegistry.getRegistry(db.getDbConnector());
+        pool = StatementPool.getPool(db.getDbConnector());
     }
 
+    
     public void delete(Component toBeDeleted) throws NoUniqueFieldException {
         Class c = toBeDeleted.getClass();
-        ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
+
         Table table = (Table) registry.get(c);
-        StatementPool pool = StatementPool.getPool(db.getDbConnector());
-        Entry<PreparedStatement, SQLQuery> entry = pool.getDelete(table);
+        Pair<PreparedStatement, SQLQuery> entry = pool.getDelete(table);
         PreparedStatement ps = entry.getKey();
         SQLQuery query = entry.getValue();
+
         try {
             int i = 1;
             for (Proposition p : query.getPropositions()) {
@@ -98,7 +101,7 @@ public class DeletionEngine {
                     if (col.isForeignKey()) {
                         Field f = col.getReferenceColumn().getField();
                         f.setAccessible(true);
-                        ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
+                        ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());                        
                     } else if (obj == null
                             || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull())))) {
                         ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
@@ -125,5 +128,4 @@ public class DeletionEngine {
             throw new RuntimeException(ex);
         }
     }
-
 }

@@ -37,7 +37,6 @@ package org.kinkydesign.decibell.db.util;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Map.Entry;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.derby.query.DerbySelectQuery;
 import org.kinkydesign.decibell.db.query.SelectQuery;
@@ -67,7 +66,7 @@ public class StatementFactory {
      * @return
      *      PreparedStatement for searching.
      */
-    public static Entry<PreparedStatement,SQLQuery> createSearch(JTable table, DbConnector con) {
+    public static Pair<PreparedStatement,SQLQuery> createSearch(JTable table, DbConnector con) {
         SelectQuery query = new DerbySelectQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL());
@@ -88,7 +87,7 @@ public class StatementFactory {
      * @return
      *      PreparedStatement for searching by primary key only.
      */
-    public static Entry<PreparedStatement,SQLQuery> createSearchPK(JTable table, DbConnector con) {
+    public static Pair<PreparedStatement,SQLQuery> createSearchPK(JTable table, DbConnector con) {
         SelectQuery query = new DerbySelectQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL(true));
@@ -109,7 +108,7 @@ public class StatementFactory {
      * @return
      *      PreparedStatement for updating.
      */
-    public static Entry<PreparedStatement,SQLQuery> createUpdate(JTable table, DbConnector con) {
+    public static Pair<PreparedStatement,SQLQuery> createUpdate(JTable table, DbConnector con) {
         UpdateQuery query= new DerbyUpdateQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL());
@@ -130,7 +129,7 @@ public class StatementFactory {
      * @return
      *      PreparedStatement for registering.
      */
-    public static Entry<PreparedStatement,SQLQuery> createRegister(JTable table, DbConnector con) {
+    public static Pair<PreparedStatement,SQLQuery> createRegister(JTable table, DbConnector con) {
         InsertQuery query= new DerbyInsertQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL());
@@ -153,7 +152,7 @@ public class StatementFactory {
      * @return
      *      PreparedStatement for the deletion.
      */
-    public static Entry<PreparedStatement,SQLQuery> createDelete(JTable table, DbConnector con) {
+    public static Pair<PreparedStatement,SQLQuery> createDelete(JTable table, DbConnector con) {
         DeleteQuery query= new DerbyDeleteQuery(table);
         try {
             PreparedStatement ps = con.prepareStatement(query.getSQL());

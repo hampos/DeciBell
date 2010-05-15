@@ -35,8 +35,6 @@
  * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
  * tel. +30 210 7723236
  */
-
-
 package org.kinkydesign.decibell.db.engine;
 
 import com.thoughtworks.xstream.XStream;
@@ -44,7 +42,6 @@ import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map.Entry;
 import java.util.Set;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
@@ -57,6 +54,7 @@ import org.kinkydesign.decibell.db.interfaces.JTableColumn;
 import org.kinkydesign.decibell.db.query.Proposition;
 import org.kinkydesign.decibell.db.query.SQLQuery;
 import org.kinkydesign.decibell.db.util.Infinity;
+import org.kinkydesign.decibell.db.util.Pair;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
 
@@ -67,20 +65,35 @@ import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
  */
 public class UpdateEngine {
 
-    private DeciBell db;
+    private final DeciBell db;
+    private final ComponentRegistry registry;
+    private final StatementPool pool;
 
-    public UpdateEngine(DeciBell db) {
+    public UpdateEngine(final DeciBell db) {
         this.db = db;
+        registry = ComponentRegistry.getRegistry(db.getDbConnector());
+        pool = StatementPool.getPool(db.getDbConnector());
     }
 
-
     public void update(Component whatToUpdate) throws NoUniqueFieldException, DuplicateKeyException {
+        try {
+            doUpdate(whatToUpdate);
+        } catch (SQLException ex) {
+            if (ex.getSQLState().equals("23505")) {
+                throw new DuplicateKeyException(whatToUpdate, db.getDbConnector(), ex);
+            } else {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    // TODO: Discuss how to handle NULLs
+    public void doUpdate(Component whatToUpdate) throws NoUniqueFieldException, DuplicateKeyException, SQLException {
         Class c = whatToUpdate.getClass();
-        ComponentRegistry registry = ComponentRegistry.getRegistry(db.getDbConnector());
         Table table = (Table) registry.get(c);
-        StatementPool pool = StatementPool.getPool(db.getDbConnector());
 
         try {
+
             /*
              * Updating contained components first
              */
@@ -94,14 +107,14 @@ public class UpdateEngine {
                 }
             }
 
-            Entry<PreparedStatement, SQLQuery> entry = pool.getUpdate(table);
+            Pair<PreparedStatement, SQLQuery> entry = pool.getUpdate(table);
             PreparedStatement ps = entry.getKey();
             SQLQuery query = entry.getValue();
 
             /*
              * Updating normal entries
              */
-            int i = 1;
+            int ps_INDEX = 1;
             for (Proposition p : query.getPropositions()) {
                 JTableColumn col = p.getTableColumn();
                 Field field = col.getField();
@@ -112,24 +125,21 @@ public class UpdateEngine {
                     if (col.isForeignKey()) {
                         Field f = col.getReferenceColumn().getField();
                         f.setAccessible(true);
-                        ps.setObject(i, (Object) f.get(obj), col.getColumnType().getType());
+                        ps.setObject(ps_INDEX, (Object) f.get(obj), col.getColumnType().getType());
                     } else if (obj == null
                             || (col.isTypeNumeric() && ((Double.parseDouble(obj.toString())) == Double.parseDouble(col.getNumericNull())))) {
-                        //  ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
-                        ps.setNull(i, col.getColumnType().getType());
+                        ps.setNull(ps_INDEX, col.getColumnType().getType());
                     } else if (!col.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                        ps.setObject(i, obj, col.getColumnType().getType());
+                        ps.setObject(ps_INDEX, obj, col.getColumnType().getType());
                     } else {
                         XStream xstream = new XStream();
                         String xml = xstream.toXML(obj);
-                        ps.setString(i, xml);
+                        ps.setString(ps_INDEX, xml);
                     }
                 } catch (NullPointerException ex) {
-                    ps.setNull(i, col.getColumnType().getType());
-//                    Infinity inf = new Infinity(db.getDbConnector());
-//                    ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                    ps.setNull(ps_INDEX, col.getColumnType().getType());
                 }
-                i++;
+                ps_INDEX++;
             }
             ps.execute();
             pool.recycleUpdate(entry, table);
@@ -141,18 +151,18 @@ public class UpdateEngine {
                 entry = pool.getDelete(relTable);
                 ps = entry.getKey();
                 query = entry.getValue();
-                i = 1;
+                ps_INDEX = 1;
                 for (Proposition p : query.getPropositions()) {
                     JTableColumn col = p.getTableColumn();
                     Field f = col.getField();
                     f.setAccessible(true);
                     if (col.getReferenceTable().equals(relTable.getMasterTable())) {
-                        ps.setObject(i, (Object) f.get(whatToUpdate), col.getColumnType().getType());
+                        ps.setObject(ps_INDEX, (Object) f.get(whatToUpdate), col.getColumnType().getType());
                     } else {
                         Infinity inf = new Infinity(db.getDbConnector());
-                        ps.setObject(i, inf.getInfinity(p), col.getColumnType().getType());
+                        ps.setObject(ps_INDEX, inf.getInfinity(p), col.getColumnType().getType());
                     }
-                    i++;
+                    ps_INDEX++;
                 }
                 ps.execute();
                 pool.recycleDelete(entry, relTable);
@@ -175,22 +185,22 @@ public class UpdateEngine {
                 }
                 Collection collection = (Collection) obj;
                 for (Object o : collection) {
-                    i = 1;
+                    ps_INDEX = 1;
                     for (JTableColumn col : relTable.getTableColumns()) {
                         if (col.getColumnName().equals("METACOLUMN")) {
                             Field f = relTable.getOnField();
-                            ps.setObject(i, (Object) obj.getClass().getName(), SQLType.VARCHAR.getType());
-                            i++;
+                            ps.setObject(ps_INDEX, (Object) obj.getClass().getName(), SQLType.VARCHAR.getType());
+                            ps_INDEX++;
                             continue;
                         }
                         Field f = col.getField();
                         f.setAccessible(true);
                         if (col.getReferenceTable().equals(relTable.getMasterTable())) {
-                            ps.setObject(i, (Object) f.get(whatToUpdate), col.getColumnType().getType());
+                            ps.setObject(ps_INDEX, (Object) f.get(whatToUpdate), col.getColumnType().getType());
                         } else {
-                            ps.setObject(i, (Object) f.get(o), col.getColumnType().getType());
+                            ps.setObject(ps_INDEX, (Object) f.get(o), col.getColumnType().getType());
                         }
-                        i++;
+                        ps_INDEX++;
                     }
                     ps.addBatch();
                 }
@@ -199,18 +209,8 @@ public class UpdateEngine {
             }
         } catch (IllegalAccessException ex) {
             throw new RuntimeException(ex);
-        } catch (SQLException ex) {
-            if (ex.getSQLState().equals("23505")) {
-                throw new DuplicateKeyException(whatToUpdate, db.getDbConnector(), ex);
-            } else {
-                throw new RuntimeException(ex);
-            }
-        } catch (SecurityException ex) {
-            throw new RuntimeException(ex);
         }
 
 
     }
-    
-
 }

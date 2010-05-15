@@ -39,7 +39,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
@@ -75,20 +74,20 @@ public class StatementPool {
 
     private static Map<DbConnector, StatementPool> pools = new HashMap<DbConnector, StatementPool>();
 
-    private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> search =
-            new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+    private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> search =
+            new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
 
-    private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> searchpk =
-            new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+    private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> searchpk =
+            new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
 
-    private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> update =
-            new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+    private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> update =
+            new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
 
-    private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> register =
-            new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+    private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> register =
+            new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
 
-    private Map<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>> delete =
-            new HashMap<JTable, ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>>();
+    private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> delete =
+            new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
 
     /**
      * Constructs a new Pool for the given DbConnector and initializes it with the
@@ -129,7 +128,7 @@ public class StatementPool {
      * @param t the JTable for which a register type prepared statement is needed.
      * @return a PreparedStatement-SQLQuer pair of type Register for the given JTable.
      */
-    public Entry<PreparedStatement, SQLQuery> getRegister(JTable t) {
+    public Pair<PreparedStatement, SQLQuery> getRegister(JTable t) {
         try {
             return register.get(t).take();
         } catch (InterruptedException ex) {
@@ -145,7 +144,7 @@ public class StatementPool {
      * @param pair the Entry pair that needs recycling.
      * @param t the JTable in which the Entry belongs.
      */
-    public void recycleRegister(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
+    public void recycleRegister(Pair<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
             register.get(t).add(pair);
@@ -179,7 +178,7 @@ public class StatementPool {
      * @param pair the Entry pair that needs recycling.
      * @param t the JTable in which the Entry belongs.
      */
-    public void recycleSearch(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
+    public void recycleSearch(Pair<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
             search.get(t).add(pair);
@@ -197,7 +196,7 @@ public class StatementPool {
      * @param t the JTable for which a search-primary-keys-only type prepared statement is needed.
      * @return a PreparedStatement-SQLQuer pair of type Search-primary-keys-only for the given JTable.
      */
-    public Entry<PreparedStatement, SQLQuery> getSearchPK(JTable t) {
+    public Pair<PreparedStatement, SQLQuery> getSearchPK(JTable t) {
         try {
             return searchpk.get(t).take();
         } catch (InterruptedException ex) {
@@ -213,7 +212,7 @@ public class StatementPool {
      * @param pair the Entry pair that needs recycling.
      * @param t the JTable in which the Entry belongs.
      */
-    public void recycleSearchPK(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
+    public void recycleSearchPK(Pair<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
             searchpk.get(t).add(pair);
@@ -231,7 +230,7 @@ public class StatementPool {
      * @param t the JTable for which an update type prepared statement is needed.
      * @return a PreparedStatement-SQLQuer pair of type Update for the given JTable.
      */
-    public Entry<PreparedStatement, SQLQuery> getUpdate(JTable t) {
+    public Pair<PreparedStatement, SQLQuery> getUpdate(JTable t) {
         try {
             return update.get(t).take();
         } catch (InterruptedException ex) {
@@ -247,7 +246,7 @@ public class StatementPool {
      * @param pair the Entry pair that needs recycling.
      * @param t the JTable in which the Entry belongs.
      */
-    public void recycleUpdate(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
+    public void recycleUpdate(Pair<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
             update.get(t).add(pair);
@@ -265,7 +264,7 @@ public class StatementPool {
      * @param t the JTable for which a delete type prepared statement is needed.
      * @return a PreparedStatement-SQLQuer pair of type Delete for the given JTable.
      */
-    public Entry<PreparedStatement, SQLQuery> getDelete(JTable t) {
+    public Pair<PreparedStatement, SQLQuery> getDelete(JTable t) {
         try {
             return delete.get(t).take();
         } catch (InterruptedException ex) {
@@ -281,7 +280,7 @@ public class StatementPool {
      * @param pair the Entry pair that needs recycling.
      * @param t the JTable in which the Entry belongs.
      */
-    public void recycleDelete(Entry<PreparedStatement, SQLQuery> pair, JTable t) {
+    public void recycleDelete(Pair<PreparedStatement, SQLQuery> pair, JTable t) {
         try {
             pair.getKey().clearParameters();
             delete.get(t).add(pair);
@@ -296,11 +295,11 @@ public class StatementPool {
      * @param table the JTable to be initiated.
      */
     private void initTable(JTable table) {
-        search.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
-        searchpk.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
-        register.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
-        delete.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
-        update.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        search.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
+        searchpk.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
+        register.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
+        delete.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
+        update.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
         for (int i = 0; i < poolSize; i++) {
             register.get(table).add(StatementFactory.createRegister(table, con));
             delete.get(table).add(StatementFactory.createDelete(table, con));
@@ -316,15 +315,13 @@ public class StatementPool {
      * @param table the JRelationalTable to be initiated.
      */
     private void initRelTable(JRelationalTable table){
-        search.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
-        register.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
-        delete.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
-    //    update.put(table, new ArrayBlockingQueue<Entry<PreparedStatement, SQLQuery>>(queueSize));
+        search.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
+        register.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
+        delete.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
         for (int i = 0; i < poolSize; i++) {
             register.get(table).add(StatementFactory.createRegister(table, con));
             delete.get(table).add(StatementFactory.createDelete(table, con));
             search.get(table).add(StatementFactory.createSearch(table, con));
-        //    update.get(table).add(StatementFactory.createUpdate(table, con));
         }
     }
 }

@@ -53,7 +53,8 @@ public class EntityWithCollection extends Component<EntityWithCollection> {
         long initTime = System.currentTimeMillis();
         e.register(db);
         long duration = System.currentTimeMillis() - initTime;
-        System.out.println(e);
+        e.update(db);
+        
     }
 
 }

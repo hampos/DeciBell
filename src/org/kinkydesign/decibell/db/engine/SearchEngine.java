@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -414,7 +413,7 @@ public class SearchEngine<T> {
         // <editor-fold defaultstate="collapsed" desc="Relational Tables">
         for (JRelationalTable relTable : table.getRelations()) {
             ArrayList relList = new ArrayList();
-            Entry<PreparedStatement, SQLQuery> fentry = pool.getSearch(relTable);
+            Pair<PreparedStatement, SQLQuery> fentry = pool.getSearch(relTable);
             PreparedStatement ps = fentry.getKey();
             SQLQuery query = fentry.getValue();
             Field field = relTable.getOnField();
