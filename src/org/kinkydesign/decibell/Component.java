@@ -37,23 +37,10 @@ package org.kinkydesign.decibell;
 
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.kinkydesign.decibell.annotations.ForeignKey;
-import org.kinkydesign.decibell.annotations.NumericNull;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
-import org.kinkydesign.decibell.db.engine.DeletionEngine;
-import org.kinkydesign.decibell.db.engine.RegistrationEngine;
-import org.kinkydesign.decibell.db.engine.SearchEngine;
-import org.kinkydesign.decibell.db.engine.UpdateEngine;
-//import org.kinkydesign.decibell.db.engine.XSearchEngine;
-import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
-import org.kinkydesign.decibell.exceptions.ImproperRegistration;
-import org.kinkydesign.decibell.exceptions.NoUniqueFieldException;
+import java.util.*;
+import org.kinkydesign.decibell.annotations.*;
+import org.kinkydesign.decibell.db.engine.*;
+import org.kinkydesign.decibell.exceptions.*;
 
 /**
  * <p  align="justify" style="width:60%">
@@ -378,10 +365,8 @@ public abstract class Component<T extends Component> implements Cloneable {
                     return primaryKeyOfThis.get(this) == null ? true : false;
                 }
                 areEqual = areEqual && primaryKeyOfThis.get(this).equals(primaryKeyOfThis.get(obj));
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalAccessException ex) {
-                Logger.getLogger(Component.class.getName()).log(Level.SEVERE, null, ex);
+                throw new RuntimeException(ex);
             }
 
         }
