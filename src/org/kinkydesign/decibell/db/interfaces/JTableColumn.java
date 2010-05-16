@@ -552,4 +552,14 @@ public interface JTableColumn {
      * @return this column's NumericNull value.
      */
     String getNumericNull();
+
+    /**
+     * Whether the column is a self-referencing column of the table in
+     * which it belongs, i.e. if it is a foreign key column referencing the
+     * same table.
+     * @return
+     *      <code>true</code> if it a self-referencing column and
+     *      <code>false</code> otehrwise.
+     */
+    boolean isSelfReferencing();
 }

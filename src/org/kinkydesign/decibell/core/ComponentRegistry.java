@@ -171,7 +171,7 @@ public class ComponentRegistry {
      * @param key a Component.class object
      * @return The table associated with the given Component.
      */
-    public JTable get(Object key) {
+    public JTable get(Class<?> key) {
         return components.get((Class<? extends Component>)key);
     }
 

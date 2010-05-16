@@ -208,7 +208,7 @@ public abstract class Component<T extends Component> implements Cloneable {
 
     public ArrayList<T> find(DeciBell db) {
         SearchEngine<T> engine = new SearchEngine<T>(db);
-        return new ArrayList<T>(engine.find(this));
+        return new ArrayList<T>(engine.search(this));
     }
 
     /**

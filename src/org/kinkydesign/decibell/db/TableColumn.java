@@ -502,5 +502,13 @@ final public class TableColumn implements Cloneable, JTableColumn {
         return numericNull;
     }
 
+    public boolean isSelfReferencing() {
+        if (isForeignKey() && getReferenceTable().equals(getMasterTable())){
+            return true;
+        }
+        return false;
+    }
+
+
     
 }

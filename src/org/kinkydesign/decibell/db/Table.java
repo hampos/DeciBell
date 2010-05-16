@@ -222,6 +222,17 @@ public abstract class Table implements JTable {
         return foreignKeyColumns;
     }
 
+    public boolean isSelfReferencing() {        
+        for (JTableColumn columnOfThis : getForeignKeyColumns()){
+            if  (columnOfThis.isSelfReferencing()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
     /**
      * Constructs and returns a new Set that contains Sets of foreign key table columns.
      * The inner Sets are groups of table columns that are essentially the same

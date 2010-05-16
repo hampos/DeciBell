@@ -130,7 +130,7 @@ public class RegistrationEngine {
             Field columnField = column.getField();
             columnField.setAccessible(true);
 
-             /*
+            /*
              * CASE: Numeric and not a FK
              */
             if (!column.isForeignKey() && column.isTypeNumeric()) {
@@ -207,9 +207,7 @@ public class RegistrationEngine {
             Object valueToBeWritten = columnField.get(whatTowrite);
             String columnDefaultValue = column.getDefaultValue();
             if (valueToBeWritten == null && columnDefaultValue == null) {
-                throw new ImproperRegistration("You cannot write a null value "
-                        + " in the database (value of field:" + columnField.getName() + ") in class"
-                        + whatTowrite.getClass().getName() + ". No DEFAULT values found!");
+                ps.setObject(ps_INDEX, __NULL__, column.getColumnType().getType());
             } else if (valueToBeWritten == null && columnDefaultValue != null) {
                 ps.setObject(ps_INDEX, columnDefaultValue, column.getColumnType().getType());
             } else if (valueToBeWritten != null) {

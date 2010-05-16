@@ -170,6 +170,7 @@ public abstract class UpdateQuery implements SQLQuery {
     }
 
     public void setDouble(JTableColumn column, double value) {
+        
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
