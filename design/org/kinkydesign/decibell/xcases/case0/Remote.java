@@ -42,17 +42,17 @@ public class Remote extends Component<Remote> {
 
     public static void main(String... args) throws Exception{
         DeciBell db = new DeciBell();
-        db.setDbName("my/db/13bcd920");
+        db.setDbName("my/db/13bcd921");
         db.attach(Remote.class);
         db.start();
 
-        Remote r1 = new Remote("abc", 13);
-        Remote r2 = new Remote("def", 14);
-        Remote r3 = new Remote("hij", 15);
+        Remote r1 = new Remote(null, 13);
+        Remote r2 = new Remote("hello", 14);
+        Remote r3 = new Remote("something", 15);
         r1.attemptRegister(db);
         r2.attemptRegister(db);
         r3.attemptRegister(db);
 
-        System.out.println(new Remote("%a%", -1).search(db));
+        System.out.println(new Remote("so%", -1).search(db));
     }
 }

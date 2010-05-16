@@ -63,7 +63,7 @@ public class RegistrationEngine {
     private final DeciBell db;
     private final ComponentRegistry registry;
     private final StatementPool pool;
-    private static final String __NULL__ = "__NULL..VALUE__";
+    static final String __NULL__ = new String(new byte[]{1}); // package-restricted access
     private static final String __DuplicateKey_State__ = "23505";
 
     /**
@@ -76,6 +76,7 @@ public class RegistrationEngine {
      *      to register the data.
      */
     public RegistrationEngine(final DeciBell db) {
+
         this.db = db;
         registry = ComponentRegistry.getRegistry(db.getDbConnector());
         pool = StatementPool.getPool(db.getDbConnector());
@@ -318,4 +319,6 @@ public class RegistrationEngine {
             }
         }
     }
+   
+    
 }

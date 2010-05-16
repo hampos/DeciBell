@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.kinkydesign.decibell.*;
@@ -19,7 +20,7 @@ public class SearchEngine<T> {
     private final DeciBell db;
     private final StatementPool pool;
     private final ComponentRegistry registry;
-    private static final String __NULL__ = "__NULL..VALUE__";
+    private static final String __NULL__ = RegistrationEngine.__NULL__;
 
     public SearchEngine(final DeciBell db) {
         this.db = db;
@@ -69,8 +70,7 @@ public class SearchEngine<T> {
             } else if (!column.isForeignKey() && column.getColumnType().equals(SQLType.LONG_VARCHAR)) {
                 handleTerminalXML(component, ps, column, field, ps_INDEX, whatever);
             } else if (column.isForeignKey()) {
-                throw new RuntimeException("This method applied only to terminal components. This "
-                        + "shoudl not have happened and is a BUG!");
+                handleTerminalFK(component, ps, column, field, ps_INDEX, whatever);
             } else {
                 throw new RuntimeException("WTF!?");
             }
@@ -78,6 +78,7 @@ public class SearchEngine<T> {
         }
 
         ResultSet resultSet = ps.executeQuery();
+
         while (resultSet.next()) {
             T componentFromDB = componentFromDB(resultSet, component.getClass(), table);
             resultList.add(componentFromDB);
@@ -103,7 +104,7 @@ public class SearchEngine<T> {
     private void handleTerminalString(Component component, PreparedStatement ps, JTableColumn column, Field field, int ps_INDEX, Object whatever)
             throws SQLException {
         try {
-            String providedValue = (String )field.get(component);
+            String providedValue = (String) field.get(component);
             if (providedValue == null) {
                 ps.setObject(ps_INDEX, whatever, column.getColumnType().getType());
             } else {
@@ -131,11 +132,25 @@ public class SearchEngine<T> {
 
     }
 
+    private void handleTerminalFK(Component component, PreparedStatement ps, JTableColumn column, Field field, int ps_INDEX, Object whatever) {
+        try {
+            // Terminals do not have declared FK fields. Check it out and proceed with `whatever`
+            Object providedValue = field.get(component);
+            if (providedValue != null) {
+                throw new RuntimeException("[BUG] Not a terminal component!");
+            }
+            ps.setObject(ps_INDEX, whatever, column.getColumnType().getType());
+        } catch (SQLException ex) {
+            Logger.getLogger(SearchEngine.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private boolean isComponentTerminal(Component component, JTable table) {
 
         Set<JTableColumn> foreignKeyColumns = table.getForeignKeyColumns();
         Set<JRelationalTable> relationalTables = table.getRelations();
-        boolean isTerminal = true;
 
         try {
             if (foreignKeyColumns.isEmpty() && relationalTables.isEmpty()) {
@@ -157,7 +172,7 @@ public class SearchEngine<T> {
                 for (JRelationalTable relationalTable : relationalTables) {
                     Field onField = relationalTable.getOnField();
                     Collection declaredCollection = (Collection) onField.get(component);
-                    if (declaredCollection != null || !declaredCollection.isEmpty()) {
+                    if (declaredCollection != null && !declaredCollection.isEmpty()) {
                         return false;
                     }
                 }
@@ -183,20 +198,22 @@ public class SearchEngine<T> {
                 }
 
                 Object retrievedObject = dbData.getObject(column.getColumnName());
-                if (column.getColumnType().equals(SQLType.LONG_VARCHAR)) {                    
-                    if (retrievedObject.equals(__NULL__)) {
-                        field.set(component, null);
-                    } else {
+                if (retrievedObject.equals(__NULL__)) {
+                    field.set(component, null);
+                } else {
+                    if (column.getColumnType().equals(SQLType.LONG_VARCHAR)) {
                         XStream xstream = new XStream();
                         Object valueForField = xstream.fromXML(retrievedObject.toString());
                         field.set(component, valueForField);
+                    } else {
+                        field.set(component, retrievedObject);
                     }
-                } else {
-                    field.set(component, retrievedObject);
                 }
             }
-            return (T) component;
 
+            retrieveForeignKeys(dbData, component, masterTable);
+            retrieveCollections(dbData, component, masterTable);
+            return (T) component;
         } catch (InstantiationException ex) {
             throw new RuntimeException("Either the class " + clazz.getName() + "is abstract or "
                     + "the requested constructor (with no parameters) does not exist.", ex);
@@ -209,7 +226,108 @@ public class SearchEngine<T> {
         } catch (NoSuchMethodException ex) {
             throw new RuntimeException("A matching method was not found", ex);
         }
-        
+    }
+
+    private void retrieveForeignKeys(ResultSet dbData, Component masterComponent, JTable masterTable) {
+        try {
+
+            for (Set<JTableColumn> groupedFK : masterTable.getForeignColumnsByGroup()) {
+                Class<? extends Component> remoteClass = groupedFK.iterator().next().getReferencesClass();
+                Constructor<? extends Component> remoteObjectConstructor = remoteClass.getConstructor();
+                remoteObjectConstructor.setAccessible(true);
+                Component remoteComponent = remoteObjectConstructor.newInstance();
+
+                for (JTableColumn remoteColumn : groupedFK) {
+                    Field remoteField = remoteColumn.getReferenceColumn().getField();
+                    remoteField.set(remoteComponent, dbData.getObject(remoteColumn.getColumnName()));
+                }
+
+                if (remoteComponent.equals(masterComponent)) {
+                    remoteComponent = masterComponent;
+                } else {
+                    ArrayList<Component> remoteList = remoteComponent.search(db);
+                    if (remoteList.size() != 1) {
+                        throw new RuntimeException("More than one remotes found!");
+                    }
+
+                    remoteComponent = remoteList.get(0);
+                }
+                Field masterField = groupedFK.iterator().next().getField();
+                masterField.set(masterComponent, remoteComponent);
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    // TODO: Implement this method so that collections are retrieved!
+    private void retrieveCollections(ResultSet dbData, Component masterComponent, JTable masterTable) {
+        Set<JRelationalTable> relations = masterTable.getRelations();
+        for (JRelationalTable relationalTable : relations) {
+            Pair<PreparedStatement, SQLQuery> entry = pool.getSearch(relationalTable);
+            PreparedStatement ps = entry.getKey();
+            SQLQuery query = entry.getValue();
+            Field onField = relationalTable.getOnField();
+            int ps_REL_INDEX = 1;
+
+            try {
+                for (Proposition proposition : query.getPropositions()) {
+                    JTableColumn relColumn = proposition.getTableColumn();
+                    if (relColumn.getColumnName().equals("METACOLUMN")) {
+                        continue;
+                    }
+
+                    Field f = relColumn.getField();
+                    if (!relationalTable.getMasterTable().equals(relColumn.getReferenceTable())) {
+                        Infinity inf = new Infinity(db);
+                        ps.setObject(ps_REL_INDEX, inf.getInfinity(proposition), relColumn.getColumnType().getType());
+                    } else {
+                        ps.setObject(ps_REL_INDEX, dbData.getObject(relColumn.getReferenceColumnName()),
+                                relColumn.getColumnType().getType());
+                    }
+                    ps_REL_INDEX++;
+                }
+                ResultSet relRs = ps.executeQuery();
+                pool.recycleSearch(entry, relationalTable);
+
+                String collectionJavaType = null;
+
+                ArrayList relList = new ArrayList();
+                while (relRs.next()) {
+                    Class fclass = relationalTable.getSlaveColumns().iterator().next().
+                            getField().getDeclaringClass();
+                    Constructor fconstuctor = fclass.getDeclaredConstructor();
+                    fconstuctor.setAccessible(true);
+                    Object fobj = fconstuctor.newInstance();
+
+                    for (JTableColumn col : relationalTable.getSlaveColumns()) {
+                        Field ffield = col.getField();
+                        ffield.setAccessible(true);
+                        ffield.set(fobj, relRs.getObject(col.getColumnName()));
+                    }
+                    Component component = (Component) fobj;
+                    ArrayList tempList = component.search(db);
+                    if (tempList.isEmpty()) {
+                        onField.set(masterComponent, Class.forName(collectionJavaType).getConstructor().newInstance());
+                    } else if (tempList.size() > 1) {
+                        throw new RuntimeException("Single foreign object list has size > 1");
+                    }
+                    relList.addAll(tempList);
+                    collectionJavaType = relRs.getString("METACOLUMN");
+                }
+
+
+                Class onClass = Class.forName(collectionJavaType);
+                Constructor con = onClass.getConstructor();
+                Object obj = con.newInstance();
+                Collection relCollection = (Collection) obj;
+                relCollection.addAll(relList);
+                onField.set(masterComponent, relCollection);
+
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
     }
 }
-
