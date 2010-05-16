@@ -13,10 +13,12 @@ import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.*;
 import org.kinkydesign.decibell.db.interfaces.*;
 import org.kinkydesign.decibell.db.query.*;
+import org.kinkydesign.decibell.db.sieve.JSieve;
 import org.kinkydesign.decibell.db.util.*;
 
-public class SearchEngine<T> {
+public class SearchEngine<T extends Component> {
 
+    private JSieve<T> sieve = null;
     private final DeciBell db;
     private final StatementPool pool;
     private final ComponentRegistry registry;
@@ -26,6 +28,11 @@ public class SearchEngine<T> {
         this.db = db;
         pool = StatementPool.getPool(db.getDbConnector());
         registry = ComponentRegistry.getRegistry(db.getDbConnector());
+    }
+
+    public SearchEngine(final DeciBell db, final JSieve<T> sieve) {
+        this(db);
+        this.sieve = sieve;
     }
 
     public ArrayList<T> search(Component prototype) {
@@ -41,6 +48,7 @@ public class SearchEngine<T> {
             throw new RuntimeException(ex);
         }
     }
+
 
     private ArrayList<T> doSearchTerminal(Component component) throws SQLException {
 
@@ -81,7 +89,9 @@ public class SearchEngine<T> {
 
         while (resultSet.next()) {
             T componentFromDB = componentFromDB(resultSet, component.getClass(), table);
-            resultList.add(componentFromDB);
+            if (sieve == null || sieve.sieve(componentFromDB)) {
+                resultList.add(componentFromDB);
+            }
         }
         return resultList;
     }
@@ -312,6 +322,7 @@ public class SearchEngine<T> {
                     } else if (tempList.size() > 1) {
                         throw new RuntimeException("Single foreign object list has size > 1");
                     }
+
                     relList.addAll(tempList);
                     collectionJavaType = relRs.getString("METACOLUMN");
                 }
