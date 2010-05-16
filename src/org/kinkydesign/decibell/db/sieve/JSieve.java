@@ -39,11 +39,29 @@ import org.kinkydesign.decibell.Component;
 
 /**
  *
+ * <p  align="justify" style="width:60%">
+ * JSieve is an interface allowing users to implement their own sieves and post-process
+ * the search results. The class <code>Component</code> contains the method {@link 
+ * Component#search(org.kinkydesign.decibell.DeciBell, org.kinkydesign.decibell.db.sieve.JSieve) search(db,sieve)}
+ * which accepts the extra parameter <code>sieve</code> which is a sieve to be used to 
+ * post-filter the search results. Only sieved results will be included in the results.
+ * Users can implement the method {@link JSieve#sieve(org.kinkydesign.decibell.Component) sieve}
+ * of this class to build their own sieve.
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
 public interface JSieve<T extends Component> {
 
+    /**
+     * Method to be implemented in a user-defined sieve to control
+     * search results in a more subtle way.
+     * @param component
+     *      Component to be sieved.
+     * @return
+     *      Returns <code>true</code> if the component is sieved (passes through
+     *      the sieve) and <code>false</code> otherwise.
+     */
     boolean sieve(T component);
 
 }

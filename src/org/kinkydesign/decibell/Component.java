@@ -212,8 +212,7 @@ public abstract class Component<T extends Component> implements Cloneable {
         if (Component.class.equals(this.getClass().getSuperclass())) { // Direct subclass of Component
             SearchEngine<T> engine = new SearchEngine<T>(db,sieve);
             return engine.search(this);
-        } else {// Indirect subclass of component
-            //XSearchEngine<T> engine = new XSearchEngine<T>(db);
+        } else {
             return null;
         }
     }
