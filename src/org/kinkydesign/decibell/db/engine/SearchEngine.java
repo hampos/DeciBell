@@ -4,6 +4,8 @@ import com.thoughtworks.xstream.XStream;
 import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kinkydesign.decibell.*;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.core.ComponentRegistry;
@@ -17,6 +19,7 @@ public class SearchEngine<T> {
     private final DeciBell db;
     private final StatementPool pool;
     private final ComponentRegistry registry;
+    private static final String __NULL__ = "__NULL..VALUE__";
 
     public SearchEngine(final DeciBell db) {
         this.db = db;
@@ -76,7 +79,8 @@ public class SearchEngine<T> {
 
         ResultSet resultSet = ps.executeQuery();
         while (resultSet.next()) {
-            resultList.add(componentFromDB(resultSet));
+            T componentFromDB = componentFromDB(resultSet, component.getClass(), table);
+            resultList.add(componentFromDB);
         }
         return resultList;
     }
@@ -99,7 +103,7 @@ public class SearchEngine<T> {
     private void handleTerminalString(Component component, PreparedStatement ps, JTableColumn column, Field field, int ps_INDEX, Object whatever)
             throws SQLException {
         try {
-            String providedValue = field.get(field.get(component)).toString();
+            String providedValue = (String )field.get(component);
             if (providedValue == null) {
                 ps.setObject(ps_INDEX, whatever, column.getColumnType().getType());
             } else {
@@ -164,9 +168,48 @@ public class SearchEngine<T> {
         }
     }
 
-    private T componentFromDB(ResultSet dbData) {
+    private T componentFromDB(ResultSet dbData, Class<?> clazz, JTable masterTable) throws SQLException {
+        try {
+            Constructor constructor = clazz.getConstructor();
+            constructor.setAccessible(true);
+            Component component = (Component) constructor.newInstance();
+
+            Set<JTableColumn> tableColumns = masterTable.getTableColumns();
+
+            for (JTableColumn column : tableColumns) {
+                Field field = column.getField();
+                if (column.isForeignKey()) {
+                    continue;
+                }
+
+                Object retrievedObject = dbData.getObject(column.getColumnName());
+                if (column.getColumnType().equals(SQLType.LONG_VARCHAR)) {                    
+                    if (retrievedObject.equals(__NULL__)) {
+                        field.set(component, null);
+                    } else {
+                        XStream xstream = new XStream();
+                        Object valueForField = xstream.fromXML(retrievedObject.toString());
+                        field.set(component, valueForField);
+                    }
+                } else {
+                    field.set(component, retrievedObject);
+                }
+            }
+            return (T) component;
+
+        } catch (InstantiationException ex) {
+            throw new RuntimeException("Either the class " + clazz.getName() + "is abstract or "
+                    + "the requested constructor (with no parameters) does not exist.", ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException("this Constructor object enforces Java language "
+                    + "access control and the underlying constructor is inaccessible.", ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException("The constructor " + clazz.getName() + "() threw "
+                    + "an exception upon invokation.", ex);
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException("A matching method was not found", ex);
+        }
         
-        return null;
     }
 }
 
