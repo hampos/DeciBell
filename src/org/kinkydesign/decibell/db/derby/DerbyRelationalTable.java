@@ -73,14 +73,17 @@ public class DerbyRelationalTable extends DerbyTable implements JRelationalTable
         super();
         this.onField = onField;
         this.masterTable = masterTable;
+        this.onField.setAccessible(true);
     }
 
     public Field getOnField() {
+        this.onField.setAccessible(true);
         return onField;
     }
 
     public void setOnField(Field onField) {
         this.onField = onField;
+        this.onField.setAccessible(true);
     }
 
     public JTable getMasterTable() {

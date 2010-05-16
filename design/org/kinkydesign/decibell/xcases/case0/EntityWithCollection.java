@@ -33,7 +33,7 @@ public class EntityWithCollection extends Component<EntityWithCollection> {
 
     public static void main(String... args) throws Exception {
         DeciBell db = new DeciBell();
-        db.setDbName("my/db/huge4");
+        db.setDbName("my/db/huge5");
         db.attach(EntityWithCollection.class);
         db.attach(Remote.class);
         db.start();
@@ -53,7 +53,7 @@ public class EntityWithCollection extends Component<EntityWithCollection> {
         long initTime = System.currentTimeMillis();
         e.register(db);
         long duration = System.currentTimeMillis() - initTime;
-        e.update(db);
+        System.out.println(duration);
         
     }
 

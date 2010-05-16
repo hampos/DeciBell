@@ -38,6 +38,7 @@
 
 package org.kinkydesign.decibell.db.util;
 
+import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.db.DbConnector;
 import org.kinkydesign.decibell.db.derby.DerbyConnector;
@@ -68,12 +69,16 @@ public class Infinity {
      * is needed so that Infinity returns infinite values for the correct server.
      * @param con a DbConnector that decides the database server values to be returned.
      */
-    public Infinity(DbConnector con){
+    public Infinity(final DbConnector con){
         if(con.getClass().equals(DerbyConnector.class)){
             this.con = Connection.DERBY;
         }else{
 
         }
+    }
+
+    public Infinity(final DeciBell db){
+        this (db.getDbConnector());
     }
 
     /**

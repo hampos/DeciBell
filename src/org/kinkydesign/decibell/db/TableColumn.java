@@ -438,6 +438,7 @@ final public class TableColumn implements Cloneable, JTableColumn {
      * @return the Component's Field on which this column was created.
      */
     public Field getField() {
+        field.setAccessible(true);
         return field;
     }
 
@@ -447,6 +448,7 @@ final public class TableColumn implements Cloneable, JTableColumn {
      */
     public void setField(Field field) {
         this.field = field;
+        this.field.setAccessible(true);
     }
 
     /**
