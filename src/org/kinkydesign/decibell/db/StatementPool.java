@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTable;
@@ -115,6 +116,15 @@ public class StatementPool {
      */
     public static StatementPool getPool(DbConnector con) {
         return pools.get(con);
+    }
+
+    /**
+     * Returns the pool associated with the specified DbConnector.
+     * @param con a {@link DeciBell} object that identifies a database connection.
+     * @return the StatementPool object associated with the specified DbConnector.
+     */
+    public static StatementPool getPool(DeciBell db) {
+        return pools.get(db.getDbConnector());
     }
 
     /**

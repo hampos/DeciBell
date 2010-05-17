@@ -1,3 +1,38 @@
+/**
+ *   .       .     ..
+ *  _| _  _.*|_  _ ||
+ * (_](/,(_.|[_)(/,||
+ *
+ * DeciBell : A Java Tool for creating and managing relational databases.
+ *  DeciBell is a Object - Relation database mapper for java applications providing
+ * an easy-to-use interface making it easy for the developer to build a relational
+ * database and moreover perform database operations easily!
+ *  This project was developed at the Automatic Control Lab in the Chemical Engineering
+ * School of the National Technical University of Athens. Please read README for more
+ * information.
+ *
+ * Copyright (C) 2009-2010 Charalampos Chomenides & Pantelis Sopasakis
+ *                         kinkyDesign ~ OpenSource Development
+
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contact:
+ * hampos Att yahoo d0t c0m
+ * chvng att mail D0t ntua dd0T gr
+ * Address: Iroon Politechniou St. 9, Zografou, Athens Greece
+ * tel. +30 210 7723236
+ */
 package org.kinkydesign.decibell.db.engine;
 
 import com.thoughtworks.xstream.XStream;
@@ -6,26 +41,83 @@ import java.sql.*;
 import java.util.*;
 import org.kinkydesign.decibell.*;
 import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.StatementPool;
 import org.kinkydesign.decibell.db.interfaces.*;
 import org.kinkydesign.decibell.db.query.*;
 import org.kinkydesign.decibell.db.util.*;
 
+/**
+ * <p  align="justify" style="width:60%">
+ * This class (Crawler) is a tool that facilitates db-to-java data transactions. Given a
+ * row of a table (provided as a <code>ResultSet</code>) and some database connection information
+ * (such as the {@link DeciBell connection object}, crawler constructs the object
+ * corresponding to that row. Recursion is the key for such a look up. Data contained in
+ * relational tables (that correspond to java Collections) and self-references are
+ * also retrieved throug the lookup.
+ * </p>
+ * @author Pantelis Sopasakis
+ * @author Charalampos Chomenides
+ */
 public class Crawler {
 
     private static final String __NULL__ = RegistrationEngine.__NULL__;
     private final DeciBell db;
     private final StatementPool pool;
-    private final ComponentRegistry registry;
 
-    public Crawler(DeciBell db, StatementPool pool, ComponentRegistry registry) {
+    /**
+     * <p  align="justify" style="width:60%">
+     * Construct a new instance of Crawler. This constructor initializes a new Crawler
+     * with the given parameters for the database connection (as a {@link DeciBell} object)
+     * and a corresponding pool. The pool is in one-to-one correspondence with the
+     * database connection using the relation:<br/>
+     * <br/>
+     * <code>Statement pool = StatementPool.getPool(db);</code><br/><br/>
+     * The pool is requested explicitly to avoid the lookup of the correct pool in
+     * the set of pools available. However you may use the simpler variant of this
+     * constructor which is
+     * </p>
+     *
+     * @param db
+     *      An identifier for the database connection.
+     * @param pool
+     *      A pool of prepared statements related to the provided database connection.
+     */
+    public Crawler(final DeciBell db, final StatementPool pool) {
         this.db = db;
         this.pool = pool;
-        this.registry = registry;
     }
 
-    public Component crawlDatabase(ResultSet dbData, Class<?> clazz, JTable masterTable) {
+    /**
+     * <p  align="justify" style="width:60%">
+     * Construct a new instance of Crawler. This constructor initializes a new Crawler
+     * with the given database connection object which is identified through a {@link DeciBell }
+     * object.
+     * </p>
+     *
+     * @param db
+     *      An identifier for the database connection.    
+     */
+    public Crawler(final DeciBell db) {
+        this(db,StatementPool.getPool(db));
+    }
+
+    /**
+     * <p  align="justify" style="width:60%">
+     * Crawl in the database to retrieve the component corresponding to some
+     * table row following recursively the foreign key directives in the database
+     * and thus recursively retrieving all information in the pointed rows (in other
+     * tables).
+     * </p>
+     * @param dbData
+     *      A row of some table in the database.
+     * @param clazz
+     *      The class of the component corresponding to the table holding the initial data (row)
+     * @param masterTable
+     *      The table in which the master data is found.
+     * @return
+     *      Retrieved data from the database as a component.
+     */
+    public Component crawlDatabase(ResultSet dbData, Class<? extends Component> clazz, JTable masterTable) {
 
         try {
 

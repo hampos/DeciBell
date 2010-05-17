@@ -177,6 +177,9 @@ public abstract class Component<T extends Component> implements Cloneable {
      * for increased performance and security. These statements are prepared upon
      * the startup of decibell ({@link DeciBell#start() start DeciBell}).
      * </p>
+     * <p  align="justify" style="width:60%">
+     * You can find in the <em>User's Guide</em> some example about how this works.
+     * </p>
      * @param db
      *      The decibell object which identifies a database connection
      * @return
