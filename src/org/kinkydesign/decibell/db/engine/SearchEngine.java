@@ -95,6 +95,7 @@ public class SearchEngine<T extends Component> {
             }            
         }
         pool.recycleSearch(entry, table);
+        resultSet.close();
         return resultList;
     }
 

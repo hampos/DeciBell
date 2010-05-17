@@ -1,26 +1,16 @@
 package org.kinkydesign.decibell.db.engine;
 
 import com.thoughtworks.xstream.XStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.DeciBell;
+import java.lang.reflect.*;
+import java.sql.*;
+import java.util.*;
+import org.kinkydesign.decibell.*;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.StatementPool;
-import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
-import org.kinkydesign.decibell.db.interfaces.JTable;
-import org.kinkydesign.decibell.db.interfaces.JTableColumn;
-import org.kinkydesign.decibell.db.query.Proposition;
-import org.kinkydesign.decibell.db.query.SQLQuery;
-import org.kinkydesign.decibell.db.util.Infinity;
-import org.kinkydesign.decibell.db.util.Pair;
+import org.kinkydesign.decibell.db.interfaces.*;
+import org.kinkydesign.decibell.db.query.*;
+import org.kinkydesign.decibell.db.util.*;
 
 public class Crawler {
 
@@ -38,7 +28,7 @@ public class Crawler {
     public Component crawlDatabase(ResultSet dbData, Class<?> clazz, JTable masterTable) {
 
         try {
-            
+
             Constructor constructor = clazz.getConstructor();
             constructor.setAccessible(true);
             Component component = (Component) constructor.newInstance();
@@ -91,19 +81,37 @@ public class Crawler {
                         ps.setObject(ps_INDEX, infinity.getInfinity(proposition));
                     }
                     ps_INDEX++;
-                }                
+                }
                 ResultSet newRS = ps.executeQuery();
                 newRS.next();
-                group.iterator().next().getField().set(component, crawlDatabase(newRS, group.iterator().next().getReferencesClass(), group.iterator().next().getReferenceTable()));
-                //newRS.close();
-            }            
+
+                boolean foundSelfRef = false;
+                if (masterTable.isSelfReferencing()){
+                    foundSelfRef = true;
+                    List<JTableColumn> selfRefColumns = masterTable.getSelfReferences();
+                    for (JTableColumn src : selfRefColumns) {
+                        foundSelfRef = foundSelfRef && newRS.getObject(src.getColumnName()).
+                                equals(newRS.getObject(src.getReferenceColumn().getColumnName()));
+                    }
+                }
+
+                if (foundSelfRef){
+                    group.iterator().next().getField().set(component, component);
+                }else{
+                    group.iterator().next().getField().set(
+                        component, crawlDatabase(newRS, group.iterator().next().getReferencesClass(),
+                        group.iterator().next().getReferenceTable()));
+                }
+                
+
+
+                newRS.close();
+            }
             return component;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
-
-
 
     private void retrieveCollections(ResultSet dbData, Component masterComponent, JTable masterTable) {
         Set<JRelationalTable> relations = masterTable.getRelations();
@@ -114,7 +122,7 @@ public class Crawler {
             Field onField = relationalTable.getOnField();
             int ps_REL_INDEX = 1;
 
-        
+
 
             try {
                 for (Proposition proposition : query.getPropositions()) {

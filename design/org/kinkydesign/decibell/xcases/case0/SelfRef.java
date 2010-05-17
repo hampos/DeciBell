@@ -55,8 +55,7 @@ public class SelfRef extends Component<SelfRef> {
         SelfRef proto = new SelfRef();
         proto.setId("%c%");
         SelfRef p = new SelfRef();
-        p.setOther(proto);
-        System.out.println(p.find(db));
+        System.out.println(p.search(db));
     }
 
     
