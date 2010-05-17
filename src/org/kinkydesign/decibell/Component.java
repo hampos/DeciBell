@@ -40,10 +40,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import org.kinkydesign.decibell.annotations.*;
 import org.kinkydesign.decibell.db.engine.*;
-<<<<<<< HEAD:src/org/kinkydesign/decibell/Component.java
-=======
 import org.kinkydesign.decibell.db.sieve.JSieve;
->>>>>>> 3cfdf5017a6dd4e56df6243d9312fbca8be1a1bf:src/org/kinkydesign/decibell/Component.java
 import org.kinkydesign.decibell.exceptions.*;
 
 /**
