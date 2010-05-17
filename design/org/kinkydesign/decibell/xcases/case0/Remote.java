@@ -6,6 +6,7 @@ import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.NumericNull;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.annotations.TableName;
+import org.kinkydesign.decibell.db.sieve.JSieve;
 
 @TableName("REMOTE")
 public class Remote extends Component<Remote> {
@@ -53,6 +54,16 @@ public class Remote extends Component<Remote> {
         r2.attemptRegister(db);
         r3.attemptRegister(db);
 
-        System.out.println(new Remote("so%", -1).search(db));
+        JSieve<Remote> sieve = new JSieve<Remote>() {
+
+            public boolean sieve(Remote component) {
+                if (component.getMyEntry() >=14 && component.getMyEntry() <= 15){
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        System.out.println(new Remote("%", -1).search(db,sieve));
     }
 }

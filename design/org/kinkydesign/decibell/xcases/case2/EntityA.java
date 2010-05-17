@@ -4,7 +4,6 @@ import java.util.UUID;
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.annotations.*;
-import org.kinkydesign.decibell.exceptions.ImproperDatabaseException;
 
 @TableName("A")
 public class EntityA extends Component<EntityA>{
@@ -48,15 +47,17 @@ public class EntityA extends Component<EntityA>{
         EntityA a = new EntityA(UUID.randomUUID().toString(), c);
 
         DeciBell db = new DeciBell();
-        db.setDbName("my/db/fjsdhg324");
+        db.setDbName("my/dba/dba21");
         db.attachFromPackages("org.kinkydesign.decibell.xcases.case2");
 
         db.start();
 
-        d.attemptRegister(db);
-        c.attemptRegister(db);
-        b.attemptRegister(db);
-        a.attemptRegister(db);
+//        d.attemptRegister(db);
+//        c.attemptRegister(db);
+//        b.attemptRegister(db);
+//        a.attemptRegister(db);
+
+        System.out.println(new EntityA("%433%", null).search(db));
         
 
     }
