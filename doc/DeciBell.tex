@@ -12,7 +12,7 @@ DeciBell is an \emph{open source} and \emph{free} tool developed
 to tackle in a uniform and structured way the problem of 
 Java and SQL cooperation (available at \href{http://github.com/hampos/DeciBell}{\texttt{http://github.com/hampos/DeciBell}}). In DeciBell, Java 
 classes are related to relational database entities automatically and in a 
-transparent way as far as the background operations are concerned. So, on the 
+transparent way as far as the background operations are concerned. So, on 
 one hand, non-expert users can work on Java code exclusively while 
 expert ones are able to focus on more algorithmic aspects of the problem they 
 try to solve rather than be wasted with trivial database management issues. In contrast 
@@ -170,8 +170,8 @@ searching as the JVM does not allow for \texttt{null} values in numeric variable
 provided using this interface, stands for the \texttt{null} value of the annotated variable.
 
 The idea is simple: When a search command is executed on a DeciBell
-Component DeciBell checks that component's Fields and when a Field has a \texttt{null}
-value it gets replaced by an infinite value. (A value used to inform the database
+Component, DeciBell checks that component's Fields and when a Field has a \texttt{null}
+value it gets replaced by an indefinite value (i.e. a value used to inform the database
 that this specific field is to be ignored in the search, in the sense to perform
 the search operation irrespective of the value of this field)
 In that way DeciBell keeps using the same PreparedStatements and
@@ -312,6 +312,39 @@ Then \texttt{foundMaster.collection} is a \texttt{HashSet}. That is,
 DeciBell also stores the collection implementation used when storing the 
 data.
 
+\section*{Implementation Details}
+\subsection*{DataTypes Mapping}
+Java basic datatypes (\texttt{int, long, short, double, float} and \texttt{String}) do not have an
+exact counterpart in SQL. It is intuitively implied that the Java datatype \texttt{int} is mapped to
+the SQL datatype \texttt{INTEGER} but those types differ both in number of allocated bytes and 
+range. Specificaly, in Java integers accept values from $-2^{31}$ up to ${2^{31}-1}$, while in SQL (and in 
+particular in Derby) the lowest integer is $-2147483648$ and the highest is $2147483647$. Analogously there
+are some datatype inconsistencies between \texttt{short} and \texttt{SMALLINT} and so on.
+However, as every ORM has to establish some correspondnce between datatypes in Decibell we 
+adopt by convention the following mapping:
+
+\begin{table}[ht]
+\caption{Java-SQL datatypes mapping}   
+\centering           
+\begin{tabular}{c c }
+\hline\hline
+Basic Java datatype & SQL datatype \hspace*{10} \\ [0.5ex]
+\hline                         
+\texttt{int} 	& 		\texttt{INTEGER}  \\             
+\texttt{short} 	& 	\texttt{SMALLINT} \\ 
+\texttt{long} 	& 	\texttt{BIGINT} \\
+\texttt{double} & 	\texttt{DOUBLE PRECISION} \\
+\texttt{float} 	& 	\texttt{REAL} \\
+\texttt{String} & 	\texttt{VARCHAR(32672)} \\
+\texttt{BigDecimal} 	& 	\texttt{DECIMAL}\\
+\texttt{boolean} 	& 	\texttt{BIT}\\ [1ex]         
+\hline
+\end{tabular}
+\end{table}
+
+
+
+
 \section*{Dependencies}
 DeciBell makes use of the following open source, free Java libraries:
 \begin{enumerate}
@@ -338,9 +371,9 @@ their ideas and proposals or even fork the project thus adjusting it to their sp
 reason why DeciBell is open source and needs the contribution of the open source community. One can either 
 contribute in terms of optimizing the source code, adding new features or fixing existing bugs or write
 documentation for the existing code. Being in its infancy, DeciBell also needs lots of tests. Contact one of the 
-developers
+developers for more information.
 
-\section*{Does it make coffee?}\label{cofee}
+\section*{Does it make coffee?}\label{coffee}
 Well, that's a tough one! It doesn't! But this is still it's alpha/testing version (0.1.1.0). All JUnit tests
 carried out till today are quite encouraging and we'll do our best so that it will make 
 coffee (due for the beta version).
