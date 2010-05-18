@@ -7,6 +7,11 @@ import static org.junit.Assert.*;
 
 public class fk1Test {
 
+    public fk1Test() {
+    }
+
+    
+
     @Test
     public void test1() throws Exception {
 
@@ -22,6 +27,7 @@ public class fk1Test {
         D d2 = new D("d2", "d2ddd-ccc", 54);
         D d3 = new D("d44", "ccds", -43);
         D d4 = new D("d44", "ccds2", -43);
+        D d5 = new D("d1", "something", -43);
 
         d1.attemptRegister(db);
         assertEquals(1, d1.attemptRegister(db));
@@ -31,6 +37,8 @@ public class fk1Test {
         assertEquals(1, d3.attemptRegister(db));
         d4.attemptRegister(db);
         assertEquals(1, d4.attemptRegister(db));
+        d5.attemptRegister(db);
+        assertEquals(1, d5.attemptRegister(db));
 
         C c1 = new C(d1, "c1--1", "chdsferfgs");
         C c2 = new C(d1, "c1--2", "824rnf");
@@ -83,12 +91,13 @@ public class fk1Test {
         assertTrue(dList.contains(d2));
         assertTrue(dList.contains(d3));
         assertTrue(dList.contains(d4));
-        assertEquals(4,dList.size());
+        assertTrue(dList.contains(d5));
+        assertEquals(5, dList.size());
 
 
         ArrayList<D> dList2 = d4.search(db);
         assertTrue(dList2.contains(d4));
-        assertEquals(1,dList2.size());
+        assertEquals(1, dList2.size());
 
         ArrayList<D> searchForSomeD = new D(null, "%s2", -1).search(db);
         assertEquals(1, searchForSomeD.size());
