@@ -11,7 +11,7 @@ public class fk1Test {
     public void test1() throws Exception {
 
         DeciBell db = new DeciBell();
-        db.setDbName("my/dvb/asdf");
+        db.setDbName("my/dvb/adsf");
         db.attach(A.class);
         db.attach(B.class);
         db.attach(C.class);

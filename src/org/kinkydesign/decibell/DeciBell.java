@@ -168,7 +168,7 @@ public class DeciBell {
         checkConsistencybefore();
         TablesGenerator tables = new DerbyTablesGenerator(this, components);
         tables.construct();
-        StatementPool pool = new StatementPool(connector);
+        StatementPool.getPool(connector);
         System.err.println("DeciBell >>> CONNECT '" + getDatabaseUrl() + "';\n");
     }
 
