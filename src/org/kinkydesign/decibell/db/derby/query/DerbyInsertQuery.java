@@ -39,13 +39,8 @@ package org.kinkydesign.decibell.db.derby.query;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
-import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.derby.DerbyTable;
 import org.kinkydesign.decibell.db.query.InsertQuery;
-import org.kinkydesign.decibell.db.query.UpdateQuery;
-import org.kinkydesign.decibell.db.TableColumn;
-import org.kinkydesign.decibell.db.interfaces.JTable;
-import org.kinkydesign.decibell.db.interfaces.JTableColumn;
+import org.kinkydesign.decibell.db.interfaces.*;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
@@ -86,33 +81,34 @@ public class DerbyInsertQuery extends InsertQuery {
         super();
     }
 
-
-
     @Override
     public String getSQL() {
-        String sql = INSERT_INTO + SPACE + getTable().getTableName() + SPACE;
-        String tableCols = LEFT_PAR;
-        String vals = LEFT_PAR;
-        Iterator<Entry<JTableColumn, String>> iterator = ColumnValuesMap.entrySet().iterator();
-        while (iterator.hasNext()){
+        StringBuffer sql = new StringBuffer();
+        sql.append(INSERT_INTO + SPACE + getTable().getTableName() + SPACE);
+        StringBuffer tableCols = new StringBuffer();
+        tableCols.append(LEFT_PAR);
+
+        StringBuffer vals = new StringBuffer();
+        vals.append(LEFT_PAR);
+        Iterator<Entry<JTableColumn, String>> iterator = columnValuesMap.entrySet().iterator();
+        while (iterator.hasNext()) {
             Entry<JTableColumn, String> e = iterator.next();
-            tableCols += e.getKey().getColumnName();
-            if (e.getValue() == null){
-                vals += QUESTION_MARK;
-            }else{
-                vals += e.getValue();
+            tableCols.append(e.getKey().getColumnName());
+            if (e.getValue() == null) {
+                vals.append(QUESTION_MARK);
+            } else {
+                vals.append(e.getValue());
             }
-            if (iterator.hasNext()){
-                vals += COMMA;
-                tableCols += COMMA;
+            if (iterator.hasNext()) {
+                vals.append(COMMA);
+                tableCols.append(COMMA);
             }
         }
-        vals += RIGHT_PAR;
-        tableCols += RIGHT_PAR;
-        sql += tableCols+SPACE+VALUES+SPACE+vals;
-        return sql;
+        vals.append(RIGHT_PAR);
+        tableCols.append(RIGHT_PAR);
+        sql.append(tableCols);
+        sql.append(SPACE + VALUES + SPACE);
+        sql.append(vals);
+        return sql.toString();
     }
-
-    
-    
 }

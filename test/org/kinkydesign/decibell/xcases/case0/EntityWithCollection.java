@@ -53,7 +53,7 @@ public class EntityWithCollection extends Component<EntityWithCollection> {
         e.uid =  90102;
         System.out.println("------------->~<-------------");
         long initTime = System.currentTimeMillis();
-        //e.register(db);
+        e.register(db);
         long duration = System.currentTimeMillis() - initTime;
         System.out.println("Duration = "+duration+"ms");
 

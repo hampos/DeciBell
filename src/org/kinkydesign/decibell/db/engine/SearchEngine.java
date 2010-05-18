@@ -106,7 +106,6 @@ public class SearchEngine<T extends Component> {
         }
     }
 
-
     private ArrayList<T> doSearchTerminal(Component component) throws SQLException {
 
         JTable table = registry.get(component.getClass());
@@ -119,7 +118,7 @@ public class SearchEngine<T extends Component> {
         Pair<PreparedStatement, SQLQuery> entry = pool.getSearch(table);
         PreparedStatement ps = entry.getKey();
         SQLQuery query = entry.getValue();
-        Infinity infinity = new Infinity(db);        
+        Infinity infinity = new Infinity(db);
 
         int ps_INDEX = 1;
 
@@ -144,16 +143,21 @@ public class SearchEngine<T extends Component> {
 
         ResultSet resultSet = ps.executeQuery();
 
-        
-        Crawler crawler = new Crawler(db, pool);
-        while (resultSet.next()) {            
-            T componentFromDB = (T) crawler.crawlDatabase(resultSet, component.getClass(), table);//componentFromDB(resultSet, component.getClass(), table);
-            if (sieve == null || sieve.sieve(componentFromDB)) {
-                resultList.add(componentFromDB);
-            }            
+        try {
+            Crawler crawler = new Crawler(db, pool);
+            while (resultSet.next()) {
+                T componentFromDB = (T) crawler.crawlDatabase(resultSet, component.getClass(), table);//componentFromDB(resultSet, component.getClass(), table);
+                if (sieve == null || sieve.sieve(componentFromDB)) {
+                    resultList.add(componentFromDB);
+                }
+            }
+        } catch (final SQLException ex) {
+            throw ex;
+        } finally {
+            pool.recycleSearch(entry, table);
+            resultSet.close();
         }
-        pool.recycleSearch(entry, table);
-        resultSet.close();
+
         return resultList;
     }
 
@@ -253,9 +257,4 @@ public class SearchEngine<T extends Component> {
             throw new RuntimeException("Could not access a field in :\n" + component, ex);
         }
     }
-
-    
-
-
-    
 }

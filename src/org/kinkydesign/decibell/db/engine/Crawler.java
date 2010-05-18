@@ -39,6 +39,8 @@ import com.thoughtworks.xstream.XStream;
 import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kinkydesign.decibell.*;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.StatementPool;
@@ -203,7 +205,15 @@ public class Crawler {
                 newRS.close();
             }
             return component;
-        } catch (Exception ex) {
+        } catch (final IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        } catch (final InstantiationException ex) {
+            throw new RuntimeException(ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        } catch (final NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
+        } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -218,26 +228,35 @@ public class Crawler {
             int ps_REL_INDEX = 1;
 
 
-
+            ResultSet relRs = null;
             try {
-                for (Proposition proposition : query.getPropositions()) {
-                    JTableColumn relColumn = proposition.getTableColumn();
-                    if (relColumn.getColumnName().equals("METACOLUMN")) {
-                        continue;
-                    }
 
-                    Field f = relColumn.getField();
-                    if (!relationalTable.getMasterTable().equals(relColumn.getReferenceTable())) {
-                        Infinity inf = new Infinity(db);
-                        ps.setObject(ps_REL_INDEX, inf.getInfinity(proposition), relColumn.getColumnType().getType());
-                    } else {
-                        ps.setObject(ps_REL_INDEX, dbData.getObject(relColumn.getReferenceColumnName()),
-                                relColumn.getColumnType().getType());
+                try {
+
+                    for (Proposition proposition : query.getPropositions()) {
+                        JTableColumn relColumn = proposition.getTableColumn();
+                        if (relColumn.getColumnName().equals("METACOLUMN")) {
+                            continue;
+                        }
+
+                        Field f = relColumn.getField();
+                        if (!relationalTable.getMasterTable().equals(relColumn.getReferenceTable())) {
+                            Infinity inf = new Infinity(db);
+                            ps.setObject(ps_REL_INDEX, inf.getInfinity(proposition), relColumn.getColumnType().getType());
+                        } else {
+                            ps.setObject(ps_REL_INDEX, dbData.getObject(relColumn.getReferenceColumnName()),
+                                    relColumn.getColumnType().getType());
+                        }
+                        ps_REL_INDEX++;
                     }
-                    ps_REL_INDEX++;
+                    relRs = ps.executeQuery();
+
+                } catch (final SQLException ex) {
+                    throw ex;
+                } finally {
+                    pool.recycleSearch(entry, relationalTable);
                 }
-                ResultSet relRs = ps.executeQuery();
-                pool.recycleSearch(entry, relationalTable);
+
 
                 String collectionJavaType = null;
 
@@ -273,8 +292,26 @@ public class Crawler {
                 relCollection.addAll(relList);
                 onField.set(masterComponent, relCollection);
 
-            } catch (Exception ex) {
+            } catch (final IllegalAccessException ex) {
                 throw new RuntimeException(ex);
+            } catch (final InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvocationTargetException ex) {
+                throw new RuntimeException(ex);
+            } catch (final NoSuchMethodException ex) {
+                throw new RuntimeException(ex);
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (final ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            } finally {
+                if (relRs != null) {
+                    try {
+                        relRs.close();
+                    } catch (final SQLException ex) {
+                        throw new RuntimeException("Could not close the result set...", ex);
+                    }
+                }
             }
         }
 

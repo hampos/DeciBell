@@ -83,40 +83,42 @@ public class DuplicateKeyException extends DeciBellException {
 
     public DuplicateKeyException(Object obj, DbConnector con, Throwable ex) {
         super(ex);
-        String message = "Exception due to duplicate key. "
-                + "Object of type "
-                + obj.getClass().getCanonicalName();
+        StringBuffer message = new StringBuffer();
+        message.append("Exception due to duplicate key. "
+                + "Object of type ");
+        message.append(obj.getClass().getCanonicalName());
         Set<JTableColumn> uniqueCols =
                 ComponentRegistry.getRegistry(con).get(obj.getClass()).getUniqueColumns();
         int count = 0;
-        String uniques = "";
+        StringBuffer uniques = new StringBuffer();
         if (!uniqueCols.isEmpty()) {
-            message += " and unique/primary field value";
+            message.append(" and unique/primary field value");
             Iterator<JTableColumn> it = uniqueCols.iterator();
             while (it.hasNext()) {
                 count++;
                 Field uniqueField = it.next().getField();
                 uniqueField.setAccessible(true);
-                uniques += uniqueField.getName();
+                uniques.append(uniqueField.getName());
                 try {
                     Field f =
                             obj.getClass().getDeclaredField(uniqueField.getName());
                     f.setAccessible(true);
                     Object valueForField = f.get(obj);
-                    uniques += " = " + valueForField;
+                    uniques.append(" = " + valueForField);
                 } catch (final Exception ex1) {
                     throw new RuntimeException(ex1);
                 }
                 if (it.hasNext()) {
-                    uniques += ", ";
+                    uniques.append(", ");
                 }
             }
             if (count > 1) {
-                message += "s ";
+                message.append("s ");
             }
-            message += " " + uniques;
+            message.append(" ");
+            message.append(uniques);
         }
-        this.explanation = message;
+        this.explanation = message.toString();
     }
 
     @Override

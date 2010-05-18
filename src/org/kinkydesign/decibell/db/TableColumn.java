@@ -288,10 +288,12 @@ final public class TableColumn implements Cloneable, JTableColumn {
      * @param domain a String array that defines the domain that this column
      * can take values from.
      */
-    public void setDomain(String[] domain) {
+    public void setDomain(final String[] domain) {
         this.isConstrained = true;
         this.hasDomain = true;
-        this.domain = domain;
+        String[] copy = new String[domain.length];
+        System.arraycopy(domain, 0, copy, 0, domain.length);
+        this.domain = copy;
     }
 
     /**
@@ -408,7 +410,9 @@ final public class TableColumn implements Cloneable, JTableColumn {
      * takes values.
      */
     public String[] getDomain() {
-        return domain;
+        String[] copy = new String[domain.length];
+        System.arraycopy(domain, 0, copy, 0, domain.length);
+        return copy;
     }
 
     /**

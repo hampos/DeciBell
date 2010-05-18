@@ -40,6 +40,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A Connector to a database. Each connector represents a specific database
@@ -318,8 +320,9 @@ public abstract class DbConnector {
      * @param sql an sql command String.
      */
     public void execute(String sql) {
+        Statement stmt = null;
         try {
-            Statement stmt = connection.createStatement();
+            stmt = connection.createStatement();
             stmt.execute(sql);
         } catch (SQLException ex) {
             if (!ex.getSQLState().equals("X0Y32") && !ex.getSQLState().equals("42Y55")) {
@@ -327,6 +330,14 @@ public abstract class DbConnector {
                 throw new RuntimeException(ex);
             }
             
+        }finally{
+            if (stmt!=null){
+                try {
+                    stmt.close();
+                } catch (SQLException ex) {
+                    throw new RuntimeException("Could not close the SQL statement!", ex);
+                }
+            }
         }
     }
 

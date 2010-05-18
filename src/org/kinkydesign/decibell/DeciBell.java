@@ -35,31 +35,16 @@
  */
 package org.kinkydesign.decibell;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.kinkydesign.decibell.db.DbConnector;
-import org.kinkydesign.decibell.db.StatementPool;
-import org.kinkydesign.decibell.db.TablesGenerator;
+import java.lang.reflect.*;
+import java.util.*;
+import org.kinkydesign.decibell.db.*;
 import org.kinkydesign.decibell.db.derby.DerbyConnector;
 import org.kinkydesign.decibell.db.derby.DerbyTablesGenerator;
 import org.kinkydesign.decibell.exceptions.ImproperDatabaseException;
 import org.kinkydesign.decibell.exceptions.NoPrimaryKeyException;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
+import org.reflections.util.*;
 
 /**
  *
@@ -146,17 +131,17 @@ public class DeciBell {
         if (components == null) {
             components = new HashSet<Class<? extends Component>>();
         }
-        String packagesToAdd = "";
+        StringBuffer packages = new StringBuffer();
 
         for (int i = 0; i < packageNames.length; i++) {
-            packagesToAdd += "+" + packageNames[i]+".*";
+            packages.append("+" + packageNames[i]+".*");
             if (i<packageNames.length-1){
-                packagesToAdd += ",";
+                packages.append(",");
             }
         }
         
         Reflections reflections = new Reflections(
-                new ConfigurationBuilder().filterInputsBy(FilterBuilder.parse(packagesToAdd)).
+                new ConfigurationBuilder().filterInputsBy(FilterBuilder.parse(packages.toString())).
                 setUrls(ClasspathHelper.getUrlsForCurrentClasspath()).
                 setScanners(new SubTypesScanner()));
 
@@ -182,7 +167,7 @@ public class DeciBell {
         checkConsistencybefore();
         TablesGenerator tables = new DerbyTablesGenerator(connector, components);
         tables.construct();
-        StatementPool pool = new StatementPool(connector, 10);
+        StatementPool pool = new StatementPool(connector);
         System.err.println("DeciBell >>> Successfully connected to the database as " + getUser());
         System.err.println("DeciBell >>> CONNECT '" + getDatabaseUrl() + "';");
     }
@@ -239,8 +224,6 @@ public class DeciBell {
             } catch (IllegalAccessException ex) {
                 throw new ImproperDatabaseException("The class " + c.getName() + " has "
                         + "a non-accessible (not public) constructor with no parameters. Make it public.", ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(DeciBell.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InvocationTargetException ex) {
                 throw new ImproperDatabaseException("The constructor of the class" + c.getName() + " failed "
                         + "to instantiate new objects because it threw an exception.\nSee next exception for details...", ex);

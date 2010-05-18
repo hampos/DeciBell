@@ -107,8 +107,9 @@ public class DerbyDeleteQuery extends DeleteQuery {
 
     @Override
     public String getSQL(boolean usePKonly) {
-        String sql = DELETE + SPACE + FROM + SPACE + getTable().getTableName() + SPACE
-                + WHERE + SPACE;
+        StringBuffer sql =  new StringBuffer();
+        sql.append(DELETE + SPACE + FROM + SPACE + getTable().getTableName() + SPACE
+                + WHERE + SPACE);
         Iterator<Proposition> it = propositions.iterator();
         boolean shouldAND = false;
         while (it.hasNext()) {
@@ -116,14 +117,14 @@ public class DerbyDeleteQuery extends DeleteQuery {
             Proposition temp = it.next();
             if (!usePKonly || (usePKonly && temp.getTableColumn().isPrimaryKey())) {
                 if (shouldAND) {
-                    sql += LogicalOperator.AND + SPACE;
+                    sql.append(LogicalOperator.AND + SPACE);
                 }
-                sql += temp + SPACE;
+                sql.append(temp + SPACE);
                 shouldAND = true;
             }
 
         }
-        return sql;
+        return sql.toString();
     }
 
     public void setInfinity(JTableColumn column) {
