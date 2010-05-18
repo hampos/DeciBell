@@ -146,7 +146,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
     private void tableCreation(Class<? extends Component> c) {
         Table table = new DerbyTable();
         // if c already in the registry, it is created - return
-        if (registry.containsKey(c)) {
+        if (registry.containsClass(c)) {
             return;
         }
         /*
@@ -155,7 +155,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
          * registered in the registry.
          */
         if (c.getSuperclass() != Component.class
-                && !registry.containsKey((Class<? extends Component>) c.getSuperclass())) {
+                && !registry.containsClass((Class<? extends Component>) c.getSuperclass())) {
             tableCreation((Class<? extends Component>) c.getSuperclass());
         }
 
@@ -281,7 +281,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
                             column.setReferencesClass(c);
                             selfReferencingCols.add(column);
                         } else {
-                            if (!registry.containsKey((Class<? extends Component>) field.getType())) {
+                            if (!registry.containsClass((Class<? extends Component>) field.getType())) {
                                 tableCreation((Class<? extends Component>) field.getType());
                             }
                             for (JTableColumn col : registry.get((Class<? extends Component>) field.getType()).getPrimaryKeyColumns()) {
