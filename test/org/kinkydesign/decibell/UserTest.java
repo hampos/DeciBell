@@ -47,7 +47,7 @@ public class UserTest {
     public void testSomeMethod() throws DeciBellException {
 
         DeciBell db = new DeciBell();
-        db.setDbName("my/dvb/1");
+        db.setDbName("my/dvb/5");
         db.attach(User.class);
         db.attach(UserInfo.class);
         db.attach(Task.class);
@@ -57,27 +57,40 @@ public class UserTest {
         t1.comment = "comment1";
         t1.id = "id1";
         t1.attemptRegister(db);
+        assertEquals(1, t1.attemptRegister(db));
 
         Task t2 = new Task();
         t2.comment = "comment2";
         t2.id = "id2";
         t2.attemptRegister(db);
+        assertEquals(1, t2.attemptRegister(db));
 
         ArrayList<Task> tasks = new ArrayList<Task>();
-        tasks.add(t1);tasks.add(t2);
+        tasks.add(t1);
+        tasks.add(t2);
 
         UserInfo ui = new UserInfo();
         ui.email = "mail1";
-        ui.uname="JS";
+        ui.uname = "JS";
         ui.attemptRegister(db);
+        assertEquals(1, ui.attemptRegister(db));
 
         User u = new User();
         u.delete(db);
         u.tasks = tasks;
-        u.ui =ui;
+        u.ui = ui;
         u.attemptRegister(db);
+        assertEquals(1, u.attemptRegister(db));
 
-        System.out.println(new User().search(db));
+        ArrayList<User> usersFound = new User().search(db);
+        assertNotNull(usersFound);
+        assertEquals(1, usersFound.size());
+        assertEquals(u, usersFound.get(0));
+        assertTrue(usersFound.get(0).tasks.contains(t1));
+        assertTrue(usersFound.get(0).tasks.contains(t2));
+        assertEquals(ui.email, usersFound.get(0).ui.email);
+        assertEquals(ui.uname, usersFound.get(0).ui.uname);
+
     }
 
 }

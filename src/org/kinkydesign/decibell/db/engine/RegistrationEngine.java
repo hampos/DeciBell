@@ -284,9 +284,10 @@ public class RegistrationEngine {
                         }
                         Field f = column.getField();
                         if (column.getReferenceTable().equals(relationalTable.getMasterTable())) {
-                            ps.setObject(ps_INDEX, (Object) f.get(whatTowrite), column.getColumnType().getType());
+                            ps.setObject(ps_INDEX,
+                                    getForeignKeyValue(whatTowrite, column.getReferenceColumn(), f));
                         } else {
-                            ps.setObject(ps_INDEX, (Object) f.get(o), column.getColumnType().getType());
+                            ps.setObject(ps_INDEX, getForeignKeyValue((Component) o, column.getReferenceColumn(), f), column.getColumnType().getType());
                         }
                         ps_INDEX++;
                     }

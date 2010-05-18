@@ -1,5 +1,6 @@
 package org.kinkydesign.decibell.xcases.case0;
 
+import java.net.URI;
 import java.util.Random;
 import java.util.UUID;
 import org.kinkydesign.decibell.Component;
@@ -41,7 +42,7 @@ public class EntityWithObject extends Component<EntityWithObject> {
         EntityWithObject myEntity = new EntityWithObject();
         myEntity.id = UUID.randomUUID().toString();
         myEntity.myentry = "XXX";
-        myEntity.myObject = UUID.randomUUID();
+        myEntity.myObject = new URI("http://example.net");
 
         
         myEntity.attemptRegister(db);
