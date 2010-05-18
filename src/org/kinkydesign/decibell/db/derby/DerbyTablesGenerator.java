@@ -82,7 +82,7 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
  * @author Charalampos Chomenides
  */
 public class DerbyTablesGenerator extends TablesGenerator {
-    
+
     /**
      * <p  align="justify" style="width:60%">
      * It is possible that a column in some table, is a foreign key to the
@@ -106,17 +106,22 @@ public class DerbyTablesGenerator extends TablesGenerator {
      *      Set of classes that extends {@link Component } with respect to which
      *      the table creation takes place.
      */
-    public DerbyTablesGenerator(DbConnector connector, Set<Class<? extends Component>> components) {
-        super(connector, components);
+    public DerbyTablesGenerator(DeciBell db, Set<Class<? extends Component>> components) {
+        super(db, components);
     }
 
-    private void initSchema(){
+    private void initSchema() {
         JTable initTable = new DerbyTable();
-        initTable.setTableName(connector.getUser(), "DECIBELL_INIT_TAB");
+        initTable.setTableName(db.getDbConnector().getUser(), "DECIBELL_INIT_TAB");
         JTableColumn initColumn = new TableColumn("AA");
         initColumn.setColumnType(SQLType.SMALLINT);
         initTable.addColumn(initColumn);
-        connector.execute(initTable.getCreationSQL());
+        String initCreationSQL = initTable.getCreationSQL();
+        db.getDbConnector().execute(initCreationSQL);
+        if (db.isVerbose()) {
+            System.out.println(initCreationSQL);
+        }
+
     }
 
     public void construct() {
@@ -131,14 +136,23 @@ public class DerbyTablesGenerator extends TablesGenerator {
         }
         relTableCreation();
 
-        Iterator<JTable> it = ComponentRegistry.getRegistry(connector).values().iterator();
+        String SQL;
+        Iterator<JTable> it = ComponentRegistry.getRegistry(db.getDbConnector()).values().iterator();
         while (it.hasNext()) {
-            connector.execute(it.next().getCreationSQL());
+            SQL = it.next().getCreationSQL();
+            db.getDbConnector().execute(SQL);
+            if (db.isVerbose()){
+                System.out.println(SQL);
+            }
         }
 
         Iterator<JRelationalTable> relit = registry.getRelationTables().iterator();
         while (relit.hasNext()) {
-            connector.execute(relit.next().getCreationSQL());
+            SQL = relit.next().getCreationSQL();
+            db.getDbConnector().execute(SQL);
+            if (db.isVerbose()){
+                System.out.println(SQL);
+            }
         }
 
     }
@@ -162,10 +176,10 @@ public class DerbyTablesGenerator extends TablesGenerator {
         // set the name to the generated table
         Annotation declaredTableName = c.getAnnotation(TableName.class);
         if (declaredTableName == null) {
-            table.setTableName(connector.getUser(), c.getName().replace(DOT, UNDERSCORE));
+            table.setTableName(db.getUser(), c.getName().replace(DOT, UNDERSCORE));
         } else {
             TableName tableName = (TableName) declaredTableName;
-            table.setTableName(connector.getUser(), tableName.value());
+            table.setTableName(db.getUser(), tableName.value());
         }
 
 
@@ -388,11 +402,11 @@ public class DerbyTablesGenerator extends TablesGenerator {
             for (Type arg : pt.getActualTypeArguments()) {
                 Class carg = (Class) arg;
 
-                table.setTableName(connector.getUser(),
+                table.setTableName(db.getUser(),
                         registry.get(f.getDeclaringClass()).getTableName()
                         + UNDERSCORE + LogicalOperator.AND + UNDERSCORE
                         + registry.get(carg).getTableName() + UNDERSCORE + ON + UNDERSCORE + f.getName());
-                
+
                 Table master = (Table) registry.get((Class<? extends Component>) f.getDeclaringClass());
                 Table slave = (Table) registry.get((Class<? extends Component>) carg);
 
@@ -455,5 +469,4 @@ public class DerbyTablesGenerator extends TablesGenerator {
             registry.setRelationTable(table);
         }
     }
-
 }

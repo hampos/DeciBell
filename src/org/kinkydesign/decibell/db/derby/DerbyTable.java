@@ -165,7 +165,7 @@ public class DerbyTable extends Table {
 
         
         bufferSQL.append(NEWLINE + RIGHT_PAR);
-        System.out.println(bufferSQL);
+
         return bufferSQL.toString();
     }
 

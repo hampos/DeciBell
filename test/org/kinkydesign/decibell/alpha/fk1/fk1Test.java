@@ -11,7 +11,7 @@ public class fk1Test {
     public void test1() throws Exception {
 
         DeciBell db = new DeciBell();
-        db.setDbName("my/dvb/xxysaf2");
+        db.setDbName("my/dvb/asdf");
         db.attach(A.class);
         db.attach(B.class);
         db.attach(C.class);
@@ -22,6 +22,7 @@ public class fk1Test {
         D d2 = new D("d2", "d2ddd-ccc", 54);
         D d3 = new D("d44", "ccds", -43);
         D d4 = new D("d44", "ccds2", -43);
+        D d5 = new D("d1", "asdf-qwerty", -43);
 
         d1.attemptRegister(db);
         assertEquals(1, d1.attemptRegister(db));
@@ -31,6 +32,8 @@ public class fk1Test {
         assertEquals(1, d3.attemptRegister(db));
         d4.attemptRegister(db);
         assertEquals(1, d4.attemptRegister(db));
+        d5.attemptRegister(db);
+        assertEquals(1, d5.attemptRegister(db));
 
         C c1 = new C(d1, "c1--1", "chdsferfgs");
         C c2 = new C(d1, "c1--2", "824rnf");
@@ -83,7 +86,8 @@ public class fk1Test {
         assertTrue(dList.contains(d2));
         assertTrue(dList.contains(d3));
         assertTrue(dList.contains(d4));
-        assertEquals(4,dList.size());
+        assertTrue(dList.contains(d5));
+        assertEquals(5,dList.size());
 
 
         ArrayList<D> dList2 = d4.search(db);
