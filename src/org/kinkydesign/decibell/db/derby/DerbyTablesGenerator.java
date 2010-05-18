@@ -425,6 +425,8 @@ public class DerbyTablesGenerator extends TablesGenerator {
         registry.put((Class<? extends Component>) c, table);
     }
 
+    // TODO: Relational tables are not correctly produced in case an entity has a MTM relation with itself.
+    // TODO: Discern between the case of Lists and the one of Sets?
     private void relTableCreation() {
 
         for (Field f : relations) {
@@ -500,4 +502,5 @@ public class DerbyTablesGenerator extends TablesGenerator {
             registry.setRelationTable(table);
         }
     }
+
 }
