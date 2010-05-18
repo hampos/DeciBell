@@ -144,8 +144,9 @@ public class SearchEngine<T extends Component> {
 
         ResultSet resultSet = ps.executeQuery();
 
+        
         Crawler crawler = new Crawler(db, pool);
-        while (resultSet.next()) {
+        while (resultSet.next()) {            
             T componentFromDB = (T) crawler.crawlDatabase(resultSet, component.getClass(), table);//componentFromDB(resultSet, component.getClass(), table);
             if (sieve == null || sieve.sieve(componentFromDB)) {
                 resultList.add(componentFromDB);
@@ -188,7 +189,7 @@ public class SearchEngine<T extends Component> {
     private void handleTerminalXML(Component component, PreparedStatement ps, JTableColumn column, Field field, int ps_INDEX, Object whatever)
             throws SQLException {
         try {
-            Object providedObject = field.get(field.get(component));
+            Object providedObject = field.get(component);
             if (providedObject == null) {
                 ps.setObject(ps_INDEX, whatever, column.getColumnType().getType());
             } else {

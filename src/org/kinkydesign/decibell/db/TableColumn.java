@@ -223,6 +223,10 @@ final public class TableColumn implements Cloneable, JTableColumn {
         return referencesColumn;
     }
 
+    public void setReferenceColumn(JTableColumn referenceColumn) {
+        this.referencesColumn = referenceColumn;
+    }
+
     /**
      * Returns the OnModification option that decides what the database must
      * do when the foreign column row this column points to is deleted.
@@ -510,6 +514,15 @@ final public class TableColumn implements Cloneable, JTableColumn {
         }
         return false;
     }
+
+    public void setOnDelete(OnModification onDelete) {
+        this.onDelete = onDelete;
+    }
+
+    public void setOnUpdate(OnModification onUpdate) {
+        this.onUpdate = onUpdate;
+    }
+
 
 
     

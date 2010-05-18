@@ -35,7 +35,8 @@ public class EntityWithForeignKey extends Component<EntityWithForeignKey>{
         ent.remote = remote;
         ent.attemptRegister(db);
 
-        
+
+        System.out.println(new EntityWithForeignKey().search(db));
 
     }
 

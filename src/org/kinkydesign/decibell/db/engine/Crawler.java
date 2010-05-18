@@ -95,10 +95,10 @@ public class Crawler {
      * </p>
      *
      * @param db
-     *      An identifier for the database connection.    
+     *      An identifier for the database connection.
      */
     public Crawler(final DeciBell db) {
-        this(db,StatementPool.getPool(db));
+        this(db, StatementPool.getPool(db));
     }
 
     /**
@@ -148,6 +148,7 @@ public class Crawler {
                 }
             }
 
+
             retrieveCollections(dbData, component, masterTable);
             // Now handle FKs:
             Set<Set<JTableColumn>> groupedFKs = masterTable.getForeignColumnsByGroup();
@@ -177,24 +178,26 @@ public class Crawler {
                 ResultSet newRS = ps.executeQuery();
                 newRS.next();
 
+
+
                 boolean foundSelfRef = false;
-                if (masterTable.isSelfReferencing()){
+                if (masterTable.isSelfReferencing()) {
                     foundSelfRef = true;
                     List<JTableColumn> selfRefColumns = masterTable.getSelfReferences();
                     for (JTableColumn src : selfRefColumns) {
                         foundSelfRef = foundSelfRef && newRS.getObject(src.getColumnName()).
-                                equals(newRS.getObject(src.getReferenceColumn().getColumnName()));
+                                equals(dbData.getObject(src.getReferenceColumn().getColumnName()));
                     }
                 }
 
-                if (foundSelfRef){
+                if (foundSelfRef) {
                     group.iterator().next().getField().set(component, component);
-                }else{
+                } else {
                     group.iterator().next().getField().set(
-                        component, crawlDatabase(newRS, group.iterator().next().getReferencesClass(),
-                        group.iterator().next().getReferenceTable()));
+                            component, crawlDatabase(newRS, group.iterator().next().getReferencesClass(),
+                            group.iterator().next().getReferenceTable()));
                 }
-                
+
 
 
                 newRS.close();

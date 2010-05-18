@@ -82,57 +82,7 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
  * @author Charalampos Chomenides
  */
 public class DerbyTablesGenerator extends TablesGenerator {
-
-    private class SelfReferencingCol {
-
-        private JTableColumn selfRefCol;
-        private JTable masterTable;
-        private OnModification onDelete;
-        private OnModification onUpdate;
-
-        public SelfReferencingCol() {
-        }
-
-        public SelfReferencingCol(JTableColumn selfRefCol, JTable masterTable, OnModification onDelete, OnModification onUpdate) {
-            this();
-            this.selfRefCol = selfRefCol;
-            this.masterTable = masterTable;
-            this.onDelete = onDelete;
-            this.onUpdate = onUpdate;
-        }
-
-        public JTable getMasterTable() {
-            return masterTable;
-        }
-
-        public void setMasterTable(JTable masterTable) {
-            this.masterTable = masterTable;
-        }
-
-        public OnModification getOnDelete() {
-            return onDelete;
-        }
-
-        public void setOnDelete(OnModification onDelete) {
-            this.onDelete = onDelete;
-        }
-
-        public OnModification getOnUpdate() {
-            return onUpdate;
-        }
-
-        public void setOnUpdate(OnModification onUpdate) {
-            this.onUpdate = onUpdate;
-        }
-
-        public JTableColumn getSelfRefCol() {
-            return selfRefCol;
-        }
-
-        public void setSelfRefCol(JTableColumn selfRefCol) {
-            this.selfRefCol = selfRefCol;
-        }
-    }
+    
     /**
      * <p  align="justify" style="width:60%">
      * It is possible that a column in some table, is a foreign key to the
@@ -142,8 +92,8 @@ public class DerbyTablesGenerator extends TablesGenerator {
      * to register them at the end of the table creation.
      * </p>
      */
-    private List<SelfReferencingCol> selfReferencingCols =
-            new LinkedList<SelfReferencingCol>();
+    private List<JTableColumn> selfReferencingCols =
+            new LinkedList<JTableColumn>();
 
     /**
      * <p  align="justify" style="width:60%">
@@ -160,30 +110,37 @@ public class DerbyTablesGenerator extends TablesGenerator {
         super(connector, components);
     }
 
-    public void construct() {
-        /*
-         * First, create an 'initialization' table, just to
-         * initialize the schema and avoid some exceptions...
-         */
+    private void initSchema(){
         JTable initTable = new DerbyTable();
         initTable.setTableName(connector.getUser(), "DECIBELL_INIT_TAB");
         JTableColumn initColumn = new TableColumn("AA");
         initColumn.setColumnType(SQLType.SMALLINT);
         initTable.addColumn(initColumn);
         connector.execute(initTable.getCreationSQL());
+    }
+
+    public void construct() {
+        /*
+         * First, create an 'initialization' table, just to
+         * initialize the schema and avoid some exceptions...
+         */
+        initSchema();
 
         for (Class<? extends Component> c : components) {
             tableCreation(c);
         }
         relTableCreation();
+
         Iterator<JTable> it = ComponentRegistry.getRegistry(connector).values().iterator();
         while (it.hasNext()) {
             connector.execute(it.next().getCreationSQL());
         }
+
         Iterator<JRelationalTable> relit = registry.getRelationTables().iterator();
         while (relit.hasNext()) {
             connector.execute(relit.next().getCreationSQL());
         }
+
     }
 
     private void tableCreation(Class<? extends Component> c) {
@@ -201,6 +158,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
                 && !registry.containsKey((Class<? extends Component>) c.getSuperclass())) {
             tableCreation((Class<? extends Component>) c.getSuperclass());
         }
+
         // set the name to the generated table
         Annotation declaredTableName = c.getAnnotation(TableName.class);
         if (declaredTableName == null) {
@@ -230,7 +188,6 @@ public class DerbyTablesGenerator extends TablesGenerator {
              * be primary key.
              */
             if ((ann = field.getAnnotation(PrimaryKey.class)) != null) {
-                PrimaryKey pk = (PrimaryKey) ann;
                 column.setPrimaryKey(true);
                 flag = true;
             }
@@ -318,15 +275,11 @@ public class DerbyTablesGenerator extends TablesGenerator {
                          * If the foreign key points to the same table
                          */
                         if (field.getType().equals(c)) {
-                            SelfReferencingCol selfRefCol = new SelfReferencingCol();
-                            selfRefCol.setMasterTable(table);
-                            selfRefCol.setOnDelete(fk.onDelete());
-                            selfRefCol.setOnUpdate(fk.onUpdate());
-                            selfRefCol.setSelfRefCol(column);
-                            selfRefCol.getSelfRefCol().setField(field);
-                            selfRefCol.getSelfRefCol().setReferencesClass(c);
-
-                            selfReferencingCols.add(selfRefCol);
+                            column.setMasterTable(table);
+                            column.setForeignKey(table, table.getPrimaryKeyColumns().iterator().next(), fk.onDelete(), fk.onUpdate());
+                            column.setField(field);
+                            column.setReferencesClass(c);
+                            selfReferencingCols.add(column);
                         } else {
                             if (!registry.containsKey((Class<? extends Component>) field.getType())) {
                                 tableCreation((Class<? extends Component>) field.getType());
@@ -407,13 +360,13 @@ public class DerbyTablesGenerator extends TablesGenerator {
          * Tackle foreign keys that point to the MASTER table
          */
         if (!selfReferencingCols.isEmpty()) {
-            for (SelfReferencingCol src : selfReferencingCols) {
+            for (JTableColumn src : selfReferencingCols) {
                 if (table.equals(src.getMasterTable())) {
-                    src.getSelfRefCol().setForeignKey(table, src.getMasterTable().getPrimaryKeyColumns().iterator().next(),
+                    src.setForeignKey(table, src.getMasterTable().getPrimaryKeyColumns().iterator().next(),
                             src.getOnDelete(), src.getOnUpdate());
-                    src.getSelfRefCol().setColumnType(src.getMasterTable().getPrimaryKeyColumns().iterator().next().getColumnType());
-                    src.getSelfRefCol().setReferencesClass((Class<? extends Component>) src.getSelfRefCol().getField().getType());
-                    table.addColumn(src.getSelfRefCol());
+                    src.setColumnType(src.getMasterTable().getPrimaryKeyColumns().iterator().next().getColumnType());
+                    src.setReferencesClass((Class<? extends Component>) c);
+                    table.addColumn(src);
                 }
             }
         }

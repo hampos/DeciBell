@@ -183,6 +183,8 @@ public interface JTableColumn {
      */
     OnModification getOnDelete();
 
+    void setOnDelete(OnModification onDelete);
+
     /**
      *
      * <p align="justify" style="width:60%">
@@ -200,7 +202,11 @@ public interface JTableColumn {
      */
     OnModification getOnUpdate();
 
+    void setOnUpdate(OnModification onUpdate);
+
     JTableColumn getReferenceColumn();
+
+    void setReferenceColumn(JTableColumn referenceColumn);
 
     String getReferenceColumnName();
 

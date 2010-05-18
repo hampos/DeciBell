@@ -43,18 +43,12 @@ public class SelfRef extends Component<SelfRef> {
 
     public static void main(String... args) throws Exception{
         DeciBell db = new DeciBell();
-        db.setDbName("my/db/ababvvg332b1");
+        db.setDbName("my/db/332b1");
         db.attach(SelfRef.class);
         db.start();
-
-        SelfRef a = new SelfRef();
-        a.setId(UUID.randomUUID().toString());
-        a.setOther(new SelfRef("6422fec0-9394-474a-b238-4e93bac11c97"));
-        a.register(db);
         
-        SelfRef proto = new SelfRef();
-        proto.setId("6422fec0%");
-        System.out.println(proto.search(db));
+        
+        System.out.println(new SelfRef().search(db));
     }
 
     

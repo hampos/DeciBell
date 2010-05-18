@@ -41,10 +41,12 @@ public class EntityWithObject extends Component<EntityWithObject> {
         EntityWithObject myEntity = new EntityWithObject();
         myEntity.id = UUID.randomUUID().toString();
         myEntity.myentry = "XXX";
-        myEntity.myObject = null;
+        myEntity.myObject = UUID.randomUUID();
 
         
         myEntity.attemptRegister(db);
+
+        System.out.println(new EntityWithObject().search(db));
 
     }
 
