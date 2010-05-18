@@ -95,10 +95,8 @@ public class StatementPool {
      * given poolSize.
      * @param con a DbConnector object that represents a database managed by
      * DeciBell.
-     * @param poolSize the size of the statement pool - meaning the number of
-     * PreparedStatement objects stored for each query.
      */
-    public StatementPool(DbConnector con, int poolSize) {
+    public StatementPool(DbConnector con) {
         this.con = con;
         for (JTable t : ComponentRegistry.getRegistry(con).values()) {
             initTable(t);

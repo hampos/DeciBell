@@ -99,13 +99,14 @@ public class DerbySelectQuery extends SelectQuery {
 
     public String getSQL(boolean searchPKonly) {
         JTable table = getTable();
-        String sql = SELECT + SPACE + STAR + SPACE + FROM + SPACE + table.getTableName() + SPACE;
+        StringBuffer sql = new StringBuffer();
+        sql.append(SELECT + SPACE + STAR + SPACE + FROM + SPACE + table.getTableName() + SPACE);
 
         for (int i=joins.size()-1;i>=0;i--) {
-            sql += joins.get(i).getSQL() + SPACE;
+            sql.append(joins.get(i).getSQL() + SPACE);
         }
         for (Join j : joins){
-            sql += j.getSQL() + SPACE;
+            sql.append(j.getSQL() + SPACE);
         }
 
         if (searchPKonly) {
@@ -119,16 +120,16 @@ public class DerbySelectQuery extends SelectQuery {
             }
             setPropositions(props);
         }
-        sql += WHERE + SPACE;
+        sql.append(WHERE + SPACE);
 
         Iterator<Proposition> propIter = propositions.iterator();
         while (propIter.hasNext()) {
-            sql += propIter.next().toString();
+            sql.append(propIter.next().toString());
             if (propIter.hasNext()) {
-                sql += SPACE + LogicalOperator.AND + SPACE;
+                sql.append(SPACE + LogicalOperator.AND + SPACE);
             }
         }
-        return sql;
+        return sql.toString();
     }
 
     public void setInfinity(JTableColumn column) {

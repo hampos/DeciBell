@@ -130,7 +130,7 @@ public class Infinity {
                     return 0;
                 }
             default:
-                return new String("%%");
+                return "%%";
         }
     }
 

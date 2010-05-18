@@ -197,17 +197,14 @@ public abstract class Component<T extends Component> implements Cloneable {
         }
     }
 
-    
     public ArrayList<T> search(DeciBell db, JSieve<T> sieve) {
         if (Component.class.equals(this.getClass().getSuperclass())) { // Direct subclass of Component
-            SearchEngine<T> engine = new SearchEngine<T>(db,sieve);
+            SearchEngine<T> engine = new SearchEngine<T>(db, sieve);
             return engine.search(this);
         } else {
             return null;
         }
     }
-
-    
 
     /**
      * <p  align="justify" style="width:60%">
@@ -252,34 +249,8 @@ public abstract class Component<T extends Component> implements Cloneable {
      */
     public void print(PrintStream stream) {
         stream.print("[\n");
-        print(stream, "");
+        stream.println(this.toString());
         stream.print("]\n");
-    }
-
-    private void print(PrintStream stream, String x) {
-        Class c = this.getClass();
-        stream.print(x + "Class = " + c.getName() + "\n");
-        for (Field f : c.getDeclaredFields()) {
-            try {
-                f.setAccessible(true);
-                if (f.get(this) instanceof Component) { // append another component
-                    if (f.get(this) instanceof Component) {
-                        if (this.equals(f.get(this))) {
-                            stream.print(x + spaces(3) + "L " + f.getName() + ": <itself>\n");
-                        } else {
-                            stream.print(x + spaces(3) + "L " + f.getName() + ":\n"
-                                    + ((Component) f.get(this)).toString(x + spaces(4)));
-                        }
-                    }
-                } else { // append some non-Component object
-                    stream.print(x + spaces(3) + "L "
-                            + f.getName() + " = " + f.get(this) + "\n");
-                }
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException("Unexpected condition - Field '" + f.getName() + "' was supposed "
-                        + "to be accessible. Method could not access the field!", ex);
-            }
-        }
     }
 
     /**
@@ -294,35 +265,68 @@ public abstract class Component<T extends Component> implements Cloneable {
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
         return "[\n" + toString("") + "]";
     }
 
     // TODO: Repeated code! Use print(PrintStream) to implement toString().
     // TODO: No need to have a private method for toString. Use print(PrintStream) instead.
     private String toString(String x) {
-        String str = "";
+        StringBuffer buffer = new StringBuffer();
         Class c = this.getClass();
-        str += x + "Class = " + c.getName() + "\n";
+        buffer.append(x);
+        buffer.append("Class = ");
+        buffer.append(c.getName());
+        buffer.append("\n");
         for (Field f : c.getDeclaredFields()) {
             try {
                 f.setAccessible(true);
                 if (f.get(this) instanceof Component) {
                     if (this.equals(f.get(this))) {
-                        str += x + spaces(3) + "L " + f.getName() + ": <itself>\n";
+                        buffer.append(x);
+                        buffer.append(spaces(3));
+                        buffer.append("L ");
+                        buffer.append(f.getName());
+                        buffer.append(": <itself>\n");
                     } else {
-                        str += x + spaces(3) + "L " + f.getName() + ":\n"
-                                + ((Component) f.get(this)).toString(x + spaces(4));
+                        buffer.append(x);
+                        buffer.append(spaces(3));
+                        buffer.append("L ");
+                        buffer.append(f.getName());
+                        buffer.append(":\n");
+                        buffer.append(((Component) f.get(this)).toString(x + spaces(4)));
+                    }
+                } else if (f.get(this)!=null && Collection.class.isAssignableFrom(f.get(this).getClass())) {
+                    Collection collection = (Collection) f.get(this);
+                    for (Object o : collection) {
+                        if (o instanceof Component) {
+                            buffer.append(x);
+                            buffer.append(spaces(3));
+                            buffer.append("L member = \n");
+                            buffer.append(((Component) o).toString(spaces(4)));
+                            buffer.append("\n");
+                        } else {
+                            buffer.append(x);
+                            buffer.append(spaces(3));
+                            buffer.append("L member = \n");
+                            buffer.append(o);
+                        }
+
                     }
                 } else {
-                    str += x + spaces(3) + "L " + f.getName() + " = " + f.get(this) + "\n";
+                    buffer.append(x);
+                    buffer.append(spaces(3));
+                    buffer.append("L ");
+                    buffer.append(f.getName());
+                    buffer.append(" = ");
+                    buffer.append(f.get(this));
+                    buffer.append("\n");
                 }
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException("Unexpected condition - Field '" + f.getName() + "' was supposed "
                         + "to be accessible. Method could not access the field!", ex);
             }
         }
-        return str;
+        return buffer.toString();
     }
 
     /**
@@ -333,11 +337,11 @@ public abstract class Component<T extends Component> implements Cloneable {
      *      Space of given length
      */
     private String spaces(int count) {
-        String spaces = "";
+        StringBuffer spaces = new StringBuffer();
         for (int i = 0; i < count; i++) {
-            spaces += " ";
+            spaces.append(" ");
         }
-        return spaces;
+        return spaces.toString();
     }
 
     /**

@@ -118,9 +118,10 @@ public class DerbyConnector extends DbConnector {
             getJavacmd(), getJavaOptions(),
             "-jar", getDriverHome() + "/lib/derbyrun.jar", "server", "ping",
             "-p", Integer.toString(getPort())};
+        BufferedReader br = null;
         try {
             Process derby_ping = Runtime.getRuntime().exec(derby_ping_command);
-            BufferedReader br = new BufferedReader(new InputStreamReader(derby_ping.getInputStream()));
+            br = new BufferedReader(new InputStreamReader(derby_ping.getInputStream()));
             if (br.readLine().contains("Connection obtained")) {
                 return true;
             } else {
@@ -129,6 +130,14 @@ public class DerbyConnector extends DbConnector {
         } catch (IOException ex) {
             ex.printStackTrace();
             return false;
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException("Could not close the Buffered Reader!",ex);
+            }
         }
     }
 
@@ -179,6 +188,9 @@ public class DerbyConnector extends DbConnector {
     private void loadDriver() {
         try {
             Driver myDriver = (Driver) Class.forName(getDatabaseDriver()).newInstance();
+            if (!myDriver.jdbcCompliant()) {
+                throw new RuntimeException("NON-JDBC compliant driver!");
+            }
         } catch (ClassNotFoundException ex) {
             throw new RuntimeException(ex);
         } catch (InstantiationException ex) {

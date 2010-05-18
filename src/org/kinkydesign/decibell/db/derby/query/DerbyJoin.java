@@ -84,17 +84,18 @@ public class DerbyJoin extends Join {
 
     @Override
     public String getSQL() {
-        String sql = types.get(getJoinType()) + SPACE + getRemoteTable().getTableName() +
-                SPACE + ON + SPACE;
+        StringBuffer sql = new StringBuffer();
+        sql.append(types.get(getJoinType()) + SPACE + getRemoteTable().getTableName() +
+                SPACE + ON + SPACE);
         Iterator<Entry<TableColumn, TableColumn>> it = column2column.entrySet().iterator();
         while (it.hasNext()){
             Entry<TableColumn, TableColumn> e = it.next();
-            sql += e.getKey().getFullName() + Qualifier.EQUAL + e.getValue().getFullName() + SPACE;
+            sql.append(e.getKey().getFullName() + Qualifier.EQUAL + e.getValue().getFullName() + SPACE);
             if (it.hasNext()){
-                sql += LogicalOperator.AND + SPACE;
+                sql.append(LogicalOperator.AND + SPACE);
             }
         }
-        return sql;
+        return sql.toString();
     }
 
 

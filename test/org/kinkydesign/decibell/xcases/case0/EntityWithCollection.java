@@ -58,7 +58,8 @@ public class EntityWithCollection extends Component<EntityWithCollection> {
         System.out.println("Duration = "+duration+"ms");
 
         
-        System.out.println(new EntityWithCollection().search(db));
+        //System.out.println(new EntityWithCollection().search(db));
+        new EntityWithCollection().search(db).get(0).print(System.err);
         
     }
 

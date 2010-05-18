@@ -73,23 +73,24 @@ public class DerbyUpdateQuery extends UpdateQuery {
     }
 
     public String getSQL(boolean usePKonly) {
-        String sql = UPDATE + SPACE + getTable().getTableName() + SPACE + SET + SPACE;
+        StringBuffer sql = new StringBuffer();
+        sql.append(UPDATE + SPACE + getTable().getTableName() + SPACE + SET + SPACE);
         Iterator<Proposition> it = setPropositions.iterator();
         while (it.hasNext()) {
-            sql += it.next();
+            sql.append(it.next());
             if (it.hasNext()) {
-                sql += SPACE + COMMA + SPACE;
+                sql.append(SPACE + COMMA + SPACE);
             }
         }
 
-        sql += SPACE + WHERE + SPACE;
+        sql.append(SPACE + WHERE + SPACE);
         it = wherePropositions.iterator();
         while (it.hasNext()) {
-            sql += it.next();
+            sql.append(it.next());
             if (it.hasNext()) {
-                sql += SPACE + LogicalOperator.AND + SPACE;
+                sql.append(SPACE + LogicalOperator.AND + SPACE);
             }
         }
-        return sql;
+        return sql.toString();
     }
 }
