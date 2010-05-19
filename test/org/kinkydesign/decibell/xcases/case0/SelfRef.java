@@ -47,7 +47,8 @@ public class SelfRef extends Component<SelfRef> {
         db.attach(SelfRef.class);
         db.setVerbose(true);
         db.start();
-        
+
+        //TODO: Create JUnit test for self-referencing entities (single PK).
         
         System.out.println(new SelfRef().search(db));
     }
