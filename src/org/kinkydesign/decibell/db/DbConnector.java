@@ -327,11 +327,12 @@ public abstract class DbConnector {
         } catch (SQLException ex) {
             if (!ex.getSQLState().equals("X0Y32") && !ex.getSQLState().equals("42Y55")) {
                 System.out.println(ex.getSQLState());
+                System.err.println("BUGGY : " + sql);
                 throw new RuntimeException(ex);
             }
-            
-        }finally{
-            if (stmt!=null){
+
+        } finally {
+            if (stmt != null) {
                 try {
                     stmt.close();
                 } catch (SQLException ex) {
@@ -371,18 +372,18 @@ public abstract class DbConnector {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null || !obj.getClass().equals(this.getClass())){
+        if (obj == null || !obj.getClass().equals(this.getClass())) {
             return false;
         }
-        DbConnector other = (DbConnector)obj;
-        if(other.getDbName().equals(this.getDbName())
+        DbConnector other = (DbConnector) obj;
+        if (other.getDbName().equals(this.getDbName())
                 && other.getUser().equals(this.getUser())
                 && other.getUrlBase().equals(this.getUrlBase())
                 && other.getDriverHome().equals(this.getDriverHome())
                 && other.getHost().equals(this.getHost())
-                && other.getPort() == this.getPort()){
+                && other.getPort() == this.getPort()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -396,5 +397,4 @@ public abstract class DbConnector {
         hash = 67 * hash + this.port;
         return hash;
     }
-
 }

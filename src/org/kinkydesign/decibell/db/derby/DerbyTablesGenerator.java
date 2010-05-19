@@ -157,6 +157,11 @@ public class DerbyTablesGenerator extends TablesGenerator {
 
     }
 
+    /*
+     * If the field is simply annotated as @Entry, assign to the column
+     * all Entry-specific characteristics of the field, like its default
+     * value and uniqueness attribute.
+     */
     private void handleEntry(JTableColumn column, Annotation ann) {
         Entry entry = (Entry) ann;
         column.setUnique(entry.unique());
@@ -193,6 +198,52 @@ public class DerbyTablesGenerator extends TablesGenerator {
         }
     }
 
+    private void checkCollectionConsistency(Field field) {
+        Type type = field.getGenericType();
+        if (!(type instanceof ParameterizedType)) {
+            throw new ClassCastException("Bad ForeignKey specified - Class:" + field.getDeclaringClass().getName()
+                    + " Field:" + field.getName() + " contains unknown types");
+        } else {
+            ParameterizedType pt = (ParameterizedType) type;
+            for (Type arg : pt.getActualTypeArguments()) {
+                Class carg = (Class) arg;
+                if (!isComponent(carg)) {
+                    throw new ClassCastException("Bad ForeignKey specified - Class:" + field.getDeclaringClass().getName()
+                            + " Field:" + field.getName() + " contains non-Component types");
+                }
+            }
+        }
+        relations.add(field);
+    }
+
+    private void handleForeignKey(Field masterField, JTableColumn masterColumn, JTableColumn remoteColumn, ForeignKey fk, JTable table) {
+        JTableColumn foreignColumn = new TableColumn();
+        if (masterColumn.hasDefault()) {
+            foreignColumn.setDefaultValue(masterColumn.getDefaultValue());
+        }
+        if (masterColumn.isConstrained()) {
+            if (masterColumn.hasHigh()) {
+                foreignColumn.setHigh(masterColumn.getHigh());
+            }
+            if (masterColumn.hasLow()) {
+                foreignColumn.setLow(masterColumn.getLow());
+            }
+            if (masterColumn.hasDomain()) {
+                foreignColumn.setDomain(masterColumn.getDomain());
+            }
+        }
+        foreignColumn.setNotNull(masterColumn.isNotNull());
+        foreignColumn.setPrimaryKey(masterColumn.isPrimaryKey());
+        foreignColumn.setUnique(masterColumn.isUnique());
+        foreignColumn.setColumnName(masterField.getName() + UNDERSCORE + remoteColumn.getColumnName());
+        foreignColumn.setColumnType(remoteColumn.getColumnType());
+        foreignColumn.setForeignKey((Table) registry.get((Class<? extends Component>) masterField.getType()),
+                remoteColumn, fk.onDelete(), fk.onUpdate());
+        foreignColumn.setReferencesClass((Class<? extends Component>) masterField.getType());
+        foreignColumn.setField(masterField);
+        table.addColumn(foreignColumn);
+    }
+
     private void tableCreation(Class<? extends Component> c) {
         Table table = new DerbyTable();
         // if c already in the registry, it is created - return
@@ -218,134 +269,58 @@ public class DerbyTablesGenerator extends TablesGenerator {
             table.setTableName(db.getUser(), tableName.value());
         }
 
-        /*
-         * Iterate over every field in the submitted class.
-         */
-        for (Field field : c.getDeclaredFields()) {
+        for (Field field : c.getDeclaredFields()) {// Iterate over every field in the submitted class.
             boolean flag = false;
-            /*
-             * Construct the column that corresponds to the current field
-             */
-            JTableColumn column = new TableColumn();
+            
+            JTableColumn column = new TableColumn();  // Construct the column that corresponds to the current field
             column.setColumnName(field.getName());
             column.setColumnType(TypeMap.getSQLType(field.getType()));
 
             Annotation ann = null;
 
-            /*
-             * If the field is annotated as @PrimaryKey, set the column to
-             * be primary key.
-             */
             if ((ann = field.getAnnotation(PrimaryKey.class)) != null) {
                 column.setPrimaryKey(true);
                 flag = true;
             }
 
-            /*
-             * If the field is simply annotated as @Entry, assign to the column
-             * all Entry-specific characteristics of the field, like its default
-             * value and uniqueness attribute.
-             */
             if ((ann = field.getAnnotation(Entry.class)) != null) {
                 handleEntry(column, ann);
                 flag = true;
             }
 
-            /**
-             * If the current field is annotated as @Constraint, assign the
-             * corresponding constraints to the table column.
-             */
             if ((ann = field.getAnnotation(Constraint.class)) != null) {
                 handleConstraint(column, ann);
             }
 
-            /*
-             * Case where the field is annotated as a foreign key.
-             */
-            if ((ann = field.getAnnotation(ForeignKey.class)) != null) {
+            if ((ann = field.getAnnotation(ForeignKey.class)) != null) { // Case where the field is annotated as a foreign key.
                 ForeignKey fk = (ForeignKey) ann;
-                /**
-                 * The foreign key is a collection, e.g. an ArrayList, List or a
-                 * Set like HashSet.
-                 */
-                if (isCollection(field.getType())) {
-                    Type type = field.getGenericType();
-                    if (!(type instanceof ParameterizedType)) {
-                        throw new ClassCastException("Bad ForeignKey specified - Class:" + field.getDeclaringClass().getName()
-                                + " Field:" + field.getName() + " contains unknown types");
-                    } else {
-                        ParameterizedType pt = (ParameterizedType) type;
-                        for (Type arg : pt.getActualTypeArguments()) {
-                            Class carg = (Class) arg;
-                            if (!isComponent(carg)) {
-                                throw new ClassCastException("Bad ForeignKey specified - Class:" + field.getDeclaringClass().getName()
-                                        + " Field:" + field.getName() + " contains non-Component types");
-                            }
-                        }
-                    }
-                    relations.add(field);
+                if (isCollection(field.getType())) { // The foreign key is a collection, e.g. an ArrayList, List or aSet like HashSet.
+                    checkCollectionConsistency(field);
                     flag = false;
-                } /**
-                 * The foreign key points to some other entity which
-                 * must be a component and is not a collection of such.
-                 */
-                else {
-                    if (isComponent(field.getType())) { // ... the type of the foreign key has to be of type 'Component'
-
-                        /*
-                         * If the foreign key points to the same table
-                         */
-                        if (field.getType().equals(c)) {
-                            column.setMasterTable(table);
-                            column.setForeignKey(table, table.getPrimaryKeyColumns().iterator().next(), fk.onDelete(), fk.onUpdate());
-                            column.setField(field);
-                            column.setReferencesClass(c);
-                            selfReferencingCols.add(column);
-                        } else {
-                            if (!registry.containsClass((Class<? extends Component>) field.getType())) {
-                                tableCreation((Class<? extends Component>) field.getType());
-                            }
-                            for (JTableColumn col : registry.get((Class<? extends Component>) field.getType()).getPrimaryKeyColumns()) {
-                                JTableColumn foreignColumn = new TableColumn();
-                                if (column.hasDefault()) {
-                                    foreignColumn.setDefaultValue(column.getDefaultValue());
-                                }
-                                if (column.isConstrained()) {
-                                    if (column.hasHigh()) {
-                                        foreignColumn.setHigh(column.getHigh());
-                                    }
-                                    if (column.hasLow()) {
-                                        foreignColumn.setLow(column.getLow());
-                                    }
-                                    if (column.hasDomain()) {
-                                        foreignColumn.setDomain(column.getDomain());
-                                    }
-                                }
-                                foreignColumn.setNotNull(column.isNotNull());
-                                foreignColumn.setPrimaryKey(column.isPrimaryKey());
-                                foreignColumn.setUnique(column.isUnique());
-                                foreignColumn.setColumnName(field.getName() + UNDERSCORE + col.getColumnName());
-                                foreignColumn.setColumnType(col.getColumnType());
-                                foreignColumn.setForeignKey((Table) registry.get((Class<? extends Component>) field.getType()),
-                                        col, fk.onDelete(), fk.onUpdate());
-                                foreignColumn.setReferencesClass((Class<? extends Component>) field.getType());
-                                foreignColumn.setField(field);
-                                table.addColumn(foreignColumn);
-                                flag = false;
-                            }
-                        }
-
-                    } else {
+                } else {// The foreign key points to some other entity which must be a component and is not a collection of such.
+                    if (!isComponent(field.getType())) { // ... the type of the foreign key has to be of type 'Component'
                         throw new ClassCastException("Bad ForeignKey specified - Class:" + field.getDeclaringClass().getName()
                                 + " Field:" + field.getName() + " is not a Component");
+                    }
+                    
+                    if (field.getType().equals(c)) {// If the foreign key points to the same table (SR)
+                        column.setMasterTable(table);
+                        column.setForeignKey(table, table.getPrimaryKeyColumns().iterator().next(), fk.onDelete(), fk.onUpdate());
+                        column.setField(field);
+                        column.setReferencesClass(c);
+                        selfReferencingCols.add(column);
+                    } else {
+                        if (!registry.containsClass((Class<? extends Component>) field.getType())) {
+                            tableCreation((Class<? extends Component>) field.getType());
+                        }
+                        for (JTableColumn col : registry.get((Class<? extends Component>) field.getType()).getPrimaryKeyColumns()) {
+                            handleForeignKey(field, column, col, fk, table);
+                            flag = false;
+                        }
                     }
                 }
             }// end of FK case
 
-            /*
-             * If the field has the NumericNull annotation the numeric null
-             * value is stored in the tablecolumn for later use in queries.
-             */
             if ((ann = field.getAnnotation(NumericNull.class)) != null) {
                 NumericNull numNull = (NumericNull) ann;
                 column.setNumericNull(numNull.value());
@@ -377,9 +352,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
             }
         }
 
-        /**
-         * Tackle foreign keys that point to the MASTER table
-         */
+        // Tackle foreign keys that point to the MASTER table (SR)
         if (!selfReferencingCols.isEmpty()) {
             for (JTableColumn src : selfReferencingCols) {
                 if (table.equals(src.getMasterTable())) {
@@ -392,10 +365,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
             }
         }
 
-
-        /**
-         * Put the table in the registry...
-         */
+        // Put the table in the registry...
         registry.put((Class<? extends Component>) c, table);
     }
 

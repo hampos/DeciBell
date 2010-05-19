@@ -16,11 +16,12 @@ public class fk1Test {
     public void test1() throws Exception {
 
         DeciBell db = new DeciBell();
-        db.setDbName("my/dvb/adsf");
+        db.setDbName("my/dvb/hhas");
         db.attach(A.class);
         db.attach(B.class);
         db.attach(C.class);
         db.attach(D.class);
+        db.setVerbose(true);
         db.start();
 
         D d1 = new D("d1", "d1ddd", 12);

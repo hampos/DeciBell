@@ -1,12 +1,8 @@
 package org.kinkydesign.decibell.xcases.case0;
 
 import java.util.UUID;
-import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.DeciBell;
-import org.kinkydesign.decibell.annotations.Entry;
-import org.kinkydesign.decibell.annotations.ForeignKey;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
-import org.kinkydesign.decibell.annotations.TableName;
+import org.kinkydesign.decibell.*;
+import org.kinkydesign.decibell.annotations.*;
 
 
 @TableName("SR")
