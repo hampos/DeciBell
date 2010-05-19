@@ -10,7 +10,7 @@ public class SRTest {
     @Test
     public void testSelfRef() throws Exception {
         DeciBell db = new DeciBell();
-        db.setDbName("my/dvb/selfref142a");
+        db.setDbName("my/dvb/selfref142d");
         db.attach(SelfRef.class);
         db.setVerbose(true);
         db.start();

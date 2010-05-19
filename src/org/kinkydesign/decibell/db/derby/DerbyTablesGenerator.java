@@ -271,7 +271,7 @@ public class DerbyTablesGenerator extends TablesGenerator {
 
         for (Field field : c.getDeclaredFields()) {// Iterate over every field in the submitted class.
             boolean flag = false;
-            
+
             JTableColumn column = new TableColumn();  // Construct the column that corresponds to the current field
             column.setColumnName(field.getName());
             column.setColumnType(TypeMap.getSQLType(field.getType()));
@@ -302,13 +302,20 @@ public class DerbyTablesGenerator extends TablesGenerator {
                         throw new ClassCastException("Bad ForeignKey specified - Class:" + field.getDeclaringClass().getName()
                                 + " Field:" + field.getName() + " is not a Component");
                     }
-                    
+
                     if (field.getType().equals(c)) {// If the foreign key points to the same table (SR)
-                        column.setMasterTable(table);
-                        column.setForeignKey(table, table.getPrimaryKeyColumns().iterator().next(), fk.onDelete(), fk.onUpdate());
-                        column.setField(field);
-                        column.setReferencesClass(c);
-                        selfReferencingCols.add(column);
+                        Iterator<JTableColumn> primaryKeyColumns = table.getPrimaryKeyColumns().iterator();
+                        JTableColumn correspondingPK =  null;
+                        while (primaryKeyColumns.hasNext()) {
+                            correspondingPK = primaryKeyColumns.next();
+                            column = new TableColumn();
+                            column.setMasterTable(table);
+                            column.setForeignKey(table, correspondingPK, fk.onDelete(), fk.onUpdate());
+                            column.setField(field);
+                            column.setReferencesClass(c);
+                            column.setColumnName(field.getName()+UNDERSCORE+correspondingPK.getField().getName());
+                            selfReferencingCols.add(column);
+                        }
                     } else {
                         if (!registry.containsClass((Class<? extends Component>) field.getType())) {
                             tableCreation((Class<? extends Component>) field.getType());
@@ -355,17 +362,18 @@ public class DerbyTablesGenerator extends TablesGenerator {
         // Tackle foreign keys that point to the MASTER table (SR)
         if (!selfReferencingCols.isEmpty()) {
             for (JTableColumn src : selfReferencingCols) {
-                if (table.equals(src.getMasterTable())) {
-                    src.setForeignKey(table, src.getMasterTable().getPrimaryKeyColumns().iterator().next(),
+                if (table.equals(src.getMasterTable())) {                    
+                    src.setForeignKey(table, src.getReferenceColumn(),
                             src.getOnDelete(), src.getOnUpdate());
                     src.setColumnType(src.getMasterTable().getPrimaryKeyColumns().iterator().next().getColumnType());
                     src.setReferencesClass((Class<? extends Component>) c);
                     table.addColumn(src);
+
                 }
             }
         }
 
-        // Put the table in the registry...
+        // Put the table in the registry...      
         registry.put((Class<? extends Component>) c, table);
     }
 
