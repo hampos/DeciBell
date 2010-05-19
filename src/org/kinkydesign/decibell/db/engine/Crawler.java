@@ -164,12 +164,19 @@ public class Crawler {
                 pool.recycleSearch(entry, masterTable);
 
                 int ps_INDEX = 1;
+                String columnName = null;
                 for (Proposition proposition : query.getPropositions()) {
+                                        
                     if (proposition.getTableColumn().isPrimaryKey()) {
                         if (proposition.getTableColumn().isTypeNumeric()) {
-                            ps.setObject(ps_INDEX, dbData.getDouble(groupedFkIterator.next().getColumnName()));
+                            columnName = (columnName==null) ? groupedFkIterator.next().getColumnName() : columnName;
+                            proposition.setInt(dbData.getInt(columnName));
+                            ps.setObject(ps_INDEX, dbData.getObject(columnName));
+                            ps.setObject(ps_INDEX++, dbData.getObject(columnName));
+                            continue;
                         } else {
-                            ps.setObject(ps_INDEX, dbData.getString(groupedFkIterator.next().getColumnName()));
+                            columnName = groupedFkIterator.next().getColumnName();
+                            ps.setObject(ps_INDEX, dbData.getString(columnName));
                         }
                     } else {
                         Infinity infinity = new Infinity(db);
@@ -179,8 +186,6 @@ public class Crawler {
                 }
                 ResultSet newRS = ps.executeQuery();
                 newRS.next();
-
-
 
                 boolean foundSelfRef = false;
                 if (masterTable.isSelfReferencing()) {

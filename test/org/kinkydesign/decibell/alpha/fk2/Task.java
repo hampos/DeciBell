@@ -1,5 +1,5 @@
 /**
- *  Class : UserInfo
+ *  Class : Task
  *  Date  : May 14, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
@@ -37,23 +37,25 @@
  */
 
 
-package org.kinkydesign.decibell.xcases.case1;
+package org.kinkydesign.decibell.alpha.fk2;
 
 import org.kinkydesign.decibell.Component;
 import org.kinkydesign.decibell.annotations.Entry;
 import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.annotations.TableName;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class UserInfo extends Component<UserInfo> {
+@TableName("TASK")
+public class Task extends Component<Task> {
 
     @PrimaryKey
-    public String uname;
+    public String id;
 
     @Entry
-    public String email;
+    public String comment;
 
 }

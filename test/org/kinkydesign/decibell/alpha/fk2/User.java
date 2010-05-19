@@ -1,5 +1,5 @@
 /**
- *  Class : Task
+ *  Class : User
  *  Date  : May 14, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
@@ -37,25 +37,24 @@
  */
 
 
-package org.kinkydesign.decibell.xcases.case1;
+package org.kinkydesign.decibell.alpha.fk2;
 
+import java.util.ArrayList;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.Entry;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
-import org.kinkydesign.decibell.annotations.TableName;
+import org.kinkydesign.decibell.annotations.*;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-@TableName("TASK")
-public class Task extends Component<Task> {
+public class User extends Component<User> {
 
     @PrimaryKey
-    public String id;
+    @ForeignKey
+    public UserInfo ui;
 
-    @Entry
-    public String comment;
+    @ForeignKey
+    public ArrayList<Task> tasks;
 
 }

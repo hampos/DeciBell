@@ -1,22 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+package org.kinkydesign.decibell.alpha.fk2;
 
-package org.kinkydesign.decibell;
-
-import org.kinkydesign.decibell.xcases.case1.UserInfo;
-import org.kinkydesign.decibell.xcases.case1.User;
-import org.kinkydesign.decibell.xcases.case1.Task;
 import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.exceptions.DeciBellException;
 import static org.junit.Assert.*;
-import org.kinkydesign.decibell.exceptions.ImproperDatabaseException;
 
 /**
  *

@@ -1,5 +1,5 @@
 /**
- *  Class : User
+ *  Class : UserInfo
  *  Date  : May 14, 2010
  *   .       .     ..
  *  _| _  _.*|_  _ ||
@@ -37,26 +37,22 @@
  */
 
 
-package org.kinkydesign.decibell.xcases.case1;
+package org.kinkydesign.decibell.alpha.fk2;
 
-import org.kinkydesign.decibell.xcases.case1.Task;
-import java.util.ArrayList;
 import org.kinkydesign.decibell.Component;
-import org.kinkydesign.decibell.annotations.ForeignKey;
-import org.kinkydesign.decibell.annotations.PrimaryKey;
+import org.kinkydesign.decibell.annotations.*;
 
 /**
  *
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class User extends Component<User> {
+public class UserInfo extends Component<UserInfo> {
 
     @PrimaryKey
-    @ForeignKey
-    public UserInfo ui;
+    public String uname;
 
-    @ForeignKey
-    public ArrayList<Task> tasks;
+    @Entry
+    public String email;
 
 }

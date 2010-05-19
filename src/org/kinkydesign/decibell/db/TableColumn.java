@@ -223,8 +223,9 @@ final public class TableColumn implements Cloneable, JTableColumn {
         return referencesColumn;
     }
 
-    public void setReferenceColumn(JTableColumn referenceColumn) {
+    public void setReferenceColumn(JTableColumn referenceColumn) {        
         this.referencesColumn = referenceColumn;
+        this.referencesTable = referenceColumn.getMasterTable();
     }
 
     /**
