@@ -5,11 +5,7 @@ Specification-Title: "DeciBell: A Novell approach to the Object Relational Mappi
 Specification-Version: "0.1 alpha release for tesing"
 Specification-Vendor: "National Technical University of Athens, School of Chemical Engineering, Automatic Control Laboratory"
 Implementation-title: "org.kinkydesign.decibell"
-<<<<<<< HEAD:src/meta-inf/MANIFEST.MF
-Implementation-version: "0.1.2.9"
-=======
-Implementation-version: "0.1.2.11"
->>>>>>> db37c94a3e6d234dab74a0f4c00106edccc12f2e:src/meta-inf/MANIFEST.MF
+Implementation-version: "0.1.2.13"
 Implementation-Vendor: "National Technical University of Athens, School of Chemical Engineering, Automatic Control Laboratory"
 Developed-by: "Charalampos Chomenides, Sopasakis Pantelis"
 License: "GNU GPL v.3."
