@@ -45,8 +45,10 @@ public class SelfRef extends Component<SelfRef> {
         DeciBell db = new DeciBell();
         db.setDbName("my/db/332b1");
         db.attach(SelfRef.class);
+        db.setVerbose(true);
         db.start();
-        
+
+        //TODO: Create JUnit test for self-referencing entities (single PK).
         
         System.out.println(new SelfRef().search(db));
     }

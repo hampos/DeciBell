@@ -70,41 +70,27 @@ public class StatementPool {
      * Size of the queue for requests for Prepared Statements.
      */
     public static final int queueSize = 50;
-
     private DbConnector con = null;
-
     private static Map<DbConnector, StatementPool> pools = new HashMap<DbConnector, StatementPool>();
-
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> search =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
-
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> searchpk =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
-
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> update =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
-
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> register =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
-
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> delete =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
 
-    /**
-     * Constructs a new Pool for the given DbConnector and initializes it with the
-     * given poolSize.
-     * @param con a DbConnector object that represents a database managed by
-     * DeciBell.
-     */
-    public StatementPool(DbConnector con) {
+    private StatementPool(DbConnector con) {
         this.con = con;
         for (JTable t : ComponentRegistry.getRegistry(con).values()) {
             initTable(t);
         }
         for (JRelationalTable rel : ComponentRegistry.getRegistry(con).getRelationTables()) {
             initRelTable(rel);
-        }
-        pools.put(con, this);
+        }        
     }
 
     /**
@@ -113,6 +99,9 @@ public class StatementPool {
      * @return the StatementPool object associated with the specified DbConnector.
      */
     public static StatementPool getPool(DbConnector con) {
+        if (pools.get(con) == null) {
+            pools.put(con, new StatementPool(con));
+        }
         return pools.get(con);
     }
 
@@ -322,7 +311,7 @@ public class StatementPool {
      * for all query types and inserting them to the pool.
      * @param table the JRelationalTable to be initiated.
      */
-    private void initRelTable(JRelationalTable table){
+    private void initRelTable(JRelationalTable table) {
         search.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
         register.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
         delete.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));

@@ -16,7 +16,7 @@ public class fk1Test {
     public void test1() throws Exception {
 
         DeciBell db = new DeciBell();
-        db.setDbName("my/dvb/xxysaf2");
+        db.setDbName("my/dvb/adsf");
         db.attach(A.class);
         db.attach(B.class);
         db.attach(C.class);
@@ -93,7 +93,6 @@ public class fk1Test {
         assertTrue(dList.contains(d4));
         assertTrue(dList.contains(d5));
         assertEquals(5, dList.size());
-
 
         ArrayList<D> dList2 = d4.search(db);
         assertTrue(dList2.contains(d4));

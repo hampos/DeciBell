@@ -47,7 +47,7 @@ public class UserTest {
     public void testSomeMethod() throws DeciBellException {
 
         DeciBell db = new DeciBell();
-        db.setDbName("my/dvb/5");
+        db.setDbName("my/dvb/15");
         db.attach(User.class);
         db.attach(UserInfo.class);
         db.attach(Task.class);

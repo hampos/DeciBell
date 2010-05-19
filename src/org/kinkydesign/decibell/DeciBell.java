@@ -93,6 +93,7 @@ public class DeciBell {
      * The set of all user-specified components (Classes that extend {@link Component }).
      */
     Set<Class<? extends Component>> components = null;
+    private boolean verbose = false;
 
     public DeciBell() {
     }
@@ -157,19 +158,18 @@ public class DeciBell {
      * </p>
      */
     public void start() throws ImproperDatabaseException {
-        System.err.println("DeciBell >>> Engine Ignition.");
+        System.err.println("DeciBell >>> Engine Ignition: Beware of the flames!");
         connector.connect();
-        System.err.println("DeciBell >>> Beware of the flames!");
+        System.err.println("DeciBell <<< Connected!");
         if (this.components == null) {
             Reflections reflections = new Reflections("");
             components = reflections.getSubTypesOf(Component.class);
         }
         checkConsistencybefore();
-        TablesGenerator tables = new DerbyTablesGenerator(connector, components);
+        TablesGenerator tables = new DerbyTablesGenerator(this, components);
         tables.construct();
-        StatementPool pool = new StatementPool(connector);
-        System.err.println("DeciBell >>> Successfully connected to the database as " + getUser());
-        System.err.println("DeciBell >>> CONNECT '" + getDatabaseUrl() + "';");
+        StatementPool.getPool(connector);
+        System.err.println("DeciBell >>> CONNECT '" + getDatabaseUrl() + "';\n");
     }
 
     /**
@@ -407,4 +407,14 @@ public class DeciBell {
     public void disconnect() {
         connector.disconnect();
     }
+
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    
 }

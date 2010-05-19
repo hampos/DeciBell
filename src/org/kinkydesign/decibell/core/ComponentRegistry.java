@@ -189,17 +189,17 @@ public class ComponentRegistry {
      * @param value a JTable object.
      * @return True if the JTable exists in the registry.
      */
-    public boolean containsValue(Object value) {
-        return components.containsValue((JTable)value);
+    public boolean containsTable(JTable table) {
+        return components.containsValue(table);
     }
 
     /**
      * Returns true if the registry contains the specified Component.
-     * @param key a Component.class object
+     * @param clazz a Component.class object
      * @return True if the Component exists in the registry.
      */
-    public boolean containsKey(Object key) {
-        return components.containsKey((Class<? extends Component>)key);
+    public boolean containsClass(Class<? extends Component> clazz) {
+        return components.containsKey(clazz);
     }
 
     /**

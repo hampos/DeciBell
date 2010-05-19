@@ -43,6 +43,7 @@ import java.util.Set;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.collections.TypeMap;
 import org.kinkydesign.decibell.Component;
+import org.kinkydesign.decibell.DeciBell;
 
 /**
  * This abstract class provides an interface for the table creation process.
@@ -63,7 +64,7 @@ public abstract class TablesGenerator {
      * The DbConnector that defines the database on which the table creation
      * will be executed.
      */
-    protected DbConnector connector = null;
+    protected DeciBell db = null;
 
     /**
      * The Component classes that must be included in the database creation.
@@ -83,10 +84,10 @@ public abstract class TablesGenerator {
      * creation process will take place.
      * @param components a Set of Components that must be included in the database.
      */
-    public TablesGenerator(DbConnector connector, Set<Class<? extends Component>> components){
-        this.connector = connector;
+    public TablesGenerator(DeciBell db, Set<Class<? extends Component>> components){
+        this.db = db;
         this.components = components;
-        registry = new ComponentRegistry(connector);
+        registry = new ComponentRegistry(db.getDbConnector());
     }
 
     /**
