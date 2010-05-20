@@ -35,7 +35,7 @@ public class EntityWithCollection extends Component<EntityWithCollection> {
 
     public static void main(String... args) throws Exception {
         DeciBell db = new DeciBell();
-        db.setDbName("my/db/541g");
+        db.setDbName("my/db/541ghr5e6");
         db.attach(EntityWithCollection.class);
         db.attach(Remote.class);
         db.start();

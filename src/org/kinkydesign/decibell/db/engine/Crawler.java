@@ -252,7 +252,6 @@ public class Crawler {
                         ps_REL_INDEX++;
                     }
                     relRs = ps.executeQuery();
-                    System.out.println("query exeuted!");
 
                 } catch (final SQLException ex) {
                     throw ex;
@@ -266,7 +265,6 @@ public class Crawler {
                 ArrayList relList = new ArrayList();
 
                 while (relRs.next()) {
-                    System.out.println(relationalTable);
                     Class fclass = relationalTable.getSlaveColumns().iterator().next().
                             getField().getDeclaringClass();
                     Constructor fconstuctor = fclass.getDeclaredConstructor();
@@ -283,21 +281,26 @@ public class Crawler {
                     ArrayList tempList;
                     if (component.equals(masterComponent)) {
                         tempList = new ArrayList();
+                        tempList.add(component);
                     } else {
                         tempList = component.search(db);
                     }
 
                     collectionJavaType = relRs.getString("METACOLUMN");
-                    
+
                     if (tempList.isEmpty()) {
                         onField.set(masterComponent, Class.forName(collectionJavaType).getConstructor().newInstance());
                     } else if (tempList.size() > 1) {
                         throw new RuntimeException("Single foreign object list has size > 1");
                     }
+                    System.out.println(tempList);
                     relList.addAll(tempList);
-                    
+
                 }
 
+                if (collectionJavaType == null) {
+                    collectionJavaType = "java.util.ArrayList";
+                }
 
                 Class onClass = Class.forName(collectionJavaType);
                 Constructor con = onClass.getConstructor();

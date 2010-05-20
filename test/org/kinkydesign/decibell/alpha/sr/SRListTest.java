@@ -15,15 +15,19 @@ public class SRListTest {
         db.setVerbose(true);
         db.start();
 
-        SRList a = new SRList();
+        SRList a = new SRList();        
+        
         a.setId(UUID.randomUUID().toString());
         ArrayList<SRList> myList = new ArrayList<SRList>();
         myList.add(a);
-        a.setMyList(myList);
 
-        System.out.println(new SRList().search(db));
-
+        // TODO: Allow for registration of empty lists....
+        a.setMyList(new ArrayList<SRList>());
         a.register(db);
+
+        System.out.println(new SRList("%", null).search(db));
+
+        
         
     }
 
