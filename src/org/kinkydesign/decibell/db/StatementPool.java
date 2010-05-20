@@ -59,7 +59,7 @@ import org.kinkydesign.decibell.db.util.StatementFactory;
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class StatementPool {
+public final class StatementPool {
 
     /**
      * The size of each pool. DeciBell totals 5
@@ -70,8 +70,13 @@ public class StatementPool {
      * Size of the queue for requests for Prepared Statements.
      */
     public static final int queueSize = 50;
-    private DbConnector con = null;
+
     private static Map<DbConnector, StatementPool> pools = new HashMap<DbConnector, StatementPool>();
+
+    private static final Object lock = new Object();
+
+    private DbConnector con = null;
+        
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> search =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> searchpk =
@@ -100,7 +105,9 @@ public class StatementPool {
      */
     public static StatementPool getPool(DbConnector con) {
         if (pools.get(con) == null) {
-            pools.put(con, new StatementPool(con));
+            synchronized(lock){
+                pools.put(con, new StatementPool(con));
+            }
         }
         return pools.get(con);
     }

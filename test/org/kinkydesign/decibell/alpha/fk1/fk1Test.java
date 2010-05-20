@@ -1,28 +1,40 @@
 package org.kinkydesign.decibell.alpha.fk1;
 
 import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
 import static org.junit.Assert.*;
 
 public class fk1Test {
 
-    public fk1Test() {
+    private static volatile DeciBell db = new DeciBell();
+    private static volatile Throwable throwable = null;
+    private static volatile boolean  testFinished[] = new boolean[2];
+    private static volatile int counter = 0;
+
+    static {
+        testFinished[0] = false;
+        testFinished[1] = false;
     }
 
-    
+    public fk1Test() {
+    }
 
     @Test
     public void test1() throws Exception {
 
-        DeciBell db = new DeciBell();
-        db.setDbName("my/dvb/hhas");
+        db = new DeciBell();
+        db.setDbName("my/dvb/brandnew2");
         db.attach(A.class);
         db.attach(B.class);
         db.attach(C.class);
         db.attach(D.class);
         db.setVerbose(true);
         db.start();
+        new A().delete(db);
 
         D d1 = new D("d1", "d1ddd", 12);
         D d2 = new D("d2", "d2ddd-ccc", 54);
@@ -111,6 +123,60 @@ public class fk1Test {
         listOfA = new A().search(db);
         assertNotNull(listOfA);
         assertEquals(0, listOfA.size());
+
+        fk1Test.testFinished[0] = true;
+    }
+
+    @Test
+    public void test2() throws InterruptedException {
+
+        int timeOut = 20000;
+        int i=0;
+        while (!fk1Test.testFinished[0]) {
+            Thread.sleep(100);
+            i++;
+            if (i>timeOut) fail("test timed out");
+        }
+
+        ArrayList<A> listOfA = new A().search(db);
+        assertNotNull(listOfA);
+        assertEquals(0, listOfA.size());
+
+        Thread t = new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    D d = new D("d2", "d2ddd-ccc", 54);
+                    C c = new C(d, "c1--4", "urghin");
+                    B b = new B("b3-a", "b4-b");
+                    A a = new A(UUID.randomUUID().toString(), b, c);
+                    try {
+                        a.register(db);
+                    } catch (Throwable thr) {
+                        fk1Test.throwable = thr;
+                        System.out.println("---");
+                        thr.printStackTrace();
+                    }                    
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                } finally{
+                    fk1Test.counter++;
+                }
+            }
+        };
+
+        ExecutorService executor = Executors.newFixedThreadPool(5);
+        int N=50;
+
+        
+
+        new A().delete(db);
+        if (throwable!=null){
+            fail(throwable.getMessage() + "***");
+        }
+
+
 
     }
 }

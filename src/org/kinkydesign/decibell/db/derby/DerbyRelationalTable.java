@@ -97,11 +97,12 @@ public class DerbyRelationalTable extends DerbyTable implements JRelationalTable
     public Set<JTableColumn> getMasterColumns() {
         Set<JTableColumn> masterColumns = new LinkedHashSet<JTableColumn>();
         for(JTableColumn col : getTableColumns()){
-            if(col.getReferenceTable().equals(this.masterTable)){
+            if(!col.getColumnName().equals("METACOLUMN") && col.getReferenceTable().equals(this.masterTable)){
                 masterColumns.add(col);
             }
         }
         return masterColumns;
+
     }
 
     public Set<JTableColumn> getSlaveColumns() {
@@ -113,6 +114,9 @@ public class DerbyRelationalTable extends DerbyTable implements JRelationalTable
             if(!col.getReferenceTable().equals(this.masterTable)){
                 foreignColumns.add(col);
             }
+        }
+        if (foreignColumns.isEmpty()){
+            return getMasterColumns();
         }
         return foreignColumns;
     }

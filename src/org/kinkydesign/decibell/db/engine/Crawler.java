@@ -39,8 +39,7 @@ import com.thoughtworks.xstream.XStream;
 import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 import org.kinkydesign.decibell.*;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.StatementPool;
@@ -166,10 +165,10 @@ public class Crawler {
                 int ps_INDEX = 1;
                 String columnName = null;
                 for (Proposition proposition : query.getPropositions()) {
-                                        
+
                     if (proposition.getTableColumn().isPrimaryKey()) {
                         if (proposition.getTableColumn().isTypeNumeric()) {
-                            columnName = (columnName==null) ? groupedFkIterator.next().getColumnName() : columnName;
+                            columnName = (columnName == null) ? groupedFkIterator.next().getColumnName() : columnName;
                             proposition.setInt(dbData.getInt(columnName));
                             ps.setObject(ps_INDEX, dbData.getObject(columnName));
                             ps.setObject(ps_INDEX++, dbData.getObject(columnName));
@@ -205,8 +204,6 @@ public class Crawler {
                             group.iterator().next().getReferenceTable()));
                 }
 
-
-
                 newRS.close();
             }
             return component;
@@ -224,6 +221,8 @@ public class Crawler {
     }
 
     private void retrieveCollections(ResultSet dbData, Component masterComponent, JTable masterTable) {
+
+
         Set<JRelationalTable> relations = masterTable.getRelations();
         for (JRelationalTable relationalTable : relations) {
             Pair<PreparedStatement, SQLQuery> entry = pool.getSearch(relationalTable);
@@ -235,9 +234,7 @@ public class Crawler {
 
             ResultSet relRs = null;
             try {
-
                 try {
-
                     for (Proposition proposition : query.getPropositions()) {
                         JTableColumn relColumn = proposition.getTableColumn();
                         if (relColumn.getColumnName().equals("METACOLUMN")) {
@@ -255,6 +252,7 @@ public class Crawler {
                         ps_REL_INDEX++;
                     }
                     relRs = ps.executeQuery();
+                    System.out.println("query exeuted!");
 
                 } catch (final SQLException ex) {
                     throw ex;
@@ -266,7 +264,9 @@ public class Crawler {
                 String collectionJavaType = null;
 
                 ArrayList relList = new ArrayList();
+
                 while (relRs.next()) {
+                    System.out.println(relationalTable);
                     Class fclass = relationalTable.getSlaveColumns().iterator().next().
                             getField().getDeclaringClass();
                     Constructor fconstuctor = fclass.getDeclaredConstructor();
@@ -278,15 +278,24 @@ public class Crawler {
                         ffield.setAccessible(true);
                         ffield.set(fobj, relRs.getObject(col.getColumnName()));
                     }
+
                     Component component = (Component) fobj;
-                    ArrayList tempList = component.search(db);
+                    ArrayList tempList;
+                    if (component.equals(masterComponent)) {
+                        tempList = new ArrayList();
+                    } else {
+                        tempList = component.search(db);
+                    }
+
+                    collectionJavaType = relRs.getString("METACOLUMN");
+                    
                     if (tempList.isEmpty()) {
                         onField.set(masterComponent, Class.forName(collectionJavaType).getConstructor().newInstance());
                     } else if (tempList.size() > 1) {
                         throw new RuntimeException("Single foreign object list has size > 1");
                     }
                     relList.addAll(tempList);
-                    collectionJavaType = relRs.getString("METACOLUMN");
+                    
                 }
 
 
