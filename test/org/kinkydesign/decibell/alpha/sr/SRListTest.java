@@ -28,6 +28,7 @@ public class SRListTest {
         for (SRList sr : found) {
             try {
                 System.out.println(sr.getMyList().get(0).getMyList().get(0).getId());
+                System.out.println(sr);
             } catch (IndexOutOfBoundsException ex) {
             }
         }

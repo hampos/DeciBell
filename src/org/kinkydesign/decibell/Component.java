@@ -338,22 +338,23 @@ public abstract class Component<T extends Component> implements Cloneable {
                         buffer.append(":\n");
                         buffer.append(((Component) f.get(this)).toString(x + spaces(4)));
                     }
-                } else if (f.get(this)!=null && Collection.class.isAssignableFrom(f.get(this).getClass())) {
+                } else if (f.get(this) != null && Collection.class.isAssignableFrom(f.get(this).getClass())) {
                     Collection collection = (Collection) f.get(this);
+                    buffer.append(spaces(3));
+                    buffer.append("L " + f.getName() + " :\n");
                     for (Object o : collection) {
                         if (o instanceof Component) {
+                            if (o.equals(this)) {
+                                continue;
+                            }
                             buffer.append(x);
-                            buffer.append(spaces(3));
-                            buffer.append("L member = \n");
-                            buffer.append(((Component) o).toString(spaces(4)));
+                            buffer.append(((Component) o).toString(spaces(8)));
                             buffer.append("\n");
                         } else {
                             buffer.append(x);
-                            buffer.append(spaces(3));
-                            buffer.append("L member = \n");
                             buffer.append(o);
+                            buffer.append("\n");
                         }
-
                     }
                 } else {
                     buffer.append(x);

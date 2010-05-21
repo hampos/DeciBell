@@ -1,11 +1,6 @@
 package org.kinkydesign.decibell.alpha.collect;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
-import java.util.Vector;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -69,6 +64,8 @@ public class MasterSlaveTest {
             Master m3 = new Master("master3", otherList);
             m3.attemptRegister(db);
             assertEquals(1, m3.attemptRegister(db));
+
+            System.out.println(m3);
 
             ArrayList<Master> mastersFound = new Master().search(db);
             assertNotNull(mastersFound);

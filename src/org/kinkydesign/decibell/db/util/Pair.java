@@ -41,7 +41,7 @@ package org.kinkydesign.decibell.db.util;
 import java.util.Map.Entry;
 
 /**
- * A simple pair implementation of the Map.Entry interface.
+ * A simple pair implementation of the <code>java.util.Map.Entry</code> interface.
  * @author Charalampos Chomenides
  * @author Pantelis Sopasakis
  */

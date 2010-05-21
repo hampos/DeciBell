@@ -76,7 +76,6 @@ public final class StatementPool {
     private static final Object lock = new Object();
 
     private DbConnector con = null;
-        
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> search =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> searchpk =
@@ -95,7 +94,7 @@ public final class StatementPool {
         }
         for (JRelationalTable rel : ComponentRegistry.getRegistry(con).getRelationTables()) {
             initRelTable(rel);
-        }        
+        }
     }
 
     /**
@@ -105,7 +104,7 @@ public final class StatementPool {
      */
     public static StatementPool getPool(DbConnector con) {
         if (pools.get(con) == null) {
-            synchronized(lock){
+            synchronized (lock) {
                 pools.put(con, new StatementPool(con));
             }
         }
