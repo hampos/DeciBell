@@ -80,9 +80,11 @@ public abstract class TablesGenerator {
     /**
      * Constructs a new TablesGenerator for a specific database and a set
      * of components.
-     * @param connector a DbConnector that identifies the database on which the
-     * creation process will take place.
-     * @param components a Set of Components that must be included in the database.
+     * @param db
+     *      The DeciBell object that the Tables Generator will use to create the tables. Identifies
+     *      the database in which the tables are created.
+     * @param components 
+     *      a <code>Set</code> of Components that must be included in the database.
      */
     public TablesGenerator(DeciBell db, Set<Class<? extends Component>> components){
         this.db = db;

@@ -186,8 +186,8 @@ public class ComponentRegistry {
 
     /**
      * Returns true if the registry contains the specified JTable.
-     * @param value a JTable object.
-     * @return True if the JTable exists in the registry.
+     * @param table a JTable object.
+     * @return <code>true</code> if the JTable is in the registry.
      */
     public boolean containsTable(JTable table) {
         return components.containsValue(table);

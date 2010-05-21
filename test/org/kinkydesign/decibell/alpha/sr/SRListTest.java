@@ -15,20 +15,22 @@ public class SRListTest {
         db.setVerbose(true);
         db.start();
 
-        SRList a = new SRList();        
-        
+        SRList a = new SRList();
+
         a.setId(UUID.randomUUID().toString());
         ArrayList<SRList> myList = new ArrayList<SRList>();
         myList.add(a);
 
-        // TODO: Allow for registration of empty lists....
         a.setMyList(new ArrayList<SRList>());
-        a.register(db);
+//        a.register(db);
 
-        System.out.println(new SRList("%", null).search(db));
+        ArrayList<SRList> found = new SRList("%", null).search(db);
+        for (SRList sr : found) {
+            try {
+                System.out.println(sr.getMyList().get(0).getMyList().get(0).getId());
+            } catch (IndexOutOfBoundsException ex) {
+            }
+        }
 
-        
-        
     }
-
 }

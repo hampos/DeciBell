@@ -99,8 +99,8 @@ public class DerbyTablesGenerator extends TablesGenerator {
      * <p  align="justify" style="width:60%">
      * Initialize a new table generator for the Derby JDBC server.
      * </p>
-     * @param connector
-     *      The connector the Tables Generator will use to create the tables. Identifies
+     * @param db
+     *      The DeciBell object that the Tables Generator will use to create the tables. Identifies
      *      the database in which the tables are created.
      * @param components
      *      Set of classes that extends {@link Component } with respect to which

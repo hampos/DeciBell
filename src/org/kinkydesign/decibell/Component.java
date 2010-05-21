@@ -197,6 +197,49 @@ public abstract class Component<T extends Component> implements Cloneable {
         }
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * This method is much like {@link Component#search(org.kinkydesign.decibell.DeciBell) search(db)}
+     * but accepts an additional parameter; that is a <code>sieve</code>. A {@link JSieve sieve} is
+     * an interface allowing users to perform complex queries.  A sieve acts like a filter on
+     * the searched components and retrieves only those that comply with a user-specified
+     * search criterion. The criterion may be of arbitrary complexity and contain any kind of
+     * statements.
+     * </p>
+     * <p  align="justify" style="width:60%">
+     * Here is an example of use. Suppose that you have some <code>Person</code> objects stored in
+     * your database which among other attributes are characterized by their weight and height.
+     * You need a list of all persons of normal weight, i.e. those that have
+     * <code>19 &lt; BMI &lt; 25</code> where <code>BMI</code> is defined as
+     * <code>BMI = height/weight<sup>2</sup></code>. All you have to do, is define your own
+     * sieve as follows:<br/><br/>
+     *
+     * <pre>
+     * JSieve&lt;Person&gt; normalWeigthSieve = new JSieve&lt;Person&gt;() {
+     *      public boolean sieve(Person p) {
+     *          double bmi = p.getHeight()/<em>Math</em>.pow(p.getWeight,2);
+     *          if (bmi&lt;25 && bmi&gt;19){
+     *              return true;
+     *          }
+     *          return false;
+     *      }
+     * }
+     * </pre>
+     * Then you can use the above sieve as follows:<br/><br/>
+     * <pre>
+     * Person prototype = new Person();
+     * ArrayList&lt;Person&gt; persons = prototype.search(db,normalWeigthSieve);
+     * </pre>
+     * </p>
+     * @param db
+     *      The decibell object which identifies a database connection
+     * @param sieve
+     *      A sieve (filter) for performing complex queries.
+     * @return
+     *      List of objects found in the database with respect to the provided sieve.
+     * @see JSieve
+     * @see Component#search(org.kinkydesign.decibell.DeciBell)  simple search
+     */
     public ArrayList<T> search(DeciBell db, JSieve<T> sieve) {
         if (Component.class.equals(this.getClass().getSuperclass())) { // Direct subclass of Component
             SearchEngine<T> engine = new SearchEngine<T>(db, sieve);

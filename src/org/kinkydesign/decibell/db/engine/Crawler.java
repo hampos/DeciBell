@@ -35,6 +35,8 @@
  */
 package org.kinkydesign.decibell.db.engine;
 
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Sets;
 import com.thoughtworks.xstream.XStream;
 import java.lang.reflect.*;
 import java.sql.*;
@@ -281,6 +283,8 @@ public class Crawler {
                     ArrayList tempList;
                     if (component.equals(masterComponent)) {
                         tempList = new ArrayList();
+                        onField.set(component, new ArrayList());
+                        ((Collection)onField.get(component)).add(component);
                         tempList.add(component);
                     } else {
                         tempList = component.search(db);
@@ -293,20 +297,33 @@ public class Crawler {
                     } else if (tempList.size() > 1) {
                         throw new RuntimeException("Single foreign object list has size > 1");
                     }
-                    System.out.println(tempList);
                     relList.addAll(tempList);
 
                 }
 
-                if (collectionJavaType == null) {
-                    collectionJavaType = "java.util.ArrayList";
+                Collection relCollection = null;
+
+                if (collectionJavaType != null) {
+                    Class onClass = Class.forName(collectionJavaType);
+                    Constructor con = onClass.getConstructor();
+                    Object obj = con.newInstance();
+                    relCollection = (Collection) obj;
+                    relCollection.addAll(relList);
+                } else {
+                    Class collectionType = onField.getType();
+                    try {
+                        relCollection = (Collection) collectionType.getConstructor().newInstance();
+                    } catch (NoSuchMethodException nsme) { // The class is abstract (e.g. List) and cannot be instantiated.
+                        if (List.class.isAssignableFrom(onField.getType())) {
+                            relCollection = Collections.EMPTY_LIST;
+                        } else if (Set.class.isAssignableFrom(onField.getType())) {                            
+                            relCollection = Collections.EMPTY_SET;
+                        } else {
+                            relCollection = null;
+                        }
+                    }
                 }
 
-                Class onClass = Class.forName(collectionJavaType);
-                Constructor con = onClass.getConstructor();
-                Object obj = con.newInstance();
-                Collection relCollection = (Collection) obj;
-                relCollection.addAll(relList);
                 onField.set(masterComponent, relCollection);
 
             } catch (final IllegalAccessException ex) {
@@ -334,4 +351,3 @@ public class Crawler {
 
     }
 }
-

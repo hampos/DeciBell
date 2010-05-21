@@ -1,18 +1,24 @@
 package org.kinkydesign.decibell.alpha.fk1;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
 import static org.junit.Assert.*;
+import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
+import org.kinkydesign.decibell.exceptions.ImproperRegistration;
 
 public class fk1Test {
 
     private static volatile DeciBell db = new DeciBell();
     private static volatile Throwable throwable = null;
-    private static volatile boolean  testFinished[] = new boolean[2];
+    private static volatile boolean testFinished[] = new boolean[2];
     private static volatile int counter = 0;
 
     static {
@@ -128,28 +134,31 @@ public class fk1Test {
     }
 
     @Test
-    public void test2() throws InterruptedException {
+    public void test2() throws InterruptedException, DuplicateKeyException, ImproperRegistration, SQLException {
 
         int timeOut = 20000;
-        int i=0;
+        int i = 0;
         while (!fk1Test.testFinished[0]) {
             Thread.sleep(100);
             i++;
-            if (i>timeOut) fail("test timed out");
+            if (i > timeOut) {
+                fail("test timed out");
+            }
         }
 
         ArrayList<A> listOfA = new A().search(db);
         assertNotNull(listOfA);
         assertEquals(0, listOfA.size());
 
+        final D d = new D("d2", "d2ddd-ccc", 54);
+        final C c = new C(d, "c1--4", "urghin");
+        final B b = new B("b3-a", "b4-b");
+
         Thread t = new Thread() {
 
             @Override
             public void run() {
                 try {
-                    D d = new D("d2", "d2ddd-ccc", 54);
-                    C c = new C(d, "c1--4", "urghin");
-                    B b = new B("b3-a", "b4-b");
                     A a = new A(UUID.randomUUID().toString(), b, c);
                     try {
                         a.register(db);
@@ -157,26 +166,34 @@ public class fk1Test {
                         fk1Test.throwable = thr;
                         System.out.println("---");
                         thr.printStackTrace();
-                    }                    
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                } finally{
+                } finally {
                     fk1Test.counter++;
                 }
             }
         };
 
         ExecutorService executor = Executors.newFixedThreadPool(5);
-        int N=50;
+        int N = 5000;
+        for (int j = 0; j < N; j++) {
+            executor.submit(new Thread(t));
+        }
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.MINUTES);
 
-        
+        Statement count = db.getDbConnector().getConnection().createStatement();
+        ResultSet rs = count.executeQuery("SELECT COUNT(*) FROM A");
+        rs.next();
+        int countA = rs.getInt(1);
+        assertEquals(N, countA);
 
-        new A().delete(db);
-        if (throwable!=null){
+        if (throwable != null) {
             fail(throwable.getMessage() + "***");
         }
 
-
+        
 
     }
 }

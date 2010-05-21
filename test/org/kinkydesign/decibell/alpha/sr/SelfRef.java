@@ -60,6 +60,9 @@ public class SelfRef extends Component<SelfRef> {
     @Entry(defaultValue="A-DEFAULT",notNull=true)
     private String a;
 
+    @ForeignKey
+    private SelfRef friend;
+
     @Entry(defaultValue="B-DEFAULT")
     private String b;
 
@@ -68,10 +71,7 @@ public class SelfRef extends Component<SelfRef> {
 
     @Entry
     @NumericNull("-1")
-    private long longValue = -1;
-
-    @ForeignKey
-    private SelfRef friend;
+    private long longValue = -1;    
     
 
     public SelfRef() {

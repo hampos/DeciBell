@@ -38,6 +38,9 @@
 
 package org.kinkydesign.decibell.exceptions;
 
+import java.security.PrivilegedActionException;
+
+
 /**
  * <p  align="justify" style="width:60%">
  * Exception thrown in case an 'improper' entity is submitted for registration in
@@ -56,6 +59,7 @@ public class ImproperRegistration extends DeciBellException {
      * </p>
      */
     public ImproperRegistration() {
+        
     }
 
 

@@ -69,7 +69,7 @@ public final class StatementPool {
     /**
      * Size of the queue for requests for Prepared Statements.
      */
-    public static final int queueSize = 50;
+    public static final int queueSize = 100;
 
     private static Map<DbConnector, StatementPool> pools = new HashMap<DbConnector, StatementPool>();
 
@@ -114,7 +114,7 @@ public final class StatementPool {
 
     /**
      * Returns the pool associated with the specified DbConnector.
-     * @param con a {@link DeciBell} object that identifies a database connection.
+     * @param db a {@link DeciBell} object that identifies a database connection.
      * @return the StatementPool object associated with the specified DbConnector.
      */
     public static StatementPool getPool(DeciBell db) {

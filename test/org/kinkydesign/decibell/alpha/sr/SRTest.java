@@ -10,7 +10,7 @@ public class SRTest {
     @Test
     public void testSelfRef() throws Exception {
         DeciBell db = new DeciBell();
-        db.setDbName("my/dvb/selfref142d");
+        db.setDbName("my/dvb/selfref142e");
         db.attach(SelfRef.class);
         db.setVerbose(true);
         db.start();
@@ -44,6 +44,8 @@ public class SRTest {
         assertNotNull(foundInDB2.get(0).getFriend().getFriend().getFriend().getFriend());
         assertEquals(sr1, foundInDB2.get(0).getFriend());
         assertEquals(sr1.getA(), foundInDB2.get(0).getFriend().getA());
+        assertEquals(sr1.getB(), foundInDB2.get(0).getFriend().getB());
+        assertEquals(sr1.getC(), foundInDB2.get(0).getFriend().getC());
 
 
         SelfRef prototype3 = new SelfRef(-1, null, null, null);
@@ -58,6 +60,9 @@ public class SRTest {
         assertEquals("B-DEFAULT", foundInDB3.get(0).getB());
         assertEquals("C_DEFAULT", foundInDB3.get(0).getC());
         assertEquals(sr1, foundInDB3.get(0).getFriend());
+        assertEquals(sr1.getA(), foundInDB3.get(0).getFriend().getA());
+        assertEquals(sr1.getB(), foundInDB3.get(0).getFriend().getB());
+        assertEquals(sr1.getC(), foundInDB3.get(0).getFriend().getC());
 
     }
 }
