@@ -37,15 +37,9 @@
  */
 package org.kinkydesign.decibell.db.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import org.kinkydesign.decibell.collections.Qualifier;
-import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.TableColumn;
-import org.kinkydesign.decibell.db.interfaces.JTable;
-import org.kinkydesign.decibell.db.interfaces.JTableColumn;
+import java.util.*;
+import org.kinkydesign.decibell.collections.*;
+import org.kinkydesign.decibell.db.interfaces.*;
 
 /**
  *
@@ -58,8 +52,7 @@ public abstract class SelectQuery implements SQLQuery {
     protected ArrayList<Proposition> propositions = new ArrayList<Proposition>();
     protected ArrayList<Join> joins = new ArrayList<Join>();
 
-    public SelectQuery(){
-
+    public SelectQuery() {
     }
 
     public SelectQuery(JTable table) {
@@ -70,9 +63,12 @@ public abstract class SelectQuery implements SQLQuery {
         return table;
     }
 
-    public void setTable(JTable table){
+    public void setTable(JTable table) {
         this.table = table;
         initPropositions(table.getTableColumns());
+        if (!(table instanceof JRelationalTable)) {
+            System.out.println("The table " + table.getFullTableName() + " is not relational!");
+        }
     }
 
     public void setColumns(Collection<? extends JTableColumn> tableColumns) {
@@ -81,7 +77,7 @@ public abstract class SelectQuery implements SQLQuery {
 
     public Collection<? extends JTableColumn> getColumns() {
         Set<JTableColumn> columns = new HashSet<JTableColumn>();
-        for(Proposition p : propositions){
+        for (Proposition p : propositions) {
             columns.add(p.getTableColumn());
         }
         return columns;
@@ -129,7 +125,7 @@ public abstract class SelectQuery implements SQLQuery {
 
     private void initPropositions(Collection<? extends JTableColumn> columns) {
         for (JTableColumn tc : columns) {
-            if(tc.getColumnName().equals("METACOLUMN")){
+            if (tc.getColumnName().equals("METACOLUMN")) {
                 continue;
             }
             Proposition p = new Proposition();
@@ -157,52 +153,18 @@ public abstract class SelectQuery implements SQLQuery {
         }
     }
 
-//    private void updatePropositions(JTable table) {
-//        Proposition p;
-//        for (TableColumn tc : table.getTableColumns()) {
-//            boolean shouldBeAdded = true;
-//            for (Join j : joins) {
-//                if (j.column2column.containsValue(tc)) {
-//                    shouldBeAdded = false;
-//                }
-//            }
-//            boolean alreadyAdded = columnsAdded.contains(tc);
-//            if (!alreadyAdded && shouldBeAdded) {
-//                // <editor-fold defaultstate="collapsed" desc="add proposition if not added as a joint">
-//                columnsAdded.add(tc);
-//                p = new Proposition();
-//                p.setTableColumn(tc);
-//                if (tc.getColumnType().equals(SQLType.VARCHAR)
-//                        || tc.getColumnType().equals(SQLType.CHAR)) {
-//                    p.setQualifier(Qualifier.LIKE);
-//                    p.setUnknown();
-//                    propositions.add(p);
-//                } else if (tc.getColumnType().equals(SQLType.BIGINT)
-//                        || tc.getColumnType().equals(SQLType.DECIMAL)
-//                        || tc.getColumnType().equals(SQLType.DOUBLE)
-//                        || tc.getColumnType().equals(SQLType.INTEGER)
-//                        || tc.getColumnType().equals(SQLType.REAL)
-//                        || tc.getColumnType().equals(SQLType.SMALLINT)) {
-//                    Proposition p1 = null;
-//
-//                    p1 = (Proposition) p.clone();
-//
-//
-//                    p.setQualifier(Qualifier.GREATER_EQUAL);
-//                    p1.setQualifier(Qualifier.LESS_EQUAL);
-//                    p.setUnknown();
-//                    p1.setUnknown();
-//                    propositions.add(p);
-//                    propositions.add(p1);
-//                }// </editor-fold>
-//            }
-//        }
-//        Iterator<Table> remoteTables = table.getReferencedTables().iterator();
-//        while (remoteTables.hasNext()) {
-//            JTable tt = remoteTables.next();
-//            updatePropositions(tt);
-//        }
-//    }
+    public void setPropositionalValue(JTableColumn column, Proposition proposition) {
+        if (!column.isForeignKey()) {
+            throw new IllegalArgumentException("It is not good practise to set a propositional value to a "
+                    + "non-foreign key table column.\nYou attempted to modify the column: " + column.getColumnName());
+        }
+        for (Proposition p : propositions) {
+            if (p.getTableColumn().equals(column)) {
+                p.setPropositional(proposition);
+                return;
+            }
+        }
+    }
 
     public void setString(JTableColumn column, String stringValue) {
         if (!(column.getColumnType().equals(SQLType.VARCHAR)
@@ -396,7 +358,7 @@ public abstract class SelectQuery implements SQLQuery {
         throw new IllegalArgumentException("Column: " + column.getFullName()
                 + " does not belong to any proposition.");
     }
-    
+
     public void setFloat(JTableColumn column, float floatValue) {
         if (!(column.getColumnType().equals(SQLType.DOUBLE)
                 || column.getColumnType().equals(SQLType.DECIMAL)
@@ -464,6 +426,4 @@ public abstract class SelectQuery implements SQLQuery {
     }
 
     public abstract void setInfinity(JTableColumn column);
-
-    
 }

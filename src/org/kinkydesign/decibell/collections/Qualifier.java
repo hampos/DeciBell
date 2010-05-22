@@ -118,7 +118,12 @@ public enum Qualifier {
      * <em>resemble</em>. The way the <code>LIKE</code> operator works relies on the
      * SQL server implementation.
      */
-    LIKE("LIKE");
+    LIKE("LIKE"),
+    /**
+     * The 'belonging' operator used to declare that a given subject belong to some
+     * collection of objects.
+     */
+    IN("IN");
 
     private String qualifier = "";
 

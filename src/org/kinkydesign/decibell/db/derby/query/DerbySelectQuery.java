@@ -83,6 +83,11 @@ import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
  */
 public class DerbySelectQuery extends SelectQuery {
 
+    public DerbySelectQuery() {
+        super();
+    }
+
+
     /**
      * Construct a new DerbySelectQuery Object for a given table.
      * @param table

@@ -54,45 +54,43 @@ public interface SQLQuery {
      * @return
      *      SQL command as a String.
      */
-    public String getSQL();
+    String getSQL();
 
-    public JTable getTable();
+    JTable getTable();
 
-    public void setTable(JTable table);
+    void setTable(JTable table);
 
-    public void setColumns(Collection<? extends JTableColumn> tableColumns);
+    void setColumns(Collection<? extends JTableColumn> tableColumns);
 
-    public Collection<? extends JTableColumn> getColumns();
+    Collection<? extends JTableColumn> getColumns();
 
-    public void setPropositions(ArrayList<Proposition> propositions);
+    void setPropositions(ArrayList<Proposition> propositions);
 
-    public ArrayList<Proposition> getPropositions();
+    ArrayList<Proposition> getPropositions();
 
-    public boolean addProposition(Proposition proposition);
+    boolean addProposition(Proposition proposition);
 
-    public Proposition replaceProposition(int position, Proposition proposition);
+    Proposition replaceProposition(int position, Proposition proposition);
 
-    public Proposition removeProposition(Proposition proposition);
+    Proposition removeProposition(Proposition proposition);
 
-    public Proposition removeProposition(int position);
+    Proposition removeProposition(int position);
 
-    public void setLong(JTableColumn column, long value);
+    void setLong(JTableColumn column, long value);
 
-    public void setShort(JTableColumn column, short value);
+    void setShort(JTableColumn column, short value);
 
-    public void setInt(JTableColumn column, int value);
+    void setInt(JTableColumn column, int value);
 
-    public void setDouble(JTableColumn column, double value);
+    void setDouble(JTableColumn column, double value);
 
-    public void setFloat(JTableColumn column, float value);
+    void setFloat(JTableColumn column, float value);
 
-    public void setString(JTableColumn column, String value);
+    void setString(JTableColumn column, String value);
 
-    public void setNull(JTableColumn column);
+    void setNull(JTableColumn column);
 
-    public void setUnknown(JTableColumn column);
+    void setUnknown(JTableColumn column);
 
-    public void setInfinity(JTableColumn column);
-
-
+    void setInfinity(JTableColumn column);
 }

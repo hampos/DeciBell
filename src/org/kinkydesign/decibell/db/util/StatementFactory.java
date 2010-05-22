@@ -57,6 +57,11 @@ import org.kinkydesign.decibell.db.query.UpdateQuery;
  */
 public class StatementFactory {
 
+    public static Pair<PreparedStatement,SQLQuery> createDeepSearch(JTable table, DbConnector con) {
+        SelectQuery query = new DerbySelectQuery(table);
+        return null;
+    }
+
     /**
      * Creates a prepared statement for searching in an SQL table.
      * @param table

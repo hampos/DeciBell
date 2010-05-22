@@ -157,6 +157,12 @@ public class Proposition
         columnType = new boolean[3];
     }
 
+
+    public void setPropositional(Proposition otherPropositionAsValue){
+        setQualifier(Qualifier.IN);
+        this.stringValue = "( "+ otherPropositionAsValue.toString() + ")";
+    }
+
     public void setUnknown() {
         this.stringValue = QUESTION_MARK;
     }
@@ -175,6 +181,12 @@ public class Proposition
             throw new IllegalArgumentException("Illegal Qualifier {" + qualifier + "} combined with not null value (Read Derby Manual)");
         }
 
-        return tableColumn.getFullName() + SPACE + qualifier.toString() + SPACE + stringValue;
+        StringBuffer string = new StringBuffer();
+        string.append(tableColumn.getFullName());
+        string.append(SPACE);
+        string.append(qualifier.toString());
+        string.append(SPACE);
+        string.append(stringValue);
+        return string.toString();
     }
 }
