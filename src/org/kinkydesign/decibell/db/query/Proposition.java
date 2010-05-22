@@ -35,12 +35,8 @@
  */
 package org.kinkydesign.decibell.db.query;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.kinkydesign.decibell.collections.Qualifier;
-import org.kinkydesign.decibell.collections.SQLType;
-import org.kinkydesign.decibell.db.TableColumn;
-import org.kinkydesign.decibell.db.interfaces.JTableColumn;
+import org.kinkydesign.decibell.collections.*;
+import org.kinkydesign.decibell.db.interfaces.*;
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
@@ -68,6 +64,13 @@ public class Proposition
      * Construct a new Proposition.
      */
     public Proposition() {
+    }
+
+    public Proposition(final Proposition other){
+        this.tableColumn = other.tableColumn;
+        this.qualifier = other.qualifier;
+        this.stringValue = other.stringValue;
+        this.columnType = other.columnType;
     }
 
     @Override
@@ -158,9 +161,9 @@ public class Proposition
     }
 
 
-    public void setPropositional(Proposition otherPropositionAsValue){
+    public void setQueryValue(SQLQuery queryValue){
         setQualifier(Qualifier.IN);
-        this.stringValue = "( "+ otherPropositionAsValue.toString() + ")";
+        this.stringValue = "( "+ queryValue.getSQL() + ")";
     }
 
     public void setUnknown() {
@@ -172,10 +175,7 @@ public class Proposition
 
         boolean qualifierForNull = (qualifier == Qualifier.IS || qualifier == Qualifier.IS_NOT);
 
-        if (!columnType[0] && !columnType[1] && !columnType[2] && !qualifierForNull
-                && (this.stringValue == null ? QUESTION_MARK != null : !this.stringValue.equals(QUESTION_MARK))) {
-            throw new IllegalArgumentException("Use the qualifier IS or IS NOT with null");
-        }
+        
 
         if (qualifierForNull && (columnType[0] || columnType[1] || columnType[2])) {
             throw new IllegalArgumentException("Illegal Qualifier {" + qualifier + "} combined with not null value (Read Derby Manual)");

@@ -70,15 +70,14 @@ public final class StatementPool {
      * Size of the queue for requests for Prepared Statements.
      */
     public static final int queueSize = 100;
-
     private static Map<DbConnector, StatementPool> pools = new HashMap<DbConnector, StatementPool>();
-
     private static final Object lock = new Object();
-
     private DbConnector con = null;
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> search =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> searchpk =
+            new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
+    private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> searchDeep =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
     private Map<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>> update =
             new HashMap<JTable, ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>>();
@@ -151,6 +150,23 @@ public final class StatementPool {
         try {
             pair.getKey().clearParameters();
             register.get(t).add(pair);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public Pair<PreparedStatement, SQLQuery> getSearchDeep(JTable t) {
+        try {
+            return (Pair<PreparedStatement, SQLQuery>) searchDeep.get(t).take();
+        } catch (InterruptedException ex) {
+            return getSearch(t);
+        }
+    }
+
+    public void recycleSearchDeep(Pair<PreparedStatement, SQLQuery> pair, JTable t) {
+        try {
+            pair.getKey().clearParameters();
+            searchDeep.get(t).add(pair);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
@@ -299,15 +315,20 @@ public final class StatementPool {
      */
     private void initTable(JTable table) {
         search.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
+        searchDeep.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
         searchpk.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
         register.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
         delete.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
         update.put(table, new ArrayBlockingQueue<Pair<PreparedStatement, SQLQuery>>(queueSize));
+
         for (int i = 0; i < poolSize; i++) {
             register.get(table).add(StatementFactory.createRegister(table, con));
             delete.get(table).add(StatementFactory.createDelete(table, con));
             search.get(table).add(StatementFactory.createSearch(table, con));
             searchpk.get(table).add(StatementFactory.createSearchPK(table, con));
+            if (!table.getReferencedTables().isEmpty()) {
+                searchDeep.get(table).add(StatementFactory.createDeepSearch(table, con));
+            }
             update.get(table).add(StatementFactory.createUpdate(table, con));
         }
     }

@@ -38,7 +38,9 @@
 package org.kinkydesign.decibell.db.derby.query;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Set;
 import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.Qualifier;
 import org.kinkydesign.decibell.collections.SQLType;
@@ -87,7 +89,6 @@ public class DerbySelectQuery extends SelectQuery {
         super();
     }
 
-
     /**
      * Construct a new DerbySelectQuery Object for a given table.
      * @param table
@@ -98,19 +99,38 @@ public class DerbySelectQuery extends SelectQuery {
     }
 
     public String getSQL() {
+        if (!isInitializedQuery) {
+            throw new RuntimeException("You cannot get the SQL code out of a query that is not "
+                    + "initialized. None of the initialization methods in this class is invoked!");
+        }
         return getSQL(false);
     }
 
-
     public String getSQL(boolean searchPKonly) {
         JTable table = getTable();
-        StringBuffer sql = new StringBuffer();
-        sql.append(SELECT + SPACE + STAR + SPACE + FROM + SPACE + table.getTableName() + SPACE);
 
-        for (int i=joins.size()-1;i>=0;i--) {
+        StringBuffer whatToSelect = new StringBuffer();
+        if (getColumnsToSelect() == null || (getColumnsToSelect() != null && getColumnsToSelect().isEmpty())) {
+            whatToSelect.append(STAR);
+        } else {
+            final Iterator<? extends JTableColumn> colsToSel = getColumnsToSelect().iterator();
+            while (colsToSel.hasNext()) {
+                whatToSelect.append(colsToSel.next().getColumnName());
+                if (colsToSel.hasNext()) {
+                    whatToSelect.append(COMMA);
+                }
+            }
+        }
+
+        StringBuffer sql = new StringBuffer();
+        sql.append(SELECT + SPACE);
+        sql.append(whatToSelect);
+        sql.append(SPACE + FROM + SPACE + table.getTableName() + SPACE);
+
+        for (int i = joins.size() - 1; i >= 0; i--) {
             sql.append(joins.get(i).getSQL() + SPACE);
         }
-        for (Join j : joins){
+        for (Join j : joins) {
             sql.append(j.getSQL() + SPACE);
         }
 
@@ -166,5 +186,49 @@ public class DerbySelectQuery extends SelectQuery {
         }
     }
 
-
+    @Override
+    public void initNestedSelect() {
+        if (isInitializedQuery) {
+            throw new RuntimeException("The query is already initialized...");
+        }
+        Set<JTableColumn> columns = getTable().getTableColumns();
+        for (JTableColumn tc : columns) {
+            if (tc.getColumnName().equals("METACOLUMN")) {
+                continue;
+            }
+            Proposition p = new Proposition();
+            if (!tc.isForeignKey() || tc.isSelfReferencing()) {
+                p.setTableColumn(tc);
+                if (tc.getColumnType().equals(SQLType.VARCHAR)
+                        || tc.getColumnType().equals(SQLType.CHAR)
+                        || tc.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                    p.setQualifier(Qualifier.LIKE);
+                    p.setUnknown();
+                    propositions.add(p);
+                } else if (tc.getColumnType().equals(SQLType.BIGINT)
+                        || tc.getColumnType().equals(SQLType.DECIMAL)
+                        || tc.getColumnType().equals(SQLType.DOUBLE)
+                        || tc.getColumnType().equals(SQLType.INTEGER)
+                        || tc.getColumnType().equals(SQLType.REAL)
+                        || tc.getColumnType().equals(SQLType.SMALLINT)) {
+                    Proposition p1 = new Proposition(p);
+                    p.setQualifier(Qualifier.GREATER_EQUAL);
+                    p1.setQualifier(Qualifier.LESS_EQUAL);
+                    p.setUnknown();
+                    p1.setUnknown();
+                    propositions.add(p);
+                    propositions.add(p1);
+                }
+            } else {
+                Proposition nestedProposition = new Proposition();
+                nestedProposition.setTableColumn(tc);
+                SelectQuery nestedQuery = new DerbySelectQuery(tc.getReferenceTable());
+                nestedQuery.setColumnsToSelect(Arrays.asList(tc.getReferenceColumn()));
+                nestedQuery.initNestedSelect();
+                nestedProposition.setQueryValue(nestedQuery);
+                propositions.add(nestedProposition);
+            }
+        }
+        isInitializedQuery = true;
+    }
 }

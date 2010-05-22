@@ -1,5 +1,9 @@
 package org.kinkydesign.decibell.alpha.fk2;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -43,7 +47,22 @@ public class UserTest {
         db.attach(User.class);
         db.attach(UserInfo.class);
         db.attach(Task.class);
+        db.setVerbose(true);
         db.start();
+
+        Connection con = db.getDbConnector().getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM  " +
+                    "org_kinkydesign_decibell_alpha_fk2_User WHERE " +
+                    "ui_uname IN (SELECT ui_uname FROM org_kinkydesign_decibell_alpha_fk2_UserInfo WHERE EMAIL LIKE ?)");
+            ps.setString(1, "%%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                System.out.println(rs.getString(1));
+            }
+        } catch (SQLException ex) {
+            fail();
+        }
 
         Task t1 = new Task();
         t1.comment = "comment1";
@@ -82,7 +101,6 @@ public class UserTest {
         assertTrue(usersFound.get(0).tasks.contains(t2));
         assertEquals(ui.email, usersFound.get(0).ui.email);
         assertEquals(ui.uname, usersFound.get(0).ui.uname);
-
     }
 
 }

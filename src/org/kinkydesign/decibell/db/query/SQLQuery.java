@@ -58,9 +58,7 @@ public interface SQLQuery {
 
     JTable getTable();
 
-    void setTable(JTable table);
-
-    void setColumns(Collection<? extends JTableColumn> tableColumns);
+    void setTable(JTable table);    
 
     Collection<? extends JTableColumn> getColumns();
 

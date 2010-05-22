@@ -1,4 +1,4 @@
-package org.kinkydesign.decibell.alpha.fk1;
+    package org.kinkydesign.decibell.alpha.fk1;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,7 +39,8 @@ public class fk1Test {
         db.attach(C.class);
         db.attach(D.class);
         db.setVerbose(true);
-        db.start();
+        db.start();                
+
         new A().delete(db);
 
         D d1 = new D("d1", "d1ddd", 12);

@@ -51,6 +51,8 @@ public abstract class SelectQuery implements SQLQuery {
     private JTable table;
     protected ArrayList<Proposition> propositions = new ArrayList<Proposition>();
     protected ArrayList<Join> joins = new ArrayList<Join>();
+    protected Collection<? extends JTableColumn> columnsToSelect = null;
+    protected boolean isInitializedQuery = false;
 
     public SelectQuery() {
     }
@@ -65,15 +67,56 @@ public abstract class SelectQuery implements SQLQuery {
 
     public void setTable(JTable table) {
         this.table = table;
+    }
+
+    public void initSimpleSelect(){
+        if (isInitializedQuery){
+            throw new RuntimeException("The query is already initialized...");
+        }
         initPropositions(table.getTableColumns());
-        if (!(table instanceof JRelationalTable)) {
-            System.out.println("The table " + table.getFullTableName() + " is not relational!");
+        isInitializedQuery = true;
+    }
+
+    public abstract void initNestedSelect();
+
+    private void initPropositions(Collection<? extends JTableColumn> columns) {
+        for (JTableColumn tc : columns) {
+            if (tc.getColumnName().equals("METACOLUMN")) {
+                continue;
+            }
+            Proposition p = new Proposition();
+            p.setTableColumn(tc);
+            if (tc.getColumnType().equals(SQLType.VARCHAR)
+                    || tc.getColumnType().equals(SQLType.CHAR)
+                    || tc.getColumnType().equals(SQLType.LONG_VARCHAR)) {
+                p.setQualifier(Qualifier.LIKE);
+                p.setUnknown();
+                propositions.add(p);
+            } else if (tc.getColumnType().equals(SQLType.BIGINT)
+                    || tc.getColumnType().equals(SQLType.DECIMAL)
+                    || tc.getColumnType().equals(SQLType.DOUBLE)
+                    || tc.getColumnType().equals(SQLType.INTEGER)
+                    || tc.getColumnType().equals(SQLType.REAL)
+                    || tc.getColumnType().equals(SQLType.SMALLINT)) {
+                Proposition p1 = (Proposition) p.clone();
+                p.setQualifier(Qualifier.GREATER_EQUAL);
+                p1.setQualifier(Qualifier.LESS_EQUAL);
+                p.setUnknown();
+                p1.setUnknown();
+                propositions.add(p);
+                propositions.add(p1);
+            }
         }
     }
 
-    public void setColumns(Collection<? extends JTableColumn> tableColumns) {
-        initPropositions(tableColumns);
+    public Collection<? extends JTableColumn> getColumnsToSelect() {
+        return columnsToSelect;
     }
+
+    public void setColumnsToSelect(Collection<? extends JTableColumn> columnsToSelect) {
+        this.columnsToSelect = columnsToSelect;
+    }
+
 
     public Collection<? extends JTableColumn> getColumns() {
         Set<JTableColumn> columns = new HashSet<JTableColumn>();
@@ -121,46 +164,16 @@ public abstract class SelectQuery implements SQLQuery {
 
     public ArrayList<Proposition> getPropositions() {
         return propositions;
-    }
+    }    
 
-    private void initPropositions(Collection<? extends JTableColumn> columns) {
-        for (JTableColumn tc : columns) {
-            if (tc.getColumnName().equals("METACOLUMN")) {
-                continue;
-            }
-            Proposition p = new Proposition();
-            p.setTableColumn(tc);
-            if (tc.getColumnType().equals(SQLType.VARCHAR)
-                    || tc.getColumnType().equals(SQLType.CHAR)
-                    || tc.getColumnType().equals(SQLType.LONG_VARCHAR)) {
-                p.setQualifier(Qualifier.LIKE);
-                p.setUnknown();
-                propositions.add(p);
-            } else if (tc.getColumnType().equals(SQLType.BIGINT)
-                    || tc.getColumnType().equals(SQLType.DECIMAL)
-                    || tc.getColumnType().equals(SQLType.DOUBLE)
-                    || tc.getColumnType().equals(SQLType.INTEGER)
-                    || tc.getColumnType().equals(SQLType.REAL)
-                    || tc.getColumnType().equals(SQLType.SMALLINT)) {
-                Proposition p1 = (Proposition) p.clone();
-                p.setQualifier(Qualifier.GREATER_EQUAL);
-                p1.setQualifier(Qualifier.LESS_EQUAL);
-                p.setUnknown();
-                p1.setUnknown();
-                propositions.add(p);
-                propositions.add(p1);
-            }
-        }
-    }
-
-    public void setPropositionalValue(JTableColumn column, Proposition proposition) {
+    public void setQueryValue(JTableColumn column, SQLQuery queryValue) {
         if (!column.isForeignKey()) {
             throw new IllegalArgumentException("It is not good practise to set a propositional value to a "
                     + "non-foreign key table column.\nYou attempted to modify the column: " + column.getColumnName());
         }
         for (Proposition p : propositions) {
             if (p.getTableColumn().equals(column)) {
-                p.setPropositional(proposition);
+                p.setQueryValue(queryValue);
                 return;
             }
         }
