@@ -65,7 +65,7 @@ public class MasterSlaveTest {
             m3.attemptRegister(db);
             assertEquals(1, m3.attemptRegister(db));
 
-            System.out.println(m3);
+            //System.out.println(m3);
 
             ArrayList<Master> mastersFound = new Master().search(db);
             assertNotNull(mastersFound);

@@ -56,7 +56,7 @@ import org.kinkydesign.decibell.db.util.*;
  * This search engine helps retrieving data from the underlying database as Java
  * objects (which subclass {@link Component }. So what is returned by such a search operation
  * is an ArrayList of Component-type objects.
- * </p
+ * </p>
  * @param <T>
  *      Generic parameter used to identify the searched objects.
  * @author Pantelis Sopasakis
@@ -95,21 +95,25 @@ public class SearchEngine<T extends Component> {
     public ArrayList<T> search(Component prototype) {
         JTable table = registry.get(prototype.getClass());
         try {
-            if (isComponentTerminal(prototype, table)) {
+            if (isCriteriaMaster(prototype, table)) {
                 return doSearchTerminal(prototype);
-            } else {
-                System.err.println("NOT TERMINAL");
-                return null;
+            } else {                
+                return doSearchDeep(prototype);
             }
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
 
+
+    private ArrayList<T> doSearchDeep(Component component) throws SQLException{
+        throw new UnsupportedOperationException();
+    }
+
     private ArrayList<T> doSearchTerminal(Component component) throws SQLException {
 
         JTable table = registry.get(component.getClass());
-        if (!isComponentTerminal(component, table)) {
+        if (!isCriteriaMaster(component, table)) {
             return null;
         }
 
@@ -126,7 +130,6 @@ public class SearchEngine<T extends Component> {
             Object whatever = infinity.getInfinity(proposition);
             JTableColumn column = proposition.getTableColumn();
             Field field = column.getField();
-
             if (!column.isForeignKey() && column.isTypeNumeric()) {
                 handleTerminalNumeric(component, ps, column, field, ps_INDEX, whatever);
             } else if (!column.isForeignKey() && column.getColumnType().equals(SQLType.VARCHAR)) {
@@ -136,7 +139,7 @@ public class SearchEngine<T extends Component> {
             } else if (column.isForeignKey()) {
                 handleTerminalFK(component, ps, column, field, ps_INDEX, whatever);
             } else {
-                throw new RuntimeException("WTF!?");
+                throw new RuntimeException("[BUG] Unhandled condition in SearchEngine! This should not happen!");
             }
             ps_INDEX++;
         }
@@ -207,7 +210,7 @@ public class SearchEngine<T extends Component> {
 
     }
 
-    private void handleTerminalFK(Component component, PreparedStatement ps, JTableColumn column, Field field, int ps_INDEX, Object whatever) {
+    private void handleTerminalFK(Component component, PreparedStatement ps, JTableColumn column, Field field, int ps_INDEX, Object whatever) {        
         try {
             // Terminals do not have declared FK fields. Check it out and proceed with `whatever`
             Object providedValue = field.get(component);
@@ -222,7 +225,7 @@ public class SearchEngine<T extends Component> {
         }
     }
 
-    private boolean isComponentTerminal(Component component, JTable table) {
+    private boolean isCriteriaMaster(Component component, JTable table) {
 
         Set<JTableColumn> foreignKeyColumns = table.getForeignKeyColumns();
         Set<JRelationalTable> relationalTables = table.getRelations();

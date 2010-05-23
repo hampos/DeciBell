@@ -63,10 +63,9 @@ public class StatementFactory {
             try {
                 PreparedStatement ps = con.prepareStatement(query.getSQL());
                 Pair pair = new Pair(ps, query);
-                System.out.println(query.getSQL());
                 return pair;
             } catch (SQLException ex) {
-                System.out.println("buggy SQL statement: " + query.getSQL());
+                System.err.println("buggy SQL statement: " + query.getSQL());
                 throw new RuntimeException(ex);
             }
     }

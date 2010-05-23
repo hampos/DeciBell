@@ -373,7 +373,8 @@ public class DerbyTablesGenerator extends TablesGenerator {
             }
         }
 
-        // Put the table in the registry...      
+        // Put the table in the registry...
+        System.out.println(table);
         registry.put((Class<? extends Component>) c, table);
     }
 

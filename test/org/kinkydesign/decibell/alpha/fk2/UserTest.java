@@ -47,7 +47,6 @@ public class UserTest {
         db.attach(User.class);
         db.attach(UserInfo.class);
         db.attach(Task.class);
-        db.setVerbose(true);
         db.start();
 
         Connection con = db.getDbConnector().getConnection();

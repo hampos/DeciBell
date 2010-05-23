@@ -12,7 +12,6 @@ public class SRListTest {
         DeciBell db = new DeciBell();
         db.setDbName("my/dvb/7ejf");
         db.attach(SRList.class);
-        db.setVerbose(true);
         db.start();
 
         SRList a = new SRList();
@@ -27,8 +26,8 @@ public class SRListTest {
         ArrayList<SRList> found = new SRList("%", null).search(db);
         for (SRList sr : found) {
             try {
-                System.out.println(sr.getMyList().get(0).getMyList().get(0).getId());
-                System.out.println(sr);
+                 System.out.println(sr.getMyList().get(0).getMyList().get(0).getId());
+                 System.out.println(sr);
             } catch (IndexOutOfBoundsException ex) {
             }
         }

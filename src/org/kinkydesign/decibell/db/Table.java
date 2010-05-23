@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import org.kinkydesign.decibell.db.interfaces.JRelationalTable;
 import org.kinkydesign.decibell.db.interfaces.JTableColumn;
+import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 
 /**
  *
@@ -338,5 +339,52 @@ public abstract class Table implements JTable {
         int hash = 3;
         hash = 83 * hash + (this.tableName != null ? this.tableName.hashCode() : 0);
         return hash;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer string = new StringBuffer();
+        Set<JTableColumn> allColumns = new HashSet<JTableColumn>(getTableColumns());
+        Set<JTableColumn> primaryKeys = new HashSet<JTableColumn>(getPrimaryKeyColumns());
+        Set<JTableColumn> foreignKeys = new HashSet<JTableColumn>(getForeignKeyColumns());
+
+        string.append("Table : " + getTableName());
+        string.append(" in schema '" + getSchemaName() + "'");
+        string.append(NEWLINE);
+        string.append("Primary Key");
+        if (primaryKeys.size() >= 2) {
+            string.append("s");
+        }
+        string.append(":" + NEWLINE);
+        for (JTableColumn primaryKey : primaryKeys) {
+            string.append("* ");
+            string.append(primaryKey.getColumnName());
+            string.append(NEWLINE);
+            allColumns.remove(primaryKey);
+        }
+        if (!foreignKeys.isEmpty()) {
+            string.append("Foreign Key");
+
+            if (foreignKeys.size() >= 2) {
+                string.append("s");
+            }
+            string.append(":" + NEWLINE);
+            for (JTableColumn foreignKey : foreignKeys) {
+                string.append("@ ");
+                string.append(foreignKey.getColumnName());
+                string.append(" --> " + foreignKey.getReferenceTableName()
+                        + " [" + foreignKey.getReferenceColumnName() + "]");
+                string.append(NEWLINE);
+                allColumns.remove(foreignKey);
+            }
+        }
+        if (!allColumns.isEmpty()) {
+            string.append("Other columns :" + NEWLINE);
+            for (JTableColumn tc : allColumns) {
+                string.append("+ " + tc.getColumnName());
+                string.append(NEWLINE);
+            }
+        }
+        return new String(string);
     }
 }

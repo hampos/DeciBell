@@ -38,7 +38,6 @@ public class fk1Test {
         db.attach(B.class);
         db.attach(C.class);
         db.attach(D.class);
-        db.setVerbose(true);
         db.start();                
 
         new A().delete(db);
