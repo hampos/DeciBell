@@ -495,6 +495,9 @@ final public class TableColumn implements Cloneable, JTableColumn {
      * @return true if the column has numeric type.
      */
     public boolean isTypeNumeric() {
+        if (columnType==null){
+            throw new NullPointerException("Unspecified datatype for the table column.");
+        }
         if (columnType.equals(SQLType.INTEGER)
                 || columnType.equals(SQLType.BIGINT)
                 || columnType.equals(SQLType.SMALLINT)
