@@ -160,6 +160,27 @@ public class DBDataTypeProperties extends OntEntity {
         return property;
     }
 
+    public static final DatatypeProperty fieldClass(OntObject model) {
+        DatatypeProperty property = model.createDatatypeProperty(String.format(_DECIBELL_BASE, "fieldDeclaringClass"));
+        property.addDomain(DBClass.Field().getResource());
+        property.addRange(XSD.xstring);
+        return property;
+    }
+
+    public static final DatatypeProperty fieldType(OntObject model) {
+        DatatypeProperty property = model.createDatatypeProperty(String.format(_DECIBELL_BASE, "fieldType"));
+        property.addDomain(DBClass.Field().getResource());
+        property.addRange(XSD.xstring);
+        return property;
+    }
+
+    public static final DatatypeProperty fieldAnnotation(OntObject model) {
+        DatatypeProperty property = model.createDatatypeProperty(String.format(_DECIBELL_BASE, "fieldAnnotation"));
+        property.addDomain(DBClass.Field().getResource());
+        property.addRange(XSD.xstring);
+        return property;
+    }
+
     public static final DatatypeProperty lowerBound(OntObject model) {
         DatatypeProperty property = model.createDatatypeProperty(String.format(_DECIBELL_BASE, "lowerBound"));
         property.addDomain(DBClass.Constraint().getResource());
@@ -187,6 +208,8 @@ public class DBDataTypeProperties extends OntEntity {
         property.addRange(XSD.xstring);
         return property;
     }
+
+    
 
 
 }

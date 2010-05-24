@@ -10,9 +10,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.kinkydesign.decibell.DeciBell;
+import org.kinkydesign.decibell.core.ComponentRegistry;
 import static org.junit.Assert.*;
 import org.kinkydesign.decibell.exceptions.DuplicateKeyException;
 import org.kinkydesign.decibell.exceptions.ImproperRegistration;
+import org.kinkydesign.decibell.rdf.engine.RDFSerializationEngine;
 
 public class fk1Test {
 
@@ -39,7 +41,9 @@ public class fk1Test {
         db.attach(C.class);
         db.attach(D.class);
         db.setVerbose(true);
-        db.start();                
+        db.start();
+
+        RDFSerializationEngine.serialize(ComponentRegistry.getRegistry(db.getDbConnector())).printConsole();
 
         new A().delete(db);
 

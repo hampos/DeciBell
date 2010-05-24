@@ -37,6 +37,7 @@ package org.kinkydesign.decibell;
 
 import java.lang.reflect.*;
 import java.util.*;
+import org.kinkydesign.decibell.annotations.PrimaryKey;
 import org.kinkydesign.decibell.db.*;
 import org.kinkydesign.decibell.db.derby.DerbyConnector;
 import org.kinkydesign.decibell.db.derby.DerbyTablesGenerator;

@@ -42,6 +42,10 @@ import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.impl.OntModelImpl;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFErrorHandler;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.rdf.model.impl.RDFDefaultErrorHandler;
+import com.hp.hpl.jena.rdf.model.impl.RDFWriterFImpl;
 import java.io.InputStream;
 import java.util.*;
 
@@ -86,7 +90,8 @@ public class OntObject extends OntModelImpl {
     }
 
     public void printConsole() {
-        this.write(System.out);
+        RDFWriter writer = new RDFWriterFImpl().getWriter();
+        writer.write(this, System.out, null);
     }
 
     public void createAnnotationProperties(String... annotation_uris) {
@@ -101,7 +106,6 @@ public class OntObject extends OntModelImpl {
     }
     
     
-
     public void includeOntClass(OntEntity ontEntity) {
         ontEntity.createOntClass(this);
     }

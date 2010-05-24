@@ -40,8 +40,6 @@ package org.kinkydesign.decibell.rdf.ns;
 import com.hp.hpl.jena.rdf.model.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.kinkydesign.decibell.collections.SQLType;
 
 /**

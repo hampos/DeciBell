@@ -58,11 +58,11 @@ public class DBObjectProperties extends OntEntity {
         return o.getProperty(getURI());
     }
 
-    public static final ObjectProperty sqlDataType(OntModel model) {
-        ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "sqlDataType"));
+    public static final ObjectProperty hasSQLType(OntModel model) {
+        ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "hasSqlType"));
         property.addDomain(DBClass.TableColumn().getResource());
         for (SQLType e : SQLType.values()){
-            property.addRange(model.createObjectProperty(DBSQLTypes.fromSQLTypes(e).getURI()));
+            property.addRange((DBSQLTypes.fromSQLTypes(e).getResource()));
         }
         return property;
     }
@@ -70,6 +70,27 @@ public class DBObjectProperties extends OntEntity {
     public static final ObjectProperty columnReferencesColumn(OntModel model) {
         ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "referencesColumn"));
         property.addDomain(DBClass.TableColumn().getResource());
+        property.addRange(DBClass.TableColumn().getResource());
+        return property;
+    }
+
+    public static final ObjectProperty hasConstraint(OntModel model){
+        ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "hasConstraint"));
+        property.addDomain(DBClass.TableColumn().getResource());
+        property.addRange(DBClass.Constraint().getResource());
+        return property;
+    }
+
+    public static final ObjectProperty hasField(OntModel model){
+        ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "hasField"));
+        property.addDomain(DBClass.TableColumn().getResource());
+        property.addRange(DBClass.Field().getResource());
+        return property;
+    }
+
+    public static final ObjectProperty hasColumn(OntModel model){
+        ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "hasColumn"));
+        property.addDomain(DBClass.Table().getResource());
         property.addRange(DBClass.TableColumn().getResource());
         return property;
     }

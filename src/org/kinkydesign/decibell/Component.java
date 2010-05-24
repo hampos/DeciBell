@@ -308,12 +308,14 @@ public abstract class Component<T extends Component> implements Cloneable {
      */
     @Override
     public String toString() {
-        return "[\n" + toString("") + "]";
+        StringBuffer string = new StringBuffer();
+        string.append("[\n");
+        string.append(toString(""));
+        string.append("]");
+        return new String(string);
     }
 
-    // TODO: Repeated code! Use print(PrintStream) to implement toString().
-    // TODO: No need to have a private method for toString. Use print(PrintStream) instead.
-    private String toString(String x) {
+    private StringBuffer toString(String x) {
         StringBuffer buffer = new StringBuffer();
         Class c = this.getClass();
         buffer.append(x);
@@ -370,7 +372,7 @@ public abstract class Component<T extends Component> implements Cloneable {
                         + "to be accessible. Method could not access the field!", ex);
             }
         }
-        return buffer.toString();
+        return buffer;
     }
 
     /**
@@ -385,7 +387,7 @@ public abstract class Component<T extends Component> implements Cloneable {
         for (int i = 0; i < count; i++) {
             spaces.append(" ");
         }
-        return spaces.toString();
+        return new String(spaces);
     }
 
     /**

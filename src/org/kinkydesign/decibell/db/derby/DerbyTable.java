@@ -236,6 +236,7 @@ public class DerbyTable extends Table {
         return constraint.toString();
     }
 
+    @Deprecated // Use isSelfReferencing instead...
     public boolean hasSelfReferences()
     {
         return getSelfReferences().size() == 0 ? false : true;

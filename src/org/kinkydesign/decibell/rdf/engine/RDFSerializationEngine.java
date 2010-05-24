@@ -39,17 +39,18 @@ package org.kinkydesign.decibell.rdf.engine;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.ontology.Individual;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.net.URLEncoder;
+import java.util.Collection;
+import org.kinkydesign.decibell.DeciBell;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.core.ComponentRegistry;
 import org.kinkydesign.decibell.db.TableColumn;
-import org.kinkydesign.decibell.db.interfaces.JTable;
-import org.kinkydesign.decibell.db.interfaces.JTableColumn;
-import org.kinkydesign.decibell.rdf.ns.DBClass;
-import org.kinkydesign.decibell.rdf.ns.DBDataTypeProperties;
-import org.kinkydesign.decibell.rdf.ns.DBObjectProperties;
-import org.kinkydesign.decibell.rdf.ns.DBSQLTypes;
-import org.kinkydesign.decibell.rdf.ns.OntEntity;
-import org.kinkydesign.decibell.rdf.ns.OntObject;
+import org.kinkydesign.decibell.db.derby.DerbyTable;
+import org.kinkydesign.decibell.db.interfaces.*;
+import org.kinkydesign.decibell.rdf.ns.*;
 
 /**
  *
@@ -58,81 +59,183 @@ import org.kinkydesign.decibell.rdf.ns.OntObject;
  */
 public class RDFSerializationEngine {
 
+    private static Individual createFieldIndividual(Field input, OntObject oo) {
+        String fieldName = null;
+        try {
+            fieldName = URLEncoder.encode(input.getName(), "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            fieldName = input.getName();
+            System.err.println("Could not encode the string : '" + input.getName() + "' using UTF-8");
+            ex.printStackTrace();
+        }
+        Individual fieldIndividual = oo.createIndividual(OntEntity.DECIBELL_BASE + "field_" + fieldName,
+                DBClass.Field().getResource());
+        fieldIndividual.addLiteral(DBDataTypeProperties.fName(oo),
+                oo.createTypedLiteral(input.getName(), XSDDatatype.XSDstring));
+        fieldIndividual.addLiteral(DBDataTypeProperties.fieldClass(oo),
+                oo.createTypedLiteral(input.getDeclaringClass().getName(), XSDDatatype.XSDstring));
+        fieldIndividual.addLiteral(DBDataTypeProperties.fieldType(oo),
+                oo.createTypedLiteral(input.getGenericType(), XSDDatatype.XSDstring));
+        for (Annotation annotation : input.getAnnotations()) {
+            fieldIndividual.addLiteral(DBDataTypeProperties.fieldAnnotation(oo),
+                    oo.createTypedLiteral(annotation.annotationType().getName(), XSDDatatype.XSDstring));
+        }
+        return fieldIndividual;
+    }
+
+    private static Individual createConstraintIndividual(JTableColumn input, OntObject oo) {
+        String columnName = null;
+        try {
+            columnName = URLEncoder.encode(input.getColumnName(), "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            columnName = input.getColumnName();
+            System.err.println("Could not encode the string : '" + input.getColumnName() + "' using UTF-8");
+            ex.printStackTrace();
+        }
+        Individual constraintIndiv = oo.createIndividual(OntEntity.DECIBELL_BASE + "constraint_" + columnName,
+                DBClass.Constraint().getResource());
+        if (input.hasHigh()) {
+            constraintIndiv.addLiteral(DBDataTypeProperties.higherBound(oo), oo.createTypedLiteral(input.getHigh(), XSDDatatype.XSDdouble));
+        }
+        if (input.hasLow()) {
+            constraintIndiv.addLiteral(DBDataTypeProperties.lowerBound(oo), oo.createTypedLiteral(input.getLow(), XSDDatatype.XSDdouble));
+        }
+        if (input.hasDomain()) {
+            for (String domainElement : input.getDomain()) {
+                constraintIndiv.addLiteral(DBDataTypeProperties.acceptsValue(oo), oo.createTypedLiteral(domainElement, XSDDatatype.XSDstring));
+            }
+        }
+        return constraintIndiv;
+    }
+
     private static Individual createTableColumnIndividual(JTableColumn input, OntObject oo) {
-        Individual tableColumn = oo.createIndividual(OntEntity.DECIBELL_BASE + input.getColumnName(),
+        String columnName = null;
+        try {
+            columnName = URLEncoder.encode(input.getColumnName(), "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            columnName = input.getColumnName();
+            System.err.println("Could not encode the string : '" + input.getColumnName() + "' using UTF-8");
+            ex.printStackTrace();
+        }
+        Individual tableColumnIndividual = oo.createIndividual(OntEntity.DECIBELL_BASE +"column_"+ columnName,
                 DBClass.TableColumn().getResource());
 
-        tableColumn.addLiteral(DBDataTypeProperties.tcName(oo),
+        tableColumnIndividual.addLiteral(DBDataTypeProperties.tcName(oo),
                 oo.createTypedLiteral(input.getColumnName(), XSDDatatype.XSDstring));
 
-        tableColumn.addLiteral(DBDataTypeProperties.hasDomain(oo),
+        tableColumnIndividual.addLiteral(DBDataTypeProperties.hasDomain(oo),
                 oo.createTypedLiteral(input.hasDomain(), XSDDatatype.XSDboolean));
-        tableColumn.addLiteral(DBDataTypeProperties.hasHigh(oo),
+        tableColumnIndividual.addLiteral(DBDataTypeProperties.hasHigh(oo),
                 oo.createTypedLiteral(input.hasHigh(), XSDDatatype.XSDboolean));
-        tableColumn.addLiteral(DBDataTypeProperties.hasLow(oo),
+        tableColumnIndividual.addLiteral(DBDataTypeProperties.hasLow(oo),
                 oo.createTypedLiteral(input.hasLow(), XSDDatatype.XSDboolean));
-        tableColumn.addLiteral(DBDataTypeProperties.isForeignKey(oo),
+        tableColumnIndividual.addLiteral(DBDataTypeProperties.isForeignKey(oo),
                 oo.createTypedLiteral(input.isForeignKey(), XSDDatatype.XSDboolean));
         if (input.isTypeNumeric()) {
-            tableColumn.addLiteral(DBDataTypeProperties.isAutoGen(oo),
+            tableColumnIndividual.addLiteral(DBDataTypeProperties.isAutoGen(oo),
                     oo.createTypedLiteral(input.isAutoGenerated(), XSDDatatype.XSDboolean));
         }
-        tableColumn.addLiteral(DBDataTypeProperties.isPrimaryKey(oo),
+        tableColumnIndividual.addLiteral(DBDataTypeProperties.isPrimaryKey(oo),
                 oo.createTypedLiteral(input.isPrimaryKey(), XSDDatatype.XSDboolean));
-        tableColumn.addLiteral(DBDataTypeProperties.isNotNull(oo),
+        tableColumnIndividual.addLiteral(DBDataTypeProperties.isNotNull(oo),
                 oo.createTypedLiteral(input.isNotNull(), XSDDatatype.XSDboolean));
-        tableColumn.addLiteral(DBDataTypeProperties.isUnique(oo),
+        tableColumnIndividual.addLiteral(DBDataTypeProperties.isUnique(oo),
                 oo.createTypedLiteral(input.isUnique(), XSDDatatype.XSDboolean));
         if (input.hasDefault()) {
-            tableColumn.addLiteral(DBDataTypeProperties.defaultValue(oo),
+            tableColumnIndividual.addLiteral(DBDataTypeProperties.defaultValue(oo),
                     oo.createTypedLiteral(input.getDefaultValue(), XSDDatatype.XSDstring));
         }
-        if (input.isTypeNumeric() && input.getNumericNull()!=null){
-            tableColumn.addLiteral(DBDataTypeProperties.numericNull(oo),
+        if (input.isTypeNumeric() && input.getNumericNull() != null) {
+            tableColumnIndividual.addLiteral(DBDataTypeProperties.numericNull(oo),
                     oo.createTypedLiteral(input.getNumericNull(), XSDDatatype.XSDdouble));
         }
 
-        Individual datatype = oo.createIndividual(DBSQLTypes.fromSQLTypes(input.getColumnType()).getURI(),
+        Individual dataTypeIndividual = oo.createIndividual(DBSQLTypes.fromSQLTypes(input.getColumnType()).getURI(),
                 DBClass.SQLType().getResource());
 
-        tableColumn.addProperty(DBObjectProperties.sqlDataType(oo), datatype);
+        tableColumnIndividual.addProperty(DBObjectProperties.hasSQLType(oo), dataTypeIndividual);
 
         if (input.isForeignKey()) {
             if (!input.isSelfReferencing()) {
-                tableColumn.addProperty(DBObjectProperties.columnReferencesColumn(oo),
+                tableColumnIndividual.addProperty(DBObjectProperties.columnReferencesColumn(oo),
                         createTableColumnIndividual(input.getReferenceColumn(), oo));
             } else {
-                tableColumn.addProperty(DBObjectProperties.columnReferencesColumn(oo), tableColumn);
+                tableColumnIndividual.addProperty(DBObjectProperties.columnReferencesColumn(oo), tableColumnIndividual);
             }
-            tableColumn.addLiteral(DBDataTypeProperties.onDelete(oo),
+            tableColumnIndividual.addLiteral(DBDataTypeProperties.onDelete(oo),
                     oo.createTypedLiteral(input.getOnDelete().toString(), XSDDatatype.XSDstring));
-            tableColumn.addLiteral(DBDataTypeProperties.onUpdate(oo),
+            tableColumnIndividual.addLiteral(DBDataTypeProperties.onUpdate(oo),
                     oo.createTypedLiteral(input.getOnUpdate().toString(), XSDDatatype.XSDstring));
         }
-        return tableColumn;
+
+        if (input.isConstrained()) {
+            tableColumnIndividual.addProperty(DBObjectProperties.hasConstraint(oo), createConstraintIndividual(input, oo));
+        }
+
+        tableColumnIndividual.addProperty(DBObjectProperties.hasField(oo), createFieldIndividual(input.getField(), oo));
+
+        return tableColumnIndividual;
+    }
+
+    private static Individual createTableIndividual(JTable input, OntObject oo) {
+        String tableName = null;
+        try {
+            tableName = URLEncoder.encode(input.getTableName(), "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            tableName = input.getTableName();
+            System.err.println("Could not encode the string : '" + input.getTableName() + "' using UTF-8");
+            ex.printStackTrace();
+        }
+        Individual tableIndividual = oo.createIndividual(OntEntity.DECIBELL_BASE +"table_"+ tableName,
+                DBClass.Table().getResource());
+
+        tableIndividual.addLiteral(DBDataTypeProperties.tName(oo),
+                oo.createTypedLiteral(input.getTableName(), XSDDatatype.XSDstring));
+        tableIndividual.addLiteral(DBDataTypeProperties.schemaName(oo),
+                oo.createTypedLiteral(input.getTableSchema(), XSDDatatype.XSDstring));
+
+        for (JTableColumn tableColumn : input.getTableColumns()) {
+            tableIndividual.addProperty(DBObjectProperties.hasColumn(oo), createTableColumnIndividual(tableColumn, oo));
+        }
+
+        return tableIndividual;
     }
 
     public static OntObject serialize(JTableColumn input) {
         OntObject oo = new OntObject();
-        oo.includeOntClasses(DBClass.TableColumn(), DBClass.SQLType());
+        oo.includeOntClasses(DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field());
         createTableColumnIndividual(input, oo);
         return oo;
     }
 
     public static OntObject serialize(JTable input) {
-        throw new UnsupportedOperationException();
+        OntObject oo = new OntObject();
+        oo.includeOntClasses(DBClass.Table(), DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field());
+        createTableIndividual(input, oo);
+        return oo;
     }
 
     public static OntObject serialize(ComponentRegistry input) {
-        throw new UnsupportedOperationException();
+        OntObject oo = new OntObject();
+        oo.includeOntClasses(DBClass.Table(), DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field());
+        Collection<JTable> allTables = input.values();
+        for (JTable table : allTables){
+            createTableIndividual(table, oo);
+        }
+        return oo;
     }
 
-    public static void main(String... args){
-        JTableColumn tc=  new TableColumn("cxxd");
+    public static void main(String... args) {
+        JTableColumn tc = new TableColumn("cxxd");
         tc.setColumnType(SQLType.BIGINT);
         tc.setNumericNull("4");
+        tc.setDomain(new String[]{"X", "Y"});
+        tc.setDefaultValue("54");
+        tc.setField(DeciBell.class.getDeclaredFields()[1]);
+
+        DerbyTable dt = new DerbyTable();
+        dt.setTableName("itsme", "dt");
+        dt.addColumn(tc);
         serialize(tc).printConsole();
     }
-
-    
 }
