@@ -19,6 +19,7 @@ public class MasterSlaveTest {
         db.setDbName("my/dvb/jfufes92");
         db.attach(Master.class);
         db.attach(Slave.class);
+        db.setVerbose(true);
         db.start();
     }
 

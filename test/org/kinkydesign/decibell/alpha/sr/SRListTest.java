@@ -12,6 +12,7 @@ public class SRListTest {
         DeciBell db = new DeciBell();
         db.setDbName("my/dvb/7ejf");
         db.attach(SRList.class);
+        db.setVerbose(true);
         db.start();
 
         SRList a = new SRList();

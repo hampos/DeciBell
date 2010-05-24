@@ -12,6 +12,7 @@ public class DoubleSRTest {
         DeciBell db = new DeciBell();
         db.setDbName("my/dvb/doublesr2");
         db.attach(DoubleSelfRef.class);
+        db.setVerbose(true);
         db.start();
 
         DoubleSelfRef dsr1 = new DoubleSelfRef("x", "y", "z");

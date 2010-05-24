@@ -38,6 +38,7 @@ public class fk1Test {
         db.attach(B.class);
         db.attach(C.class);
         db.attach(D.class);
+        db.setVerbose(true);
         db.start();                
 
         new A().delete(db);
@@ -164,7 +165,7 @@ public class fk1Test {
                         a.register(db);
                     } catch (Throwable thr) {
                         fk1Test.throwable = thr;
-                        System.out.println("---");
+                        System.out.println("--- ERROR ---");
                         thr.printStackTrace();
                     }
                 } catch (Exception ex) {
@@ -176,6 +177,7 @@ public class fk1Test {
         };
 
         ExecutorService executor = Executors.newFixedThreadPool(5);
+        
         int N = 5000;
         for (int j = 0; j < N; j++) {
             executor.submit(new Thread(t));

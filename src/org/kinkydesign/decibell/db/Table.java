@@ -345,11 +345,10 @@ public abstract class Table implements JTable {
     public String toString() {
         StringBuffer string = new StringBuffer();
         Set<JTableColumn> allColumns = new HashSet<JTableColumn>(getTableColumns());
-        Set<JTableColumn> primaryKeys = new HashSet<JTableColumn>(getPrimaryKeyColumns());
-        Set<JTableColumn> foreignKeys = new HashSet<JTableColumn>(getForeignKeyColumns());
+        final Set<JTableColumn> primaryKeys = getPrimaryKeyColumns();
+        final Set<Set<JTableColumn>> foreignKeys = getForeignColumnsByGroup();
 
         string.append("Table : " + getTableName());
-        string.append(" in schema '" + getSchemaName() + "'");
         string.append(NEWLINE);
         string.append("Primary Key");
         if (primaryKeys.size() >= 2) {
@@ -369,17 +368,48 @@ public abstract class Table implements JTable {
                 string.append("s");
             }
             string.append(":" + NEWLINE);
-            for (JTableColumn foreignKey : foreignKeys) {
-                string.append("@ ");
-                string.append(foreignKey.getColumnName());
-                string.append(" --> " + foreignKey.getReferenceTableName()
-                        + " [" + foreignKey.getReferenceColumnName() + "]");
-                string.append(NEWLINE);
-                allColumns.remove(foreignKey);
+
+            for (Set<JTableColumn> group : foreignKeys) {
+                if (group.size() == 1) {
+                    JTableColumn currentFK = group.iterator().next();
+                    allColumns.remove(currentFK);
+                    string.append("@ ");
+                    string.append(currentFK.getColumnName());
+                    string.append(" --> ");
+                    string.append(currentFK.getReferenceColumnName());
+                    string.append("  [");
+                    string.append(currentFK.getReferenceTableName());
+                    string.append("]");
+                    string.append(NEWLINE);
+                } else if (group.size() > 1) {
+                    StringBuffer referencedColumns = new StringBuffer();
+                    string.append("@ ");
+                    string.append(LEFT_PAR);
+                    final Iterator<JTableColumn> foreignKeyIterator = group.iterator();
+                    while (foreignKeyIterator.hasNext()) {
+                        JTableColumn currentFK = foreignKeyIterator.next();
+                        allColumns.remove(currentFK);
+                        string.append(currentFK.getColumnName());
+                        referencedColumns.append(currentFK.getReferenceColumnName());
+                        if (foreignKeyIterator.hasNext()) {
+                            string.append(COMMA + SPACE);
+                            referencedColumns.append(COMMA + SPACE);
+                        }
+                    }
+                    string.append(RIGHT_PAR);
+                    string.append(" --> ");
+                    string.append(LEFT_PAR);
+                    string.append(referencedColumns);
+                    string.append(RIGHT_PAR);
+                    string.append("  [");
+                    string.append(group.iterator().next().getReferenceTable().getTableName());
+                    string.append("]");
+                    string.append(NEWLINE);
+                }
             }
         }
         if (!allColumns.isEmpty()) {
-            string.append("Other columns :" + NEWLINE);
+            string.append("Other columns:" + NEWLINE);
             for (JTableColumn tc : allColumns) {
                 string.append("+ " + tc.getColumnName());
                 string.append(NEWLINE);

@@ -12,6 +12,7 @@ public class SRTest {
         DeciBell db = new DeciBell();
         db.setDbName("my/dvb/selfref142e");
         db.attach(SelfRef.class);
+        db.setVerbose(true);
         db.start();
 
         SelfRef sr1 = new SelfRef(412, "x", "y", "z");
