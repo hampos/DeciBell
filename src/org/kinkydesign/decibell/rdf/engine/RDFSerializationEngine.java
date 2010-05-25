@@ -150,8 +150,8 @@ public class RDFSerializationEngine {
                     oo.createTypedLiteral(input.getNumericNull(), XSDDatatype.XSDdouble));
         }
 
-        Individual dataTypeIndividual = oo.createIndividual(DBSQLTypes.fromSQLTypes(input.getColumnType()).getURI(),
-                DBClass.SQLType().getResource());
+        
+        Individual dataTypeIndividual = DBSQLTypes.fromSQLTypes(input.getColumnType(), oo);
 
         tableColumnIndividual.addProperty(DBObjectProperties.hasSQLType(oo), dataTypeIndividual);
 
@@ -203,21 +203,21 @@ public class RDFSerializationEngine {
 
     public static OntObject serialize(JTableColumn input) {
         OntObject oo = new OntObject();
-        oo.includeOntClasses(DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field());
+        oo.includeOntClasses(DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field(), DBClass.Constraint());
         createTableColumnIndividual(input, oo);
         return oo;
     }
 
     public static OntObject serialize(JTable input) {
         OntObject oo = new OntObject();
-        oo.includeOntClasses(DBClass.Table(), DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field());
+        oo.includeOntClasses(DBClass.Table(), DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field(), DBClass.Constraint());
         createTableIndividual(input, oo);
         return oo;
     }
 
     public static OntObject serialize(ComponentRegistry input) {
         OntObject oo = new OntObject();
-        oo.includeOntClasses(DBClass.Table(), DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field());
+        oo.includeOntClasses(DBClass.Table(), DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field(), DBClass.Constraint());
         Collection<JTable> allTables = input.values();
         for (JTable table : allTables){
             createTableIndividual(table, oo);

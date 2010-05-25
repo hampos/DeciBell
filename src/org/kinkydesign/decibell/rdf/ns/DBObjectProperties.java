@@ -61,9 +61,7 @@ public class DBObjectProperties extends OntEntity {
     public static final ObjectProperty hasSQLType(OntModel model) {
         ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "hasSqlType"));
         property.addDomain(DBClass.TableColumn().getResource());
-        for (SQLType e : SQLType.values()){
-            property.addRange((DBSQLTypes.fromSQLTypes(e).getResource()));
-        }
+        property.addRange(DBClass.SQLType().getResource());
         return property;
     }
 

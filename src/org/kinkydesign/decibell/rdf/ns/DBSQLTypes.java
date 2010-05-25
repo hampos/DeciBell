@@ -37,6 +37,9 @@
  */
 package org.kinkydesign.decibell.rdf.ns;
 
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -68,7 +71,7 @@ public class DBSQLTypes extends OntEntity {
      * @return
      *      An ontological resource wrapped as an instance of {@link DBSQLTypes }.
      */
-    public static final DBSQLTypes fromSQLTypes(SQLType type) {
+    public static final Individual fromSQLTypes(SQLType type, OntModel oo) {
         String name = "";
         try {
             name = URLEncoder.encode(type.toString(), "UTF-8");
@@ -77,7 +80,9 @@ public class DBSQLTypes extends OntEntity {
             System.err.println("[WARNING] UTF-8 encoding error for " + name);
             ex.printStackTrace();
         }
-        DBSQLTypes dbc = new DBSQLTypes(name);
-        return dbc;
+        
+        Individual sqlIndividual =
+                oo.createIndividual(String.format(_DECIBELL_DATATYPES, name), DBClass.SQLType().getResource());
+        return sqlIndividual;
     }
 }
