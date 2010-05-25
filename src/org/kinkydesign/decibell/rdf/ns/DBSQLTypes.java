@@ -38,7 +38,6 @@
 package org.kinkydesign.decibell.rdf.ns;
 
 import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
 import java.io.UnsupportedEncodingException;
@@ -51,23 +50,14 @@ import org.kinkydesign.decibell.collections.SQLType;
  * @author Charalampos Chomenides
  */
 public class DBSQLTypes extends OntEntity {
-
-    public DBSQLTypes(Resource resource) {
-        super(resource);
-    }
-
-    public DBSQLTypes() {
-        super();
-    }
-
-    public DBSQLTypes(String resourceName) {
-        this(model.createResource(String.format(_DECIBELL_DATATYPES, resourceName)));
-    }
+    
 
     /**
-     * Ontological entity that corresponds to some given {@link SQLType }.
+     * Ontological individual (instances of the DeciBell ontological
+     * class {@link DBClass#sqlType() SQLType} ) that corresponds to
+     * some given {@link SQLType sql type}.
      * @param type
-     *      An {@link SQLType } for which the corresponding ontological resource is needed.
+     *      An {@link sqlType } for which the corresponding ontological resource is needed.
      * @return
      *      An ontological resource wrapped as an instance of {@link DBSQLTypes }.
      */
@@ -82,7 +72,7 @@ public class DBSQLTypes extends OntEntity {
         }
         
         Individual sqlIndividual =
-                oo.createIndividual(String.format(_DECIBELL_DATATYPES, name), DBClass.SQLType().getResource());
+                oo.createIndividual(String.format(_DECIBELL_DATATYPES, name), DBClass.sqlType().getResource());
         return sqlIndividual;
     }
 }

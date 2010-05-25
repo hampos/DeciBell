@@ -41,7 +41,14 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
- *
+ * <p  align="justify" style="width:60%">
+ * The DeciBell ontology and its ontological entities establish a formal
+ * representation of the knowledge by a set of concepts manipulated by DeciBell
+ * and the relationships between those concepts. The DeciBell ontology provides
+ * all necessary specifications for the conceptualization of abstract notions
+ * such as a database table or a table column paving the way towards a consistent
+ * vocabulary able to model a set of (logical) propositions.
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
@@ -51,12 +58,10 @@ public abstract class OntEntity {
     protected static final String _DECIBELL_DATATYPES = "http://www.kinkydesign.org/decibell/datatypes/#%s";
     public static final String DECIBELL_BASE = String.format(_DECIBELL_BASE, "");
     public static final String DECIBELL_DATATYPES = String.format(_DECIBELL_DATATYPES, "");
-
-
-    protected static OntObject model = new OntObject();
+    
     protected Resource resource;
 
-    public OntEntity() {
+        public OntEntity() {
     }
 
     public OntEntity(Resource resource) {
@@ -68,6 +73,7 @@ public abstract class OntEntity {
         clazz.setVersionInfo("0.1");
         return clazz;
     }
+
 
     public String getURI() {
         return resource.getURI();

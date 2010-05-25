@@ -38,11 +38,12 @@
 package org.kinkydesign.decibell.rdf.ns;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
 
 /**
  * <p  align="justify" style="width:60%">
  * Collection of ontological classes used in DeciBell an standing as datatypes for
- * the main conceptions of DeciBell which are the Table, the TableColumn and the Field
+ * the main conceptions of DeciBell which are the table, the tableColumn and the field
  * (and some other auxiliary classes).
  * </p>
  * @author Pantelis Sopasakis
@@ -68,15 +69,15 @@ public class DBClass extends OntEntity {
      * <p  align="justify" style="width:60%">
      * Construct a new <code>DBClass</code> providing just the name of the resource; the
      * URI of the resource is internall generated using the standard namespace that all
-     * DeciBell entities share. For example, given the resource name 'Table', the URI
+     * DeciBell entities share. For example, given the resource name 'table', the URI
      * of the created <code>DBClass</code> will be something like
-     * <code>http://www.kinkydesign.org/decibell/ver.0.1/#Table</code>.
+     * <code>http://www.kinkydesign.org/decibell/ver.0.1/#table</code>.
      * </p>
      * @param resourceName
      *      The name of the resource as a String.
      */
     public DBClass(String resourceName) {
-        this(model.createResource(String.format(_DECIBELL_BASE, resourceName)));
+        this(new ResourceImpl(String.format(_DECIBELL_BASE, resourceName)));
     }
 
     /**
@@ -90,12 +91,25 @@ public class DBClass extends OntEntity {
 
     /**
      * <p  align="justify" style="width:60%">
+     * The ontological entity for DeciBell database schemas (collection of tables).
+     * </p>
+     * @return
+     *      The <code>DBClass</code> corresponding to a database schema (collection
+     *      of tables).
+     */
+    public static final DBClass schema() {
+        DBClass dbc = new DBClass("Schema");
+        return dbc;
+    }
+
+    /**
+     * <p  align="justify" style="width:60%">
      * The ontological entity for DeciBell tables.
      * </p>
      * @return
      *      The <code>DBClass</code> corresponding to DeciBell table entities.
      */
-    public static final DBClass Table() {
+    public static final DBClass table() {
         DBClass dbc = new DBClass("Table");
         return dbc;
     }
@@ -107,7 +121,7 @@ public class DBClass extends OntEntity {
      * @return
      *      The <code>DBClass</code> corresponding to DeciBell table column entities.
      */
-    public static final DBClass TableColumn() {
+    public static final DBClass tableColumn() {
         DBClass dbc = new DBClass("TableColumn");
         return dbc;
     }
@@ -119,7 +133,7 @@ public class DBClass extends OntEntity {
      * @return
      *      The <code>DBClass</code> corresponding to table column constraints.
      */
-    public static final DBClass Constraint() {
+    public static final DBClass constraint() {
         DBClass dbc = new DBClass("Constraint");
         return dbc;
     }
@@ -132,7 +146,7 @@ public class DBClass extends OntEntity {
      * @return
      *      The <code>DBClass</code> corresponding to Java<sup><tt>TM</tt></sup> fields.
      */
-    public static final DBClass Field() {
+    public static final DBClass field() {
         DBClass dbc = new DBClass("Field");
         return dbc;
     }
@@ -143,9 +157,9 @@ public class DBClass extends OntEntity {
      * is found in {@link DBSQLTypes }.
      * </p>
      * @return
-     *      The <code>DBClass</code> corresponding to the notion of an SQLType.
+     *      The <code>DBClass</code> corresponding to the notion of an sqlType.
      */
-    public static final DBClass SQLType() {
+    public static final DBClass sqlType() {
         DBClass dbc = new DBClass("SQLType");
         return dbc;
     }

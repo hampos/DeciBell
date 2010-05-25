@@ -39,57 +39,56 @@ package org.kinkydesign.decibell.rdf.ns;
 
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
-import org.kinkydesign.decibell.collections.SQLType;
 
 /**
- *
+ * <p  align="justify" style="width:60%">
+ * Collection of definitions of object properties(properties for which the value is an individual)
+ * used in the ontology of DeciBell to describe relations between various resources.
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
-public class DBObjectProperties extends OntEntity {
-
-    private DBObjectProperties(Resource resource) {
-        super(resource);
-    }
-
-    public Property getProperty(OntObject o) {
-        return o.getProperty(getURI());
-    }
-
+public class DBObjectProperties extends OntEntity {    
+        
     public static final ObjectProperty hasSQLType(OntModel model) {
         ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "hasSqlType"));
-        property.addDomain(DBClass.TableColumn().getResource());
-        property.addRange(DBClass.SQLType().getResource());
+        property.addDomain(DBClass.tableColumn().getResource());
+        property.addRange(DBClass.sqlType().getResource());
         return property;
     }
 
     public static final ObjectProperty columnReferencesColumn(OntModel model) {
         ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "referencesColumn"));
-        property.addDomain(DBClass.TableColumn().getResource());
-        property.addRange(DBClass.TableColumn().getResource());
+        property.addDomain(DBClass.tableColumn().getResource());
+        property.addRange(DBClass.tableColumn().getResource());
         return property;
     }
 
     public static final ObjectProperty hasConstraint(OntModel model){
         ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "hasConstraint"));
-        property.addDomain(DBClass.TableColumn().getResource());
-        property.addRange(DBClass.Constraint().getResource());
+        property.addDomain(DBClass.tableColumn().getResource());
+        property.addRange(DBClass.constraint().getResource());
         return property;
     }
 
     public static final ObjectProperty hasField(OntModel model){
         ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "hasField"));
-        property.addDomain(DBClass.TableColumn().getResource());
-        property.addRange(DBClass.Field().getResource());
+        property.addDomain(DBClass.tableColumn().getResource());
+        property.addRange(DBClass.field().getResource());
         return property;
     }
 
     public static final ObjectProperty hasColumn(OntModel model){
         ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "hasColumn"));
-        property.addDomain(DBClass.Table().getResource());
-        property.addRange(DBClass.TableColumn().getResource());
+        property.addDomain(DBClass.table().getResource());
+        property.addRange(DBClass.tableColumn().getResource());
+        return property;
+    }
+
+    public static final ObjectProperty schemaTable(OntModel model){
+        ObjectProperty property = model.createObjectProperty(String.format(_DECIBELL_BASE, "schemaTable"));
+        property.addDomain(DBClass.schema().getResource());
+        property.addRange(DBClass.table().getResource());
         return property;
     }
 }

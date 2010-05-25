@@ -69,7 +69,7 @@ public class RDFSerializationEngine {
             ex.printStackTrace();
         }
         Individual fieldIndividual = oo.createIndividual(OntEntity.DECIBELL_BASE + "field_" + fieldName,
-                DBClass.Field().getResource());
+                DBClass.field().getResource());
         fieldIndividual.addLiteral(DBDataTypeProperties.fName(oo),
                 oo.createTypedLiteral(input.getName(), XSDDatatype.XSDstring));
         fieldIndividual.addLiteral(DBDataTypeProperties.fieldClass(oo),
@@ -93,7 +93,7 @@ public class RDFSerializationEngine {
             ex.printStackTrace();
         }
         Individual constraintIndiv = oo.createIndividual(OntEntity.DECIBELL_BASE + "constraint_" + columnName,
-                DBClass.Constraint().getResource());
+                DBClass.constraint().getResource());
         if (input.hasHigh()) {
             constraintIndiv.addLiteral(DBDataTypeProperties.higherBound(oo), oo.createTypedLiteral(input.getHigh(), XSDDatatype.XSDdouble));
         }
@@ -117,8 +117,8 @@ public class RDFSerializationEngine {
             System.err.println("Could not encode the string : '" + input.getColumnName() + "' using UTF-8");
             ex.printStackTrace();
         }
-        Individual tableColumnIndividual = oo.createIndividual(OntEntity.DECIBELL_BASE +"column_"+ columnName,
-                DBClass.TableColumn().getResource());
+        Individual tableColumnIndividual = oo.createIndividual(OntEntity.DECIBELL_BASE + "column_" + columnName,
+                DBClass.tableColumn().getResource());
 
         tableColumnIndividual.addLiteral(DBDataTypeProperties.tcName(oo),
                 oo.createTypedLiteral(input.getColumnName(), XSDDatatype.XSDstring));
@@ -150,7 +150,7 @@ public class RDFSerializationEngine {
                     oo.createTypedLiteral(input.getNumericNull(), XSDDatatype.XSDdouble));
         }
 
-        
+
         Individual dataTypeIndividual = DBSQLTypes.fromSQLTypes(input.getColumnType(), oo);
 
         tableColumnIndividual.addProperty(DBObjectProperties.hasSQLType(oo), dataTypeIndividual);
@@ -186,13 +186,11 @@ public class RDFSerializationEngine {
             System.err.println("Could not encode the string : '" + input.getTableName() + "' using UTF-8");
             ex.printStackTrace();
         }
-        Individual tableIndividual = oo.createIndividual(OntEntity.DECIBELL_BASE +"table_"+ tableName,
-                DBClass.Table().getResource());
+        Individual tableIndividual = oo.createIndividual(OntEntity.DECIBELL_BASE + "table_" + tableName,
+                DBClass.table().getResource());
 
         tableIndividual.addLiteral(DBDataTypeProperties.tName(oo),
                 oo.createTypedLiteral(input.getTableName(), XSDDatatype.XSDstring));
-        tableIndividual.addLiteral(DBDataTypeProperties.schemaName(oo),
-                oo.createTypedLiteral(input.getTableSchema(), XSDDatatype.XSDstring));
 
         for (JTableColumn tableColumn : input.getTableColumns()) {
             tableIndividual.addProperty(DBObjectProperties.hasColumn(oo), createTableColumnIndividual(tableColumn, oo));
@@ -201,27 +199,39 @@ public class RDFSerializationEngine {
         return tableIndividual;
     }
 
+    private static Individual createSchemaIndividual(ComponentRegistry input, OntObject oo) {
+        Individual schemaIndiv = oo.createIndividual(OntEntity.DECIBELL_BASE + "schema", DBClass.schema().getResource());
+        boolean schemaNameAdded = false;
+        for (JTable table : input.values()) {
+            if (!schemaNameAdded) {
+                schemaIndiv.addLiteral(DBDataTypeProperties.schemaName(oo),
+                        oo.createTypedLiteral(table.getTableSchema(), XSDDatatype.XSDstring));
+                schemaNameAdded = true;
+            }
+            schemaIndiv.addProperty(DBObjectProperties.schemaTable(oo), createTableIndividual(table, oo));
+        }
+        return schemaIndiv;
+
+    }
+
     public static OntObject serialize(JTableColumn input) {
         OntObject oo = new OntObject();
-        oo.includeOntClasses(DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field(), DBClass.Constraint());
+        oo.includeOntClasses(DBClass.tableColumn(), DBClass.sqlType(), DBClass.field(), DBClass.constraint());
         createTableColumnIndividual(input, oo);
         return oo;
     }
 
     public static OntObject serialize(JTable input) {
         OntObject oo = new OntObject();
-        oo.includeOntClasses(DBClass.Table(), DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field(), DBClass.Constraint());
+        oo.includeOntClasses(DBClass.table(), DBClass.tableColumn(), DBClass.sqlType(), DBClass.field(), DBClass.constraint());
         createTableIndividual(input, oo);
         return oo;
     }
 
     public static OntObject serialize(ComponentRegistry input) {
         OntObject oo = new OntObject();
-        oo.includeOntClasses(DBClass.Table(), DBClass.TableColumn(), DBClass.SQLType(), DBClass.Field(), DBClass.Constraint());
-        Collection<JTable> allTables = input.values();
-        for (JTable table : allTables){
-            createTableIndividual(table, oo);
-        }
+        oo.includeOntClasses(DBClass.table(), DBClass.tableColumn(), DBClass.sqlType(), DBClass.field(), DBClass.constraint(), DBClass.schema());
+        createSchemaIndividual(input, oo);
         return oo;
     }
 
