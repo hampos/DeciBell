@@ -113,6 +113,7 @@ public interface JTable {
      * generation of this table.
      * </p>
      * @return
+     *      Set of relational tables for this table.
      */
     Set<JRelationalTable> getRelations();
 

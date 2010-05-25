@@ -37,17 +37,34 @@
  */
 package org.kinkydesign.decibell.rdf.ns;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
- *
+ * <p  align="justify" style="width:60%">
+ * Collection of datatype properties used in DeciBell. These properties are used
+ * for the creation of a structured data model that fully describes the table structure,
+ * provides all necessary metadata for all tables in the database and all necessary
+ * meta information for the table columns therein. This renders the table structure
+ * fully portable and self-describing.
+ * </p>
  * @author Pantelis Sopasakis
  * @author Charalampos Chomenides
  */
 public class DBDataTypeProperties extends OntEntity {
-    
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * Datatype property that applies on table columns and its values 
+     * are of type {@link XSDDatatype#XSDstring xsd:string}. Connects a
+     * table columns with its default value.
+     * </p>
+     * @param model
+     *      Ontological Model in which this property is to be encapsulated.
+     * @return
+     *      Datatype property for the default value of a table column.
+     */
     public static final DatatypeProperty defaultValue(OntObject model) {
         DatatypeProperty property = model.createDatatypeProperty(String.format(_DECIBELL_BASE, "defaultValue"));
         property.addDomain(DBClass.TableColumn().getResource());
@@ -55,6 +72,20 @@ public class DBDataTypeProperties extends OntEntity {
         return property;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * Datatype property that applies on table columns and its values
+     * are of type {@link XSDDatatype#XSDboolean xsd:boolean}. Assigns a boolean
+     * value to a table column according to whether it has a specified domain of
+     * acceptable values.
+     * </p>
+     * @param model
+     *      Ontological Model in which this property is to be encapsulated.
+     * @return
+     *      Datatype property telling whether there is a specified domain
+     *      for the table column.
+     * @see DBDataTypeProperties#acceptsValue(org.kinkydesign.decibell.rdf.ns.OntObject) accepts value
+     */
     public static final DatatypeProperty hasDomain(OntObject model) {
         DatatypeProperty property = model.createDatatypeProperty(String.format(_DECIBELL_BASE, "hasDomain"));
         property.addDomain(DBClass.TableColumn().getResource());
@@ -62,6 +93,19 @@ public class DBDataTypeProperties extends OntEntity {
         return property;
     }
 
+    /**
+     * <p  align="justify" style="width:60%">
+     * Datatype property that applies on table columns and its values
+     * are of type {@link XSDDatatype#XSDboolean xsd:boolean}. Assigns a boolean
+     * value to a table column according to whether it has a specified higher
+     * bound.
+     * </p>
+     * @param model
+     *      Ontological Model in which this property is to be encapsulated.
+     * @return
+     *      Datatype property telling whether there is a higher
+     *      bound constraint imposed on the table column.
+     */
     public static final DatatypeProperty hasHigh(OntObject model) {
         DatatypeProperty property = model.createDatatypeProperty(String.format(_DECIBELL_BASE, "hasHigh"));
         property.addDomain(DBClass.TableColumn().getResource());
@@ -208,8 +252,4 @@ public class DBDataTypeProperties extends OntEntity {
         property.addRange(XSD.xstring);
         return property;
     }
-
-    
-
-
 }

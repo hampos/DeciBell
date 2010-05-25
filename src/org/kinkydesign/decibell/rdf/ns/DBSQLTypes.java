@@ -61,6 +61,13 @@ public class DBSQLTypes extends OntEntity {
         this(model.createResource(String.format(_DECIBELL_DATATYPES, resourceName)));
     }
 
+    /**
+     * Ontological entity that corresponds to some given {@link SQLType }.
+     * @param type
+     *      An {@link SQLType } for which the corresponding ontological resource is needed.
+     * @return
+     *      An ontological resource wrapped as an instance of {@link DBSQLTypes }.
+     */
     public static final DBSQLTypes fromSQLTypes(SQLType type) {
         String name = "";
         try {

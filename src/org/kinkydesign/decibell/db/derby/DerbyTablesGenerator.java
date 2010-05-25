@@ -50,7 +50,6 @@ import org.kinkydesign.decibell.collections.LogicalOperator;
 import org.kinkydesign.decibell.collections.SQLType;
 import org.kinkydesign.decibell.db.*;
 import org.kinkydesign.decibell.db.interfaces.*;
-import org.kinkydesign.decibell.rdf.engine.RDFSerializationEngine;
 
 import static org.kinkydesign.decibell.db.derby.util.DerbyKeyWord.*;
 

@@ -37,12 +37,7 @@
  */
 package org.kinkydesign.decibell.rdf.ns;
 
-import com.hp.hpl.jena.ontology.DatatypeProperty;
-import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.SymmetricProperty;
-import com.hp.hpl.jena.ontology.TransitiveProperty;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
